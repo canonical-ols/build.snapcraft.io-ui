@@ -5,7 +5,7 @@
  * Javascript.
  */
 
-require('es6-promise/auto');
+import 'es6-promise/auto';
 import 'isomorphic-fetch';
 import { OAuth } from 'oauth';
 import qs from 'qs';
