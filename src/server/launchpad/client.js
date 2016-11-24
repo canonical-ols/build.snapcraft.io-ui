@@ -21,7 +21,7 @@ const HTTP_CREATED = 201;
 export function normalizeURI(base_uri, uri) {
   const service_base = '/api/devel';
   const base_parsed = url.parse(base_uri);
-  let parsed = url.parse(uri);
+  const parsed = url.parse(uri);
 
   if (parsed.host !== null) {
     // e.g. 'http://www.example.com/api/devel/foo';
@@ -109,7 +109,7 @@ export class Collection extends Resource {
   constructor(client, representation, uri) {
     super();
     this.init(client, representation, uri);
-    for (let i = 0; i < this.entries.length; i++) {
+    for (const i in this.entries.keys()) {
       const entry = this.entries[i];
       this.entries[i] = new Entry(client, entry, entry.self_link);
     }
