@@ -109,10 +109,9 @@ export class Collection extends Resource {
   constructor(client, representation, uri) {
     super();
     this.init(client, representation, uri);
-    for (const i in this.entries.keys()) {
-      const entry = this.entries[i];
+    this.entries.forEach((entry, i) => {
       this.entries[i] = new Entry(client, entry, entry.self_link);
-    }
+    });
   }
 
   /**
@@ -155,11 +154,11 @@ export class Entry extends Resource {
 
   /** Write modifications to this entry back to the web service. */
   lp_save(config) {
-    let representation = {};
+    const representation = {};
     for (const attribute of this.dirty_attributes) {
       representation[attribute] = this[attribute];
     }
-    let headers = {};
+    const headers = {};
     if (this['http_etag'] !== undefined) {
       headers['If-Match'] = this['http_etag'];
     }
@@ -179,7 +178,7 @@ export class Launchpad {
   }
 
   makeHeaders() {
-    let headers = {};
+    const headers = {};
     if (this.consumer_key !== undefined &&
         this.token_key !== undefined && this.token_secret !== undefined) {
       // We leave a lot of the parameters null or empty here because
@@ -206,7 +205,7 @@ export class Launchpad {
       ...this.makeHeaders(),
       'Accept': config.accept || 'application/json'
     };
-    let parameters = { ...config.parameters };
+    const parameters = { ...config.parameters };
     if (start !== undefined) {
       parameters['ws.start'] = start;
     }
