@@ -14,7 +14,7 @@ import { normalizeURI } from './uri';
 
 const HTTP_CREATED = 201;
 
-class ResourceError extends Error {
+export class ResourceError extends Error {
   constructor(response, client, uri, method) {
     super(`${uri} returned HTTP status ${response.status}`);
     this.response = response;
