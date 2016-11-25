@@ -7,8 +7,8 @@ import { Launchpad } from './client';
 
 export function getLaunchpad() {
   return new Launchpad(
-    conf.get('LP_API_URL'), conf.get('LP_CONSUMER_KEY'),
-    conf.get('LP_TOKEN_KEY'), conf.get('LP_TOKEN_SECRET'));
+    conf.get('LP_API_URL'), conf.get('LP_API_CONSUMER_KEY'),
+    conf.get('LP_API_TOKEN'), conf.get('LP_API_TOKEN_SECRET'));
 }
 
 export default getLaunchpad;

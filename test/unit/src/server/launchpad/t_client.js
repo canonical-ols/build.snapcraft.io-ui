@@ -225,9 +225,9 @@ describe('Launchpad', () => {
     conf.add('t_client', {
       type: 'literal',
       store: {
-        'LP_CONSUMER_KEY': 'consumer key',
-        'LP_TOKEN_KEY': 'token key',
-        'LP_TOKEN_SECRET': 'token secret'
+        'LP_API_CONSUMER_KEY': 'consumer key',
+        'LP_API_TOKEN': 'token key',
+        'LP_API_TOKEN_SECRET': 'token secret'
       }
     });
     lp = nock(LP_API_URL)
