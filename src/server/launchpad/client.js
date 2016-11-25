@@ -9,40 +9,10 @@ import 'es6-promise/auto';
 import 'isomorphic-fetch';
 import { OAuth } from 'oauth';
 import qs from 'qs';
-import url from 'url';
+
+import { normalizeURI } from './uri';
 
 const HTTP_CREATED = 201;
-
-/**
- * Converts an absolute URI into a relative URI.
- * Prepends the root to a relative URI that lacks the root.
- * Does nothing to a relative URI that includes the root.
- */
-export function normalizeURI(base_uri, uri) {
-  const service_base = '/api/devel';
-  const base_parsed = url.parse(base_uri);
-  const parsed = url.parse(uri);
-
-  if (parsed.host !== null) {
-    // e.g. 'http://www.example.com/api/devel/foo';
-    // Don't try to insert the service base into what was an absolute URL.
-    // So 'http://www.example.com/foo' remains unchanged.
-  } else {
-    if (!parsed.pathname.startsWith('/')) {
-      // e.g. 'api/devel/foo' or 'foo'
-      parsed.pathname = '/' + parsed.pathname;
-    }
-    if (!parsed.pathname.startsWith(service_base)) {
-      // e.g. '/foo'
-      parsed.pathname = service_base + parsed.pathname;
-    }
-  }
-
-  parsed.protocol = base_parsed.protocol;
-  parsed.host = base_parsed.host;
-
-  return url.format(parsed);
-}
 
 class ResourceError extends Error {
   constructor(response, client, uri, method) {

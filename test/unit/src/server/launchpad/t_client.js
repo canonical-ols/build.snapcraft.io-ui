@@ -9,47 +9,11 @@ import { conf } from '../../../../../src/server/helpers/config';
 import {
   Collection,
   Entry,
-  normalizeURI,
   wrapResourceOnSuccess
 } from '../../../../../src/server/launchpad/client';
 import getLaunchpad from '../../../../../src/server/launchpad';
 
 const LP_API_URL = conf.get('LP_API_URL');
-
-describe('normalizeURI', () => {
-  it('handles absolute URI', () => {
-    const result = normalizeURI(
-      'http://www.example.com', 'http://www.example.com/api/devel/foo');
-    expect(result).toEqual('http://www.example.com/api/devel/foo');
-  });
-
-  it('handles absolute URI without inserting service base', () => {
-    const result = normalizeURI(
-      'http://www.example.com', 'http://www.example.com/foo/bar');
-    expect(result).toEqual('http://www.example.com/foo/bar');
-  });
-
-  it('prepends base URI and service base to relative URI', () => {
-    const result = normalizeURI('http://www.example.com', '/foo/bar');
-    expect(result).toEqual('http://www.example.com/api/devel/foo/bar');
-  });
-
-  it('prepends base URI to relative URI with service base', () => {
-    const result = normalizeURI(
-      'http://www.example.com', '/api/devel/foo/bar');
-    expect(result).toEqual('http://www.example.com/api/devel/foo/bar');
-  });
-
-  it('prepends base URI and service base to /-less relative URI', () => {
-    const result = normalizeURI('http://www.example.com', 'foo/bar');
-    expect(result).toEqual('http://www.example.com/api/devel/foo/bar');
-  });
-
-  it('prepends base URI to /-less relative URI with service base', () => {
-    const result = normalizeURI('http://www.example.com', 'api/devel/foo/bar');
-    expect(result).toEqual('http://www.example.com/api/devel/foo/bar');
-  });
-});
 
 describe('wrapResourceOnSuccess', () => {
   const original_uri = 'https://api.staging.launchpad.net/original_uri';
