@@ -24,24 +24,6 @@ class ResourceError extends Error {
   }
 }
 
-export function wrapResourceOnSuccess(response, client, uri, method) {
-  const media_type = response.headers.get('Content-Type');
-  if (media_type.startsWith('application/json')) {
-    return response.json().then(representation => {
-      // If the object fetched has a self_link, make that the object's uri
-      // for use in other api methods off of that object.  During a PATCH
-      // request the caller is the object.  Leave the original_uri alone.
-      // Otherwise make the uri the object coming back.
-      if (representation.self_link && method !== 'PATCH') {
-        uri = representation.self_link;
-      }
-      return client.wrap_resource(uri, representation);
-    });
-  } else {
-    return response.text();
-  }
-}
-
 // The resources that come together to make Launchpad.
 
 /** The base class for objects retrieved from Launchpad's web service. */
@@ -189,7 +171,7 @@ export class Launchpad {
 
     return fetch(uri, { headers: headers }).then(response => {
       if (Math.floor(response.status / 100) == 2) {
-        return wrapResourceOnSuccess(response, this, uri, 'GET');
+        return this.wrap_resource_on_success(response, uri, 'GET');
       } else {
         throw new ResourceError(response, this, uri, 'GET');
       }
@@ -234,7 +216,7 @@ export class Launchpad {
         var new_location = response.headers.get('Location');
         return this.get(new_location, {});
       } else if (Math.floor(response.status / 100) == 2) {
-        return wrapResourceOnSuccess(response, this, uri, 'POST');
+        return this.wrap_resource_on_success(response, uri, 'POST');
       } else {
         throw new ResourceError(response, this, uri, 'POST');
       }
@@ -265,7 +247,7 @@ export class Launchpad {
       body: JSON.stringify(representation)
     }).then(response => {
       if (Math.floor(response.status / 100) == 2) {
-        return wrapResourceOnSuccess(response, this, uri, 'PATCH');
+        return this.wrap_resource_on_success(response, uri, 'PATCH');
       } else {
         throw new ResourceError(response, this, uri, 'PATCH');
       }
@@ -311,6 +293,25 @@ export class Launchpad {
       return new Entry(this, representation, uri);
     } else {
       return new Collection(this, representation, uri);
+    }
+  }
+
+  /** Common handler for successful responses, wrapping as appropriate. */
+  wrap_resource_on_success(response, uri, method) {
+    const media_type = response.headers.get('Content-Type');
+    if (media_type.startsWith('application/json')) {
+      return response.json().then(representation => {
+        // If the object fetched has a self_link, make that the object's uri
+        // for use in other api methods off of that object.  During a PATCH
+        // request the caller is the object.  Leave the original_uri alone.
+        // Otherwise make the uri the object coming back.
+        if (representation.self_link && method !== 'PATCH') {
+          uri = representation.self_link;
+        }
+        return this.wrap_resource(uri, representation);
+      });
+    } else {
+      return response.text();
     }
   }
 }

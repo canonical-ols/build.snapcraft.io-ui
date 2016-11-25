@@ -8,51 +8,11 @@ import nock from 'nock';
 import { conf } from '../../../../../src/server/helpers/config';
 import {
   Collection,
-  Entry,
-  wrapResourceOnSuccess
+  Entry
 } from '../../../../../src/server/launchpad/client';
 import getLaunchpad from '../../../../../src/server/launchpad';
 
 const LP_API_URL = conf.get('LP_API_URL');
-
-describe('wrapResourceOnSuccess', () => {
-  const original_uri = 'https://api.staging.launchpad.net/original_uri';
-  const updated_uri = 'https://api.staging.launchpad.net/object_uri';
-  const fake_response = {
-    headers: {
-      get: key => {
-        switch (key) {
-          case 'Content-Type':
-            return 'application/json';
-          default:
-            return null;
-        }
-      }
-    },
-    json: () => {
-      return Promise.resolve({
-        self_link: updated_uri,
-        resource_type_link: 'object'
-      });
-    }
-  };
-
-  it('does not modify the URI on a PATCH request', () => {
-    return wrapResourceOnSuccess(
-      fake_response, getLaunchpad(), original_uri, 'PATCH')
-      .then(result => {
-        expect(result.uri).toEqual(original_uri);
-      });
-  });
-
-  it('replaces the URI on a POST request with the value of self_link', () => {
-    return wrapResourceOnSuccess(
-      fake_response, getLaunchpad(), original_uri, 'POST')
-      .then(result => {
-        expect(result.uri).toEqual(updated_uri);
-      });
-  });
-});
 
 describe('Collection', () => {
   let lp;
@@ -374,6 +334,45 @@ describe('Launchpad', () => {
     it('handles null correctly', () => {
       const result = getLaunchpad().wrap_resource(null, { bar: null });
       expect(result.bar).toBe(null);
+    });
+  });
+
+  describe('wrap_resource_on_success', () => {
+    const original_uri = 'https://api.staging.launchpad.net/original_uri';
+    const updated_uri = 'https://api.staging.launchpad.net/object_uri';
+    const fake_response = {
+      headers: {
+        get: key => {
+          switch (key) {
+            case 'Content-Type':
+              return 'application/json';
+            default:
+              return null;
+          }
+        }
+      },
+      json: () => {
+        return Promise.resolve({
+          self_link: updated_uri,
+          resource_type_link: 'object'
+        });
+      }
+    };
+
+    it('does not modify URI on PATCH', () => {
+      return getLaunchpad().wrap_resource_on_success(
+        fake_response, original_uri, 'PATCH')
+        .then(result => {
+          expect(result.uri).toEqual(original_uri);
+        });
+    });
+
+    it('replaces the URI on POST with the value of self_link', () => {
+      return getLaunchpad().wrap_resource_on_success(
+        fake_response, original_uri, 'POST')
+        .then(result => {
+          expect(result.uri).toEqual(updated_uri);
+        });
     });
   });
 });
