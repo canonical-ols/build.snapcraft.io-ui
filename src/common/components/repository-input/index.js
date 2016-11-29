@@ -19,17 +19,11 @@ export class RepositoryInput extends Component {
 
     if (!input.repository) {
       message = 'Invalid repository URL.';
-    }
-
-    if (input.repository && input.isFetching) {
+    } else if (input.repository && input.isFetching) {
       message = `Verifying ${input.repository} on GitHub...`;
-    }
-
-    if (input.success && input.repositoryUrl) {
+    } else if (input.success && input.repositoryUrl) {
       message = `Repository ${input.repository} is valid.`;
-    }
-
-    if (input.errors) {
+    } else if (input.errors) {
       message = `Repository ${input.repository} is invalid.`;
     }
 

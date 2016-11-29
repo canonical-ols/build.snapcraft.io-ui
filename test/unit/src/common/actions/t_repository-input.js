@@ -135,15 +135,9 @@ describe('repository input actions', () => {
     });
 
     it('should save GitHub repo on successful verification', () => {
-      scope.get('/repos/foo/bar')
+      scope.get('/repos/foo/bar/contents/snapcraft.yaml')
         .reply(200, {
-          'id': 123456,
-          'name': 'bar',
-          'full_name': 'foo/bar',
-          'owner': {
-            'login': 'bar',
-          },
-          'clone_url': 'https://github.com/foo/bar.git'
+          'name': 'snapcraft.yaml'
         });
 
       return store.dispatch(verifyGitHubRepository('foo/bar'))
@@ -155,7 +149,7 @@ describe('repository input actions', () => {
     });
 
     it('should store error on GitHub verification failure', () => {
-      scope.get('/repos/foo/bar')
+      scope.get('/repos/foo/bar/contents/snapcraft.yaml')
         .reply(404, {
           'message': 'Not Found',
           'documentation_url': 'https://developer.github.com/v3'

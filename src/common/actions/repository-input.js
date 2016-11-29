@@ -42,11 +42,8 @@ export function verifyGitHubRepository(repository) {
         payload: gitHubRepo.repo
       });
 
-      return fetch(`https://api.github.com/repos/${repo}`)
+      return fetch(`https://api.github.com/repos/${repo}/contents/snapcraft.yaml`)
         .then(checkStatus)
-        // TODO:
-        //.then(response => response.json())
-        // use json.clone_url from response instead of building our own?
         .then(() => dispatch(verifyGitHubRepositorySuccess(`https://github.com/${repo}.git`)))
         .catch(error => dispatch(verifyGitHubRepositoryError(error)));
     } else {
