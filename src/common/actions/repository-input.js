@@ -30,14 +30,16 @@ export function setGitHubRepository(repository) {
 }
 
 export function validateGitHubRepository(repository) {
-  const gitHubRepo = parseGitHubUrl(repository);
-  const repo = gitHubRepo ? gitHubRepo.repo : null;
+  return (dispatch) => {
+    const gitHubRepo = parseGitHubUrl(repository);
+    const repo = gitHubRepo ? gitHubRepo.repo : null;
 
-  if (repo) {
-    return setGitHubRepository(repo);
-  } else {
-    return verifyGitHubRepositoryError(new Error('Invalid repository URL.'));
-  }
+    dispatch(setGitHubRepository(repo));
+
+    if (!repo) {
+      dispatch(verifyGitHubRepositoryError(new Error('Invalid repository URL.')));
+    }
+  };
 }
 
 function checkStatus(response) {

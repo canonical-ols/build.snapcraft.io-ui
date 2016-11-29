@@ -98,10 +98,6 @@ describe('repository input actions', () => {
         store.dispatch(action);
         expect(store.getActions()).toInclude(expectedAction);
       });
-
-      it('should create a valid flux standard action', () => {
-        expect(isFSA(action)).toBe(true);
-      });
     });
 
     context('on invalid repository input', () => {
@@ -116,10 +112,6 @@ describe('repository input actions', () => {
         expect(store.getActions()).toHaveActionOfType(
           ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR
         );
-      });
-
-      it('should create a valid flux standard action', () => {
-        expect(isFSA(action)).toBe(true);
       });
     });
   });

@@ -17,14 +17,16 @@ export class RepositoryInput extends Component {
     const input = this.props.repositoryInput;
     let message;
 
-    if (!input.repository) {
-      message = 'Invalid repository URL.';
-    } else if (input.repository && input.isFetching) {
+    if (input.repository && input.isFetching) {
       message = `Verifying ${input.repository} on GitHub...`;
     } else if (input.success && input.repositoryUrl) {
-      message = `Repository ${input.repository} is valid.`;
-    } else if (input.errors) {
-      message = `Repository ${input.repository} is invalid.`;
+      message = `Repository ${input.repository} contains snapcraft project and can be built.`;
+    } else if (input.error) {
+      if (input.repository) {
+        message = `Repository ${input.repository} is doesn't exist, is not public or doesn't contain snapcraft.yaml file.`;
+      } else {
+        message = 'Repository URL or name is invalid.';
+      }
     }
 
     return message;

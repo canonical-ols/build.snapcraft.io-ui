@@ -6,13 +6,15 @@ export function repositoryInput(state = {
   repository: null,
   repositoryUrl: null,
   success: false,
-  errors: false
+  error: false
 }, action) {
   switch(action.type) {
     case ActionTypes.CHANGE_REPOSITORY_INPUT:
       return {
         ...state,
-        inputValue: action.payload
+        inputValue: action.payload,
+        success: false,
+        error: false
       };
     case ActionTypes.SET_GITHUB_REPOSITORY:
       return {
@@ -29,7 +31,7 @@ export function repositoryInput(state = {
         ...state,
         isFetching: false,
         success: true,
-        errors: false,
+        error: false,
         repositoryUrl: action.payload
       };
     case ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR:
@@ -37,7 +39,7 @@ export function repositoryInput(state = {
         ...state,
         isFetching: false,
         success: false,
-        errors: action.payload
+        error: action.payload
       };
     default:
       return state;
