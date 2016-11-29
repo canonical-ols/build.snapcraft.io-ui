@@ -31,6 +31,7 @@ export function repositoryInput(state = {
         ...state,
         isFetching: false,
         success: true,
+        errors: false,
         repositoryUrl: action.payload
       };
     case ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR:

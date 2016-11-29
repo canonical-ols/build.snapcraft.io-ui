@@ -1,80 +1,76 @@
 import 'isomorphic-fetch';
 
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
-import parseGitHubUrl from 'parse-github-url';
+import {
+  changeRepositoryInput,
+  verifyGitHubRepository
+} from '../../actions/repository-input';
 
 export class RepositoryInput extends Component {
   constructor(props) {
     super(props);
+  }
 
-    this.state = {
-      message: '',
-      repository: null,
-      repositoryInput: ''
-    };
+  getStatusMessage() {
+    const input = this.props.repositoryInput;
+    let message;
+
+    if (!input.repository) {
+      message = 'Invalid repository URL.';
+    }
+
+    if (input.repository && input.isFetching) {
+      message = `Verifying ${input.repository} on GitHub...`;
+    }
+
+    if (input.success && input.repositoryUrl) {
+      message = `Repository ${input.repository} is valid.`;
+    }
+
+    if (input.errors) {
+      message = `Repository ${input.repository} is invalid.`;
+    }
+
+    return message;
   }
 
   render() {
     return (
       <div>
         <label>Repository URL:</label>
-        <input type='text' value={this.state.repositoryInput} onChange={this.onInputChange.bind(this)} />
+        <input type='text' value={this.props.repositoryInput.inputValue} onChange={this.onInputChange.bind(this)} />
         <button onClick={this.onButtonClick.bind(this)}>Parse</button>
         <div>
-          {this.state.message}
+          {this.getStatusMessage()}
         </div>
       </div>
     );
   }
 
   onInputChange(event) {
-    this.setState({
-      repositoryInput: event.target.value
-    });
+    this.props.dispatch(changeRepositoryInput(event.target.value));
   }
 
   onButtonClick() {
-    const gitHubRepo = parseGitHubUrl(this.state.repositoryInput);
-    const repo = gitHubRepo ? gitHubRepo.repo : null;
-    let message;
-
-    if (repo) {
-      let repoUrl = `https://github.com/${repo}.git`;
-      let apiUrl = `https://api.github.com/repos/${repo}`;
-
-      message = <span>Repository: {repo}, URL: <a href={repoUrl}>{repoUrl}</a></span>;
-
-      let self = this;
-      fetch(apiUrl)
-        .then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            return response.json();
-          } else {
-            const error = new Error(response.statusText);
-            error.response = response;
-            throw error;
-          }
-        })
-        .then(() => {
-          self.setState({
-            message: <span>{this.state.message}  [exists on GitHub]</span>
-          });
-        })
-        .catch((errors) => {
-          self.setState({
-            message: `Repository ${repo} doesn't exist (${errors})`
-          });
-        });
-
-    } else {
-      message = 'Invalid repository URL';
-    }
-
-    this.setState({
-      message: message
-    });
+    this.props.dispatch(verifyGitHubRepository(this.props.repositoryInput.inputValue));
   }
 }
 
-export default RepositoryInput;
+RepositoryInput.propTypes = {
+  repositoryInput: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired
+};
+
+function mapStateToProps(state) {
+  const {
+    repositoryInput
+  } = state;
+
+  return {
+    repositoryInput
+  };
+}
+
+export default connect(mapStateToProps)(RepositoryInput);

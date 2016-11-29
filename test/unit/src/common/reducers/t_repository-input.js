@@ -75,6 +75,21 @@ describe('repositoryInput reducers', () => {
     });
   });
 
+  it('should clean errors on success', () => {
+    const state = {
+      ...initialState,
+      repository: 'dummy/repo',
+      errors: 'Previous error'
+    };
+
+    const action = {
+      type: ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS,
+      payload: 'http://github.com/dummy/repo.git'
+    };
+
+    expect(repositoryInput(state, action).errors).toBe(false);
+  });
+
   it('should handle verify repo failure', () => {
     const state = {
       ...initialState,
