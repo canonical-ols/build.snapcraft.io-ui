@@ -5,8 +5,10 @@ import nock from 'nock';
 import { isFSA } from 'flux-standard-action';
 
 import {
+  updateInputValue,
   changeRepositoryInput,
-  updateStatusMessage,
+  setGitHubRepository,
+  validateGitHubRepository,
   verifyGitHubRepository,
   verifyGitHubRepositorySuccess,
   verifyGitHubRepositoryError
@@ -56,16 +58,16 @@ describe('repository input actions', () => {
     });
   });
 
-  context('updateStatusMessage', () => {
-    let payload = 'test status message';
+  context('setGitHubRepository', () => {
+    let payload = 'foo/bar';
 
     beforeEach(() => {
-      action = updateStatusMessage(payload);
+      action = setGitHubRepository(payload);
     });
 
-    it('should create an action to update status message', () => {
+    it('should create an action to update repository name', () => {
       const expectedAction = {
-        type: ActionTypes.UPDATE_STATUS_MESSAGE,
+        type: ActionTypes.SET_GITHUB_REPOSITORY,
         payload
       };
 
@@ -75,6 +77,72 @@ describe('repository input actions', () => {
 
     it('should create a valid flux standard action', () => {
       expect(isFSA(action)).toBe(true);
+    });
+  });
+
+  context('validateGitHubRepository', () => {
+
+    context('on valid repository input', () => {
+      let payload = 'foo/bar';
+
+      beforeEach(() => {
+        action = validateGitHubRepository(payload);
+      });
+
+      it('should save an action to change repository input value', () => {
+        const expectedAction = {
+          type: ActionTypes.SET_GITHUB_REPOSITORY,
+          payload
+        };
+
+        store.dispatch(action);
+        expect(store.getActions()).toInclude(expectedAction);
+      });
+
+      it('should create a valid flux standard action', () => {
+        expect(isFSA(action)).toBe(true);
+      });
+    });
+
+    context('on invalid repository input', () => {
+      let payload = 'foo bar';
+
+      beforeEach(() => {
+        action = validateGitHubRepository(payload);
+      });
+
+      it('should dispatch VERIFY_GITHUB_REPOSITORY_ERROR action', () => {
+        store.dispatch(action);
+        expect(store.getActions()).toHaveActionOfType(
+          ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR
+        );
+      });
+
+      it('should create a valid flux standard action', () => {
+        expect(isFSA(action)).toBe(true);
+      });
+    });
+  });
+
+  context('updateInputValue', () => {
+    let payload = 'foo/bar';
+
+    beforeEach(() => {
+      action = updateInputValue(payload);
+    });
+
+    it('should dispatch CHANGE_REPOSITORY_INPUT action', () => {
+      store.dispatch(action);
+      expect(store.getActions()).toHaveActionOfType(
+        ActionTypes.CHANGE_REPOSITORY_INPUT
+      );
+    });
+
+    it('should dispatch SET_GITHUB_REPOSITORY action', () => {
+      store.dispatch(action);
+      expect(store.getActions()).toHaveActionOfType(
+        ActionTypes.SET_GITHUB_REPOSITORY
+      );
     });
   });
 
@@ -162,14 +230,6 @@ describe('repository input actions', () => {
           );
         });
     });
-
-    it('should fail on invalid input', () => {
-      store.dispatch(verifyGitHubRepository('invalid input'));
-      expect(store.getActions()).toHaveActionOfType(
-        ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR
-      );
-    });
-
 
   });
 

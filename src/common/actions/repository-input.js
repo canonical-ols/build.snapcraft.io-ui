@@ -3,9 +3,17 @@ import parseGitHubUrl from 'parse-github-url';
 
 export const CHANGE_REPOSITORY_INPUT = 'CHANGE_REPOSITORY_INPUT';
 export const UPDATE_STATUS_MESSAGE = 'UPDATE_STATUS_MESSAGE';
+export const SET_GITHUB_REPOSITORY = 'SET_GITHUB_REPOSITORY';
 export const VERIFY_GITHUB_REPOSITORY = 'VERIFY_GITHUB_REPOSITORY';
 export const VERIFY_GITHUB_REPOSITORY_SUCCESS = 'VERIFY_GITHUB_REPOSITORY_SUCCESS';
 export const VERIFY_GITHUB_REPOSITORY_ERROR = 'VERIFY_GITHUB_REPOSITORY_ERROR';
+
+export function updateInputValue(value) {
+  return (dispatch) => {
+    dispatch(changeRepositoryInput(value));
+    dispatch(validateGitHubRepository(value));
+  };
+}
 
 export function changeRepositoryInput(value) {
   return {
@@ -14,11 +22,22 @@ export function changeRepositoryInput(value) {
   };
 }
 
-export function updateStatusMessage(message) {
+export function setGitHubRepository(repository) {
   return {
-    type: UPDATE_STATUS_MESSAGE,
-    payload: message
+    type: SET_GITHUB_REPOSITORY,
+    payload: repository
   };
+}
+
+export function validateGitHubRepository(repository) {
+  const gitHubRepo = parseGitHubUrl(repository);
+  const repo = gitHubRepo ? gitHubRepo.repo : null;
+
+  if (repo) {
+    return setGitHubRepository(repo);
+  } else {
+    return verifyGitHubRepositoryError(new Error('Invalid repository URL.'));
+  }
 }
 
 function checkStatus(response) {
@@ -33,22 +52,16 @@ function checkStatus(response) {
 
 export function verifyGitHubRepository(repository) {
   return (dispatch) => {
-    const gitHubRepo = parseGitHubUrl(repository);
-    const repo = gitHubRepo ? gitHubRepo.repo : null;
-
-    if (repo) {
+    if (repository) {
       dispatch({
         type: VERIFY_GITHUB_REPOSITORY,
-        payload: gitHubRepo.repo
+        payload: repository
       });
 
-      return fetch(`https://api.github.com/repos/${repo}/contents/snapcraft.yaml`)
+      return fetch(`https://api.github.com/repos/${repository}/contents/snapcraft.yaml`)
         .then(checkStatus)
-        .then(() => dispatch(verifyGitHubRepositorySuccess(`https://github.com/${repo}.git`)))
+        .then(() => dispatch(verifyGitHubRepositorySuccess(`https://github.com/${repository}.git`)))
         .catch(error => dispatch(verifyGitHubRepositoryError(error)));
-    } else {
-      // TODO: above we return promise, here nothing - inconsistent and harder to test
-      dispatch(verifyGitHubRepositoryError(new Error('Invalid repository URL.')));
     }
   };
 }

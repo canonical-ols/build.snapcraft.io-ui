@@ -9,7 +9,6 @@ describe('repositoryInput reducers', () => {
     inputValue: '',
     repository: null,
     repositoryUrl: null,
-    statusMessage: '',
     success: false,
     errors: false
   };
@@ -30,19 +29,19 @@ describe('repositoryInput reducers', () => {
     });
   });
 
-  it('should update status message', () => {
+  it('should save validated repository name', () => {
     const action = {
-      type: ActionTypes.UPDATE_STATUS_MESSAGE,
-      payload: 'dummy message here'
+      type: ActionTypes.SET_GITHUB_REPOSITORY,
+      payload: 'foo/bar'
     };
 
     expect(repositoryInput(initialState, action)).toEqual({
       ...initialState,
-      statusMessage: 'dummy message here'
+      repository: 'foo/bar'
     });
   });
 
-  it('should store and verify repository id (user/name)', () => {
+  it('should store fetching status when repository is verified via GH API', () => {
     const action = {
       type: ActionTypes.VERIFY_GITHUB_REPOSITORY,
       payload: 'dummy/repo'
@@ -50,8 +49,7 @@ describe('repositoryInput reducers', () => {
 
     expect(repositoryInput(initialState, action)).toEqual({
       ...initialState,
-      isFetching: true,
-      repository: 'dummy/repo'
+      isFetching: true
     });
   });
 

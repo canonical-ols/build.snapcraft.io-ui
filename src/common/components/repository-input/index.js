@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import {
-  changeRepositoryInput,
+  updateInputValue,
   verifyGitHubRepository
 } from '../../actions/repository-input';
 
@@ -44,7 +44,7 @@ export class RepositoryInput extends Component {
   }
 
   onInputChange(event) {
-    this.props.dispatch(changeRepositoryInput(event.target.value));
+    this.props.dispatch(updateInputValue(event.target.value));
   }
 
   onButtonClick() {

@@ -5,7 +5,6 @@ export function repositoryInput(state = {
   inputValue: '',
   repository: null,
   repositoryUrl: null,
-  statusMessage: '',
   success: false,
   errors: false
 }, action) {
@@ -15,16 +14,15 @@ export function repositoryInput(state = {
         ...state,
         inputValue: action.payload
       };
-    case ActionTypes.UPDATE_STATUS_MESSAGE:
+    case ActionTypes.SET_GITHUB_REPOSITORY:
       return {
         ...state,
-        statusMessage: action.payload
+        repository: action.payload
       };
     case ActionTypes.VERIFY_GITHUB_REPOSITORY:
       return {
         ...state,
-        isFetching: true,
-        repository: action.payload
+        isFetching: true
       };
     case ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS:
       return {
