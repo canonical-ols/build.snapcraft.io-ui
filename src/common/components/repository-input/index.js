@@ -8,6 +8,8 @@ import {
   verifyGitHubRepository
 } from '../../actions/repository-input';
 
+import Button from '../button';
+
 export class RepositoryInput extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +41,7 @@ export class RepositoryInput extends Component {
       <form onSubmit={this.onSubmit.bind(this)}>
         <label>Repository URL:</label>
         <input type='text' value={this.props.repositoryInput.inputValue} onChange={this.onInputChange.bind(this)} />
-        <button type='submit' disabled={!isValid}>Verify</button>
+        <Button type='submit' disabled={!isValid}>Verify</Button>
         <div>
           {this.getStatusMessage()}
         </div>
