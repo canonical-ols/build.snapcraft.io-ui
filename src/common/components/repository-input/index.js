@@ -34,14 +34,14 @@ export class RepositoryInput extends Component {
 
   render() {
     return (
-      <div>
+      <form onSubmit={this.onSubmit.bind(this)}>
         <label>Repository URL:</label>
         <input type='text' value={this.props.repositoryInput.inputValue} onChange={this.onInputChange.bind(this)} />
-        <button onClick={this.onButtonClick.bind(this)}>Parse</button>
+        <button type='submit'>Parse</button>
         <div>
           {this.getStatusMessage()}
         </div>
-      </div>
+      </form>
     );
   }
 
@@ -49,8 +49,9 @@ export class RepositoryInput extends Component {
     this.props.dispatch(updateInputValue(event.target.value));
   }
 
-  onButtonClick() {
+  onSubmit(event) {
     this.props.dispatch(verifyGitHubRepository(this.props.repositoryInput.inputValue));
+    event.preventDefault();
   }
 }
 
