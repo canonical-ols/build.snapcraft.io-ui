@@ -9,6 +9,7 @@ import {
 } from '../../actions/repository-input';
 
 import Button from '../button';
+import { Form, InputField, Message } from '../forms';
 
 export class RepositoryInput extends Component {
   constructor(props) {
@@ -38,14 +39,20 @@ export class RepositoryInput extends Component {
     const isValid = !!this.props.repositoryInput.repository;
 
     return (
-      <form onSubmit={this.onSubmit.bind(this)}>
-        <label>Repository URL:</label>
-        <input type='text' value={this.props.repositoryInput.inputValue} onChange={this.onInputChange.bind(this)} />
+      <Form onSubmit={this.onSubmit.bind(this)}>
+
+        <InputField
+          label='Repository URL'
+          placeholder='username/snap-example'
+          value={this.props.repositoryInput.inputValue}
+          onChange={this.onInputChange.bind(this)}
+        />
+        <Message
+          status={isValid ? 'success' : 'error'}
+          text={this.getStatusMessage()}
+        />
         <Button type='submit' disabled={!isValid}>Verify</Button>
-        <div>
-          {this.getStatusMessage()}
-        </div>
-      </form>
+      </Form>
     );
   }
 
