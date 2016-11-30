@@ -17,51 +17,68 @@ describe('repositoryInput reducers', () => {
     expect(repositoryInput(undefined, {})).toEqual(initialState);
   });
 
-  context('CHANGE_REPOSITORY_INPUT', () => {
+  context('SET_GITHUB_REPOSITORY', () => {
     let action;
 
     beforeEach(() => {
       action = {
-        type: ActionTypes.CHANGE_REPOSITORY_INPUT,
-        payload: 'foo'
+        type: ActionTypes.SET_GITHUB_REPOSITORY
       };
     });
 
     it('should change repository input value', () => {
-      expect(repositoryInput(initialState, action)).toEqual({
-        ...initialState,
+      action.payload = 'foo';
+
+      expect(repositoryInput(initialState, action)).toInclude({
         inputValue: 'foo'
+      });
+    });
+
+    it('should save repository name for valid user/repo pair', () => {
+      action.payload = 'foo/bar';
+
+      expect(repositoryInput(initialState, action)).toInclude({
+        repository: 'foo/bar'
+      });
+    });
+
+    it('should save repository name for valid repo URL', () => {
+      action.payload = 'http://github.com/foo/bar';
+
+      expect(repositoryInput(initialState, action)).toInclude({
+        repository: 'foo/bar'
+      });
+    });
+
+    it('should clear repository name for invalid input', () => {
+      action.payload = 'foo bar';
+
+      const state = {
+        ...initialState,
+        repository: 'foo/bar'
+      };
+
+      expect(repositoryInput(state, action)).toInclude({
+        repository: null
       });
     });
 
     it('should reset error status', () => {
       const state = {
+        ...initialState,
         error: new Error('Test')
       };
 
       expect(repositoryInput(state, action).error).toBe(false);
     });
 
-    it('should reset error status', () => {
+    it('should reset success status', () => {
       const state = {
+        ...initialState,
         success: true
       };
 
       expect(repositoryInput(state, action).success).toBe(false);
-    });
-  });
-
-  context('SET_GITHUB_REPOSITORY', () => {
-    it('should save validated repository name', () => {
-      const action = {
-        type: ActionTypes.SET_GITHUB_REPOSITORY,
-        payload: 'foo/bar'
-      };
-
-      expect(repositoryInput(initialState, action)).toEqual({
-        ...initialState,
-        repository: 'foo/bar'
-      });
     });
   });
 

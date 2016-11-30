@@ -1,44 +1,14 @@
 import 'isomorphic-fetch';
-import parseGitHubUrl from 'parse-github-url';
 
-export const CHANGE_REPOSITORY_INPUT = 'CHANGE_REPOSITORY_INPUT';
-export const UPDATE_STATUS_MESSAGE = 'UPDATE_STATUS_MESSAGE';
 export const SET_GITHUB_REPOSITORY = 'SET_GITHUB_REPOSITORY';
 export const VERIFY_GITHUB_REPOSITORY = 'VERIFY_GITHUB_REPOSITORY';
 export const VERIFY_GITHUB_REPOSITORY_SUCCESS = 'VERIFY_GITHUB_REPOSITORY_SUCCESS';
 export const VERIFY_GITHUB_REPOSITORY_ERROR = 'VERIFY_GITHUB_REPOSITORY_ERROR';
 
-export function updateInputValue(value) {
-  return (dispatch) => {
-    dispatch(changeRepositoryInput(value));
-    dispatch(validateGitHubRepository(value));
-  };
-}
-
-export function changeRepositoryInput(value) {
-  return {
-    type: CHANGE_REPOSITORY_INPUT,
-    payload: value
-  };
-}
-
-export function setGitHubRepository(repository) {
+export function setGitHubRepository(value) {
   return {
     type: SET_GITHUB_REPOSITORY,
-    payload: repository
-  };
-}
-
-export function validateGitHubRepository(repository) {
-  return (dispatch) => {
-    const gitHubRepo = parseGitHubUrl(repository);
-    const repo = gitHubRepo ? gitHubRepo.repo : null;
-
-    dispatch(setGitHubRepository(repo));
-
-    if (!repo) {
-      dispatch(verifyGitHubRepositoryError(new Error('Invalid repository URL.')));
-    }
+    payload: value
   };
 }
 

@@ -1,4 +1,10 @@
 import * as ActionTypes from '../actions/repository-input';
+import parseGitHubUrl from 'parse-github-url';
+
+function parseRepository(input) {
+  const gitHubRepo = parseGitHubUrl(input);
+  return gitHubRepo ? gitHubRepo.repo : null;
+}
 
 export function repositoryInput(state = {
   isFetching: false,
@@ -9,17 +15,13 @@ export function repositoryInput(state = {
   error: false
 }, action) {
   switch(action.type) {
-    case ActionTypes.CHANGE_REPOSITORY_INPUT:
-      return {
-        ...state,
-        inputValue: action.payload,
-        success: false,
-        error: false
-      };
     case ActionTypes.SET_GITHUB_REPOSITORY:
       return {
         ...state,
-        repository: action.payload
+        inputValue: action.payload,
+        repository: parseRepository(action.payload),
+        success: false,
+        error: false
       };
     case ActionTypes.VERIFY_GITHUB_REPOSITORY:
       return {
