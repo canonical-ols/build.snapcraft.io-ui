@@ -199,9 +199,9 @@ const hasStatus = (expected) => {
 const hasMessage = (expected) => {
   return (actual) => {
     if (typeof actual.body.payload === 'undefined'
-        || typeof actual.body.payload.message === 'undefined'
-        || actual.body.payload.message !== expected) {
-      throw new Error('Response does not have payload with message ' + expected);
+        || typeof actual.body.payload.code === 'undefined'
+        || actual.body.payload.code !== expected) {
+      throw new Error('Response does not have payload with code ' + expected);
     }
   };
 };

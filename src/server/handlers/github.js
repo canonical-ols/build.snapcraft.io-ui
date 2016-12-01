@@ -9,35 +9,40 @@ const HTTP_PROXY = conf.get('HTTP_PROXY');
 const RESPONSE_NOT_FOUND = {
   status: 'error',
   payload: {
-    message: 'github-repository-not-found'
+    code: 'github-repository-not-found',
+    message: 'The GitHub repository cannot be found or access not granted to account'
   }
 };
 
 const RESPONSE_AUTHENTICATION_FAILED = {
   status: 'error',
   payload: {
-    message: 'github-authentication-failed'
+    code: 'github-authentication-failed',
+    message: 'Authentication with GitHub failed'
   }
 };
 
 const RESPONSE_OTHER = {
   status: 'error',
   payload: {
-    message: 'github-error-other'
+    code: 'github-error-other',
+    message: 'Something went wrong when creating a webhook'
   }
 };
 
 const RESPONSE_ALREADY_CREATED = {
   status: 'error',
   payload: {
-    message: 'github-already-created'
+    code: 'github-already-created',
+    message: 'A webhook already exists on the given repository'
   }
 };
 
 const RESPONSE_CREATED = {
   status: 'success',
   payload: {
-    message: 'github-webhook-created'
+    code: 'github-webhook-created',
+    message: 'GitHub webhook successfully created'
   }
 };
 
