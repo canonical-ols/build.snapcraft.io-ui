@@ -5,7 +5,7 @@ import logging from '../logging';
 const GITHUB_USERNAME = conf.get('GITHUB_USERNAME');
 const GITHUB_PASSWORD = conf.get('GITHUB_PASSWORD');
 const GITHUB_API_ENDPOINT = conf.get('GITHUB_API_ENDPOINT');
-const HTTP_PROXY = conf.get('http_proxy') || conf.get('HTTP_PROXY');
+const HTTP_PROXY = conf.get('HTTP_PROXY');
 const logger = logging.getLogger('express-error');
 
 const RESPONSE_NOT_FOUND = {
