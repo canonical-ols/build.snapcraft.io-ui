@@ -52,7 +52,7 @@ export class RepositoryInput extends Component {
           errorMsg={this.getErrorMessage()}
         />
         { input.success &&
-          <Message status='success'>
+          <Message status='info'>
             Repository <a href={input.repositoryUrl}>{input.repository}</a> contains snapcraft project and can be built.
           </Message>
         }
