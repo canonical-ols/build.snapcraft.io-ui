@@ -5,7 +5,7 @@ import nock from 'nock';
 import github from '../../../../../src/server/routes/github';
 import { conf } from '../../../../../src/server/helpers/config.js';
 
-describe('Github', () => {
+describe('The GitHub API endpoint', () => {
   let app;
   app = Express();
   app.use(github);
@@ -76,7 +76,7 @@ describe('Github', () => {
         supertest(app)
           .post('/github/integrations')
           .send({ account: 'anaccount', repo: 'arepo' })
-          .expect(hasMessage('github-webhook-created'))
+          .expect(hasMessage('github-already-created'))
           .end(done);
       });
     });
@@ -190,14 +190,18 @@ describe('Github', () => {
 
 const hasStatus = (expected) => {
   return (actual) => {
-    return typeof actual.success !== 'undefined' && actual.success === expected;
+    if (typeof actual.body.status === 'undefined' || actual.body.status !== expected) {
+      throw new Error('Response does not have status ' + expected);
+    }
   };
 };
 
 const hasMessage = (expected) => {
   return (actual) => {
-    return typeof actual.payload !== 'undefined'
-      && typeof actual.payload.message !== 'undefined'
-      && actual.payload.message === expected;
+    if (typeof actual.body.payload === 'undefined'
+        || typeof actual.body.payload.message === 'undefined'
+        || actual.body.payload.message !== expected) {
+      throw new Error('Response does not have payload with message ' + expected);
+    }
   };
 };

@@ -46,7 +46,6 @@ export const newIntegration = (req, res) => {
   const repo = req.body.repo;
 
   const options = getRequest(account, repo);
-
   request.post(options, (err, response, body) => {
     if (response.statusCode !== 201) {
       switch (body.message) {
