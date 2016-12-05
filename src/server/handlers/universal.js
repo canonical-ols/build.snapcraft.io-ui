@@ -38,11 +38,7 @@ export const handleMatch = (req, res, error, redirectLocation, renderProps) => {
     const initialState = {};
 
     if (req.session.error) {
-      initialState['oyez'] = [{
-        'message': req.session.error,
-        'status': 'error'
-      }];
-
+      initialState['authError'] = { message: req.session.error };
       delete req.session.error;
     } else if (!req.session.authenticated && teams && teams.length) {
       res.redirect(302, '/login/authenticate');

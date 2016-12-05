@@ -73,7 +73,9 @@ export const errorHandler = (err, req, res, next) => {
   }
   if (req.session) {
     req.session.error = err.message;
+    res.redirect('/login/failed');
+  } else {
+    // FIXME redirect to page that initiated the sign in request
+    res.redirect('/');
   }
-  // FIXME redirect to page that initiated the sign in request
-  res.redirect('/');
 };
