@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
 
+import BuildHistory from '../components/build-history';
+
 import styles from './container.css';
 
 const Builds = (props) => {
@@ -14,6 +16,8 @@ const Builds = (props) => {
       />
       {/* TODO: make into title component? */}
       <h1>{name} builds</h1>
+      {/* TODO: prepare for loading (waiting for buils list */}
+      <BuildHistory account={account} repo={repo}/>
     </div>
   );
 };
