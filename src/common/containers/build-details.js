@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
 
 import BuildRow from '../components/build-row';
-
+import BuildLog from '../components/build-log';
 import styles from './container.css';
 
 const BUILD_MOCK = {
@@ -31,6 +31,9 @@ const Builds = (props) => {
       <h1>{name} build #{buildId}</h1>
 
       <BuildRow account={account} repo={repo} {...BUILD_MOCK} />
+
+      <h3>Build log:</h3>
+      <BuildLog logUrl='http://pastebin.com/raw/NuPJQt4S' />
     </div>
   );
 };
