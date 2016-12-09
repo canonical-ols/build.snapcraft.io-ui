@@ -32,9 +32,9 @@ function mapStateToProps() {
     architecture: 'i386',
     status:  'pending',
     statusMessage: 'Currently building',
-    dateStarted: '2016-12-01',
+    dateStarted: '2016-12-01T17:08:36.317805+00:00',
     dateCompleted: null,
-    duration: '11 minutes'
+    duration: '0:02:36.314039'
   },{
     buildId: '1234',
     username: 'John Doe',
@@ -43,9 +43,9 @@ function mapStateToProps() {
     architecture: 'i386',
     status:  'success',
     statusMessage: 'Completed',
-    dateStarted: '2016-12-01',
-    dateCompleted: '2016-12-01',
-    duration: '12 minutes'
+    dateStarted: '2016-12-01T17:08:36.317805+00:00',
+    dateCompleted: '2016-12-01T17:15:36.317805+00:00',
+    duration: '0:07:36.314039'
   },{
     buildId: '1233',
     username: 'John Doe',
@@ -54,9 +54,9 @@ function mapStateToProps() {
     architecture: 'i386',
     status:  'success',
     statusMessage: 'Completed',
-    dateStarted: '2016-12-01',
-    dateCompleted: '2016-12-01',
-    duration: '11 minutes'
+    dateStarted: '2016-12-01T17:08:36.317805+00:00',
+    dateCompleted: '2016-12-01T17:09:36.317805+00:00',
+    duration: '0:01:00.124039'
   },{
     buildId: '1232',
     username: 'John Doe',
@@ -65,9 +65,9 @@ function mapStateToProps() {
     architecture: 'i386',
     status:  'error',
     statusMessage: 'Failed to build',
-    dateStarted: '2016-12-01',
-    dateCompleted: '2016-12-01',
-    duration: '2 minutes'
+    dateStarted: '2016-12-01T17:08:36.317805+00:00',
+    dateCompleted: '2016-12-01T17:10:36.317805+00:00',
+    duration: '0:02:00.124039'
   }];
 
   return {
