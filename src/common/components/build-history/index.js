@@ -23,7 +23,7 @@ BuildHistory.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const builds = state.buildsList.builds;
+  const builds = state.snapBuilds.builds;
 
   return {
     builds

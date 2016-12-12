@@ -1,9 +1,46 @@
-const initialState = {
-  isFetching: false,
-  builds: []
-};
+export const FETCH_BUILDS = 'FETCH_BUILDS';
+export const FETCH_BUILDS_SUCCESS = 'FETCH_BUILDS_SUCCESS';
+export const FETCH_BUILDS_ERROR = 'FETCH_BUILDS_ERROR';
 
-initialState.builds = [{
+export function fetchBuildsSuccess(builds) {
+  return {
+    type: FETCH_BUILDS_SUCCESS,
+    payload: builds
+  };
+}
+
+export function fetchBuildsError(error) {
+  return {
+    type: FETCH_BUILDS_ERROR,
+    payload: error,
+    error: true
+  };
+}
+
+export function fetchBuilds(repository) {
+  return (dispatch) => {
+    if (repository) {
+      dispatch({
+        type: FETCH_BUILDS,
+        payload: repository
+      });
+
+      // TODO: real async call to load the builds
+      // return fetch(...)
+      //   .then(checkStatus)
+      //   ...
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ entries: BUILDS_MOCK });
+        }, 1000);
+      }).then((json) => dispatch(fetchBuildsSuccess(json.entries)))
+        .catch( error => dispatch(fetchBuildsError(error)));
+    }
+  };
+}
+
+const BUILDS_MOCK = [{
   buildId: '1235',
   username: 'John Doe',
   commitId:  'c196edb',
@@ -48,10 +85,3 @@ initialState.builds = [{
   dateCompleted: '2016-12-01T17:10:36.317805+00:00',
   duration: '0:02:00.124039'
 }];
-
-export function buildsList(state = initialState, action) {
-  switch(action.type) {
-    default:
-      return state;
-  }
-}

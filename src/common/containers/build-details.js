@@ -42,7 +42,7 @@ const mapStateToProps = (state, ownProps) => {
   // TODO:
   // find build by id in builds list
   // but it should also fetch it if necessary
-  const build = state.buildsList.builds.filter((build) => build.buildId === buildId)[0];
+  const build = state.snapBuilds.builds.filter((build) => build.buildId === buildId)[0];
 
   return {
     account,
