@@ -34,7 +34,7 @@ export default function sessionStorageConfig(config) {
   }
 
   if(config.get('MEMCACHED_HOST') && config.get('MEMCACHED_SESSION_SECRET')) {
-    logger.info('Starting with memcached session store');
+    logger.info('Starting with memcached store');
     settings.store = new MemcachedStore({
       hosts: config.get('MEMCACHED_HOST').split(','),
       prefix: 'session:',
