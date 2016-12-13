@@ -1,36 +1,52 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
 import BuildRow from '../components/build-row';
 import BuildLog from '../components/build-log';
+import { fetchBuilds } from '../actions/snap-builds';
+
 import styles from './container.css';
 
-const BuildDetails = (props) => {
-  const { account, repo, fullName, buildId, build } = props;
+class BuildDetails extends Component {
 
-  return (
-    <div className={ styles.container }>
-      <Helmet
-        title={`${fullName} builds`}
-      />
-      {/* TODO: make into title component? */}
-      <h1>{fullName} build #{buildId}</h1>
+  componentWillMount() {
+    this.props.dispatch(fetchBuilds(this.props.fullName));
+  }
 
-      <BuildRow account={account} repo={repo} {...build} />
+  render() {
+    const { account, repo, fullName, buildId, build } = this.props;
 
-      <h3>Build log:</h3>
-      <BuildLog logUrl='http://pastebin.com/raw/NuPJQt4S' />
-    </div>
-  );
-};
+    return (
+      <div className={ styles.container }>
+        <Helmet
+          title={`${fullName} builds`}
+        />
+        {/* TODO: make into title component? */}
+        <h1>{fullName} build #{buildId}</h1>
+        { this.props.isFetching &&
+          <span>Loading...</span>
+        }
+        { build &&
+          <div>
+            <BuildRow account={account} repo={repo} {...build} />
+            <h3>Build log:</h3>
+            <BuildLog logUrl={build.buildLogUrl} />
+          </div>
+        }
+      </div>
+    );
+  }
 
+}
 BuildDetails.propTypes = {
   account: PropTypes.string.isRequired,
   repo: PropTypes.string.isRequired,
   fullName: PropTypes.string.isRequired,
   buildId: PropTypes.string.isRequired,
-  build: PropTypes.object
+  build: PropTypes.object,
+  isFetching: PropTypes.bool,
+  dispatch: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -43,13 +59,15 @@ const mapStateToProps = (state, ownProps) => {
   // find build by id in builds list
   // but it should also fetch it if necessary
   const build = state.snapBuilds.builds.filter((build) => build.buildId === buildId)[0];
+  const isFetching = state.snapBuilds.isFetching;
 
   return {
     account,
     repo,
     fullName,
     buildId,
-    build
+    build,
+    isFetching
   };
 };
 

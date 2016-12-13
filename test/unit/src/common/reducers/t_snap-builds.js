@@ -32,6 +32,20 @@ describe('snapBuilds reducers', () => {
 
   context('FETCH_BUILDS_SUCCESS', () => {
 
+    it('should stop fetching', () => {
+      const state = {
+        ...initialState,
+        isFetching: true
+      };
+
+      const action = {
+        type: ActionTypes.FETCH_BUILDS_SUCCESS,
+        payload: dummyBuilds
+      };
+
+      expect(snapBuilds(state, action).isFetching).toBe(false);
+    });
+
     it('should store builds on fetch success', () => {
       const state = {
         ...initialState,
@@ -43,11 +57,8 @@ describe('snapBuilds reducers', () => {
         payload: dummyBuilds
       };
 
-      expect(snapBuilds(state, action)).toEqual({
-        ...state,
-        isFetching: false,
-        builds: dummyBuilds
-      });
+      // TODO: check expected values in builds (test parsing the input)
+      expect(snapBuilds(state, action).builds.length).toEqual(dummyBuilds.length);
     });
 
     it('should clean error', () => {

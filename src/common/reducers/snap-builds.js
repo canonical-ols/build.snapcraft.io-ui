@@ -65,7 +65,7 @@ const BuildStatusMapping = {
 };
 
 function getLastPartOfUrl(url) {
-  return url.substr(url.lastIndexOf('/') + 1);
+  return url ? url.substr(url.lastIndexOf('/') + 1) : null;
 }
 
 // TODO:
