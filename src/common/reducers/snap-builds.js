@@ -15,7 +15,8 @@ export function snapBuilds(state = {
       return {
         ...state,
         isFetching: false,
-        builds: action.payload
+        builds: action.payload,
+        error: false
       };
     case ActionTypes.FETCH_BUILDS_ERROR:
       return {
