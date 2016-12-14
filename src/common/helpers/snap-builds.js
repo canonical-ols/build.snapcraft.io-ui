@@ -27,10 +27,9 @@
 //   duration: '0:02:00.124039' // 'duration'
 // };
 
-
 // Based on BuildStatus from LP API
 // https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
-const BuildStatus = {
+export const BuildStatusLP = {
   NEEDSBUILD: 'Needs building',     // pending
   FULLYBUILT: 'Successfully built', // success
   FAILEDTOBUILD:'Failed to build',  // error
@@ -44,32 +43,37 @@ const BuildStatus = {
   CANCELLED: 'Cancelled build'      // error
 };
 
+export const BuildStatus = {
+  SUCCESS: 'success', // for builds successfully finished
+  PENDING: 'pending', // for build currently running or in any way in progress
+  ERROR: 'error'      // for builds failed for any reason
+};
+
 // TODO:
 // export enum with build status success/pending/error
 // or export full list of statuses (like in API) and let view do the mapping?
 
+// mapping between build status from LP and pending/success/error internal status
 const BuildStatusMapping = {
-  [BuildStatus.NEEDSBUILD]: 'pending',
-  [BuildStatus.FULLYBUILT]: 'success',
-  [BuildStatus.FAILEDTOBUILD]: 'error',
-  [BuildStatus.MANUALDEPWAIT]: 'pending',
-  [BuildStatus.CHROOTWAIT]: 'error',
-  [BuildStatus.SUPERSEDED]: 'error',
-  [BuildStatus.BUILDING]: 'pending',
-  [BuildStatus.FAILEDTOUPLOAD]: 'error',
-  [BuildStatus.UPLOADING]: 'pending',
-  [BuildStatus.CANCELLING]: 'pending',
-  [BuildStatus.CANCELLED]: 'error'
+  [BuildStatusLP.NEEDSBUILD]: BuildStatus.PENDING,
+  [BuildStatusLP.FULLYBUILT]: BuildStatus.SUCCESS,
+  [BuildStatusLP.FAILEDTOBUILD]: BuildStatus.ERROR,
+  [BuildStatusLP.MANUALDEPWAIT]: BuildStatus.PENDING,
+  [BuildStatusLP.CHROOTWAIT]: BuildStatus.ERROR,
+  [BuildStatusLP.SUPERSEDED]: BuildStatus.ERROR,
+  [BuildStatusLP.BUILDING]: BuildStatus.PENDING,
+  [BuildStatusLP.FAILEDTOUPLOAD]: BuildStatus.ERROR,
+  [BuildStatusLP.UPLOADING]: BuildStatus.PENDING,
+  [BuildStatusLP.CANCELLING]: BuildStatus.PENDING,
+  [BuildStatusLP.CANCELLED]: BuildStatus.ERROR
 };
 
 function getLastPartOfUrl(url) {
   return url ? url.substr(url.lastIndexOf('/') + 1) : null;
 }
 
-// TODO:
-// move out to some helper module?
 export function snapBuildFromAPI(entry) {
-  return {
+  return entry ? {
     buildId: getLastPartOfUrl(entry.self_link),
     buildLogUrl: entry.build_log_url,
 
@@ -83,5 +87,5 @@ export function snapBuildFromAPI(entry) {
     dateFirstDispatched: entry.date_first_dispatched,
     dateBuilt: entry.datebuilt,
     duration: entry.duration
-  };
+  } : null;
 }
