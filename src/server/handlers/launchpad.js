@@ -93,8 +93,10 @@ const makeSnapName = url => {
 };
 
 const getSnapcraftYaml = (req, res, callback) => {
-  const parsed = parseGitHubUrl(req.body.repository_url);
+  const repositoryUrl = req.body.repository_url;
+  const parsed = parseGitHubUrl(repositoryUrl);
   if (parsed === null || parsed.owner === null || parsed.name === null) {
+    logger.info(`Cannot parse "${repositoryUrl}"`);
     return res.status(400).send(RESPONSE_GITHUB_BAD_URL);
   }
 
@@ -105,6 +107,7 @@ const getSnapcraftYaml = (req, res, callback) => {
       'Accept': 'application/vnd.github.v3.raw'
     }
   };
+  logger.info(`Fetching snapcraft.yaml from ${repositoryUrl}`);
   return requestGitHub.get(uri, options, (err, response, body) => {
     if (response.statusCode !== 200) {
       try {
@@ -122,7 +125,7 @@ const getSnapcraftYaml = (req, res, callback) => {
           return res.status(401).send(RESPONSE_GITHUB_AUTHENTICATION_FAILED);
         default:
           // Something else
-          logger.info('GitHub API error', err, body);
+          logger.info('GitHub API error:', err, body);
           return res.status(500).send(RESPONSE_GITHUB_OTHER);
       }
     }
@@ -147,6 +150,7 @@ export const newSnap = (req, res) => {
     }
     const lp_client = getLaunchpad();
     const username = conf.get('LP_API_USERNAME');
+    logger.info(`Creating new snap for ${repositoryUrl}`);
     lp_client.named_post('/+snaps', 'new', {
       parameters: {
         owner: `/~${username}`,
@@ -162,15 +166,18 @@ export const newSnap = (req, res) => {
         store_name: snapcraftYaml.name
       }
     }).then(result => {
+      logger.info(`Authorizing ${result.self_link}`);
       lp_client.named_post(result.self_link, 'beginAuthorization', {
         parameters: { success_url: req.body.success_url }
-      }).then(result => {
-        return res.redirect(result);
+      }).then(authUrl => {
+        logger.info(`Authorized ${result.self_link}`);
+        return res.redirect(authUrl);
       });
     }).catch(error => {
       // At least for the moment, we just wrap the error we get from
       // Launchpad.
       return error.response.text().then(text => {
+        logger.info('Launchpad API error:', text);
         return res.status(error.response.status).send({
           status: 'error',
           payload: {
