@@ -15,10 +15,14 @@ To create a snap:
     Content-Type: application/json
     Accept: application/json
 
-    {"repository_url": "https://github.com/:account/:repo"}
+    {
+      "repository_url": "https://github.com/:account/:repo",
+      "success_url": ":url"
+    }
 
 On success, returns 302 with the `Location` header set to a URL that the
-user should visit to continue authorization.
+user should visit to continue authorization.  This will ultimately redirect
+back to the URL passed in `success_url`.
 
 To search for an existing snap:
 
