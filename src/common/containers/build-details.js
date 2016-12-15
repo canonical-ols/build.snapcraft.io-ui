@@ -55,9 +55,6 @@ const mapStateToProps = (state, ownProps) => {
   const buildId = ownProps.params.buildId.toLowerCase();
 
   const fullName = `${account}/${repo}`;
-  // TODO:
-  // find build by id in builds list
-  // but it should also fetch it if necessary
   const build = state.snapBuilds.builds.filter((build) => build.buildId === buildId)[0];
   const isFetching = state.snapBuilds.isFetching;
 

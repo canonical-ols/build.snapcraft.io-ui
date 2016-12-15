@@ -56,7 +56,7 @@ describe('repository input actions', () => {
       action = fetchBuildsError(payload);
     });
 
-    it('should create an action to store github repo error on failure', () => {
+    it('should create an action to store request error on failure', () => {
       const expectedAction = {
         type: ActionTypes.FETCH_BUILDS_ERROR,
         error: true,
@@ -84,7 +84,7 @@ describe('repository input actions', () => {
     });
 
     // TODO: pending - mocked actions never fail
-    xit('should store error on GitHub verification failure', () => {
+    xit('should store error on Launchpad request failure', () => {
       // return store.dispatch(fetchBuilds('foo/bar'))
       //   .then(() => {
       //     expect(store.getActions()).toHaveActionOfType(

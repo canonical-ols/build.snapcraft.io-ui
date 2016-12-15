@@ -56,7 +56,6 @@ describe('snapBuildFromAPI helper', () => {
 
         'dateCreated',
         'dateStarted',
-        'dateFirstDispatched',
         'dateBuilt',
         'duration',
       ]);
@@ -86,10 +85,6 @@ describe('snapBuildFromAPI helper', () => {
 
     it('should take dateStarted from date_started field', () => {
       expect(snapBuild.dateStarted).toEqual(SNAP_BUILD_ENTRY.date_started);
-    });
-
-    it('should take dateFirstDispatched from date_first_dispatched field', () => {
-      expect(snapBuild.dateFirstDispatched).toEqual(SNAP_BUILD_ENTRY.date_first_dispatched);
     });
 
     it('should take dateBuilt from datebuilt field', () => {
@@ -199,7 +194,7 @@ describe('snapBuildFromAPI helper', () => {
         buildstate: BuildStatusLP.CANCELLING
       };
 
-      expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
+      expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
     it('should map CANCELLED into ERROR', () => {

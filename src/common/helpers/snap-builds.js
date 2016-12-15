@@ -12,7 +12,7 @@
 //   // commitId:  'f1d6edb',
 //   // commitMessage:  'Failed commit',
 //
-//   // TODO: use 'distro_arch_series.architecturetag' once available
+//   // TODO: use 'arch_tag' once available
 //   architecture: 'i386', // last part of 'distro_arch_series_link'
 //
 //   // TODO: full list of statuses based on
@@ -64,7 +64,7 @@ const BuildStatusMapping = {
   [BuildStatusLP.BUILDING]: BuildStatus.PENDING,
   [BuildStatusLP.FAILEDTOUPLOAD]: BuildStatus.ERROR,
   [BuildStatusLP.UPLOADING]: BuildStatus.PENDING,
-  [BuildStatusLP.CANCELLING]: BuildStatus.PENDING,
+  [BuildStatusLP.CANCELLING]: BuildStatus.ERROR,
   [BuildStatusLP.CANCELLED]: BuildStatus.ERROR
 };
 
@@ -84,7 +84,6 @@ export function snapBuildFromAPI(entry) {
 
     dateCreated: entry.datecreated,
     dateStarted: entry.date_started,
-    dateFirstDispatched: entry.date_first_dispatched,
     dateBuilt: entry.datebuilt,
     duration: entry.duration
   } : null;
