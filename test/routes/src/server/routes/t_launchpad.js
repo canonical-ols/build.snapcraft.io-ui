@@ -70,6 +70,8 @@ describe('The Launchpad API endpoint', () => {
     });
 
     context('when snap does not exist', () => {
+      const caveatId = 'dummy caveat';
+
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
@@ -87,11 +89,10 @@ describe('The Launchpad API endpoint', () => {
             resource_type_link: `${lp_api_url}/api/devel/#snap`,
             self_link: `${lp_api_url}/api/devel/~test-user/+snap/test-snap`
           });
-        const auth_url = `${lp_api_url}/~test-user/+snap/test-snap/+authorize`;
         nock(lp_api_url)
           .post('/api/devel/~test-user/+snap/test-snap')
           .query({ 'ws.op': 'beginAuthorization' })
-          .reply(200, JSON.stringify(auth_url), {
+          .reply(200, JSON.stringify(caveatId), {
             'Content-Type': 'application/json'
           });
       });
@@ -100,21 +101,27 @@ describe('The Launchpad API endpoint', () => {
         nock.cleanAll();
       });
 
-      it('should return a 302 Found response', (done) => {
+      it('should return a 201 Created response', (done) => {
         supertest(app)
           .post('/launchpad/snaps')
           .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(302, done);
+          .expect(201, done);
       });
 
-      it('should redirect to an appropriate URL', (done) => {
+      it('should return a "success" status', (done) => {
         supertest(app)
           .post('/launchpad/snaps')
           .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect('Location',
-                  'http://localhost:4000/launchpad' +
-                  '/~test-user/+snap/test-snap/+authorize',
-                  done);
+          .expect(hasStatus('success'))
+          .end(done);
+      });
+
+      it('should return a body with an appropriate caveat ID', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(hasMessage('snap-created', caveatId))
+          .end(done);
       });
     });
 
@@ -416,6 +423,148 @@ describe('The Launchpad API endpoint', () => {
           .get('/launchpad/snaps')
           .query({ repository_url: 'https://github.com/anaccount/arepo' })
           .expect(hasMessage('lp-error', 'Bad OAuth token.'))
+          .end(done);
+      });
+    });
+  });
+
+  describe('complete snap authorization route', () => {
+    beforeEach(() => {
+      const memcachedStub = { cache: {} };
+      memcachedStub.get = (key, callback) => {
+        callback(undefined, memcachedStub.cache[key]);
+      };
+      memcachedStub.set = (key, value, lifetime, callback) => {
+        memcachedStub.cache[key] = value;
+        callback(undefined, true);
+      };
+      setMemcached(memcachedStub);
+    });
+
+    afterEach(() => {
+      setMemcached(null);
+    });
+
+    context('when snap exists', () => {
+      beforeEach(() => {
+        const lp_api_url = conf.get('LP_API_URL');
+        const lp_api_base = `${lp_api_url}/api/devel`;
+        nock(lp_api_url)
+          .get('/api/devel/+snaps')
+          .query({
+            'ws.op': 'findByURL',
+            url: 'https://github.com/anaccount/arepo'
+          })
+          .reply(200, {
+            total_size: 1,
+            start: 0,
+            entries: [
+              {
+                resource_type_link: `${lp_api_base}/#snap`,
+                self_link: `${lp_api_base}/~test-user/+snap/test-snap`,
+                owner_link: `${lp_api_base}/~test-user`
+              }
+            ]
+          });
+        nock(lp_api_url)
+          .post('/api/devel/~test-user/+snap/test-snap')
+          .query({
+            'ws.op': 'completeAuthorization',
+            'discharge_macaroon': 'dummy-discharge'
+          })
+          .reply(200, 'null', {
+            'Content-Type': 'application/json'
+          });
+      });
+
+      afterEach(() => {
+        nock.cleanAll();
+      });
+
+      it('should return a 200 OK response', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/complete-authorization')
+          .send({
+            repository_url: 'https://github.com/anaccount/arepo',
+            discharge_macaroon: 'dummy-discharge'
+          })
+          .expect(200, done);
+      });
+
+      it('should return a "success" status', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/complete-authorization')
+          .send({
+            repository_url: 'https://github.com/anaccount/arepo',
+            discharge_macaroon: 'dummy-discharge'
+          })
+          .expect(hasStatus('success'))
+          .end(done);
+      });
+
+      it('should return a 200 OK response', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/complete-authorization')
+          .send({
+            repository_url: 'https://github.com/anaccount/arepo',
+            discharge_macaroon: 'dummy-discharge'
+          })
+          .expect(hasMessage(
+            'snap-authorized',
+            `${conf.get('LP_API_URL')}/api/devel/~test-user/+snap/test-snap`))
+          .end(done);
+      });
+    });
+
+    context('when snap does not exist', () => {
+      beforeEach(() => {
+        const lp_api_url = conf.get('LP_API_URL');
+        nock(lp_api_url)
+          .get('/api/devel/+snaps')
+          .query({
+            'ws.op': 'findByURL',
+            url: 'https://github.com/anaccount/arepo'
+          })
+          .reply(200, {
+            total_size: 0,
+            start: 0,
+            entries: []
+          });
+      });
+
+      afterEach(() => {
+        nock.cleanAll();
+      });
+
+      it('should return a 404 response', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/complete-authorization')
+          .send({
+            repository_url: 'https://github.com/anaccount/arepo',
+            discharge_macaroon: 'dummy-discharge'
+          })
+          .expect(404, done);
+      });
+
+      it('should return an "error" status', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/complete-authorization')
+          .send({
+            repository_url: 'https://github.com/anaccount/arepo',
+            discharge_macaroon: 'dummy-discharge'
+          })
+          .expect(hasStatus('error'))
+          .end(done);
+      });
+
+      it('should return a body with a "snap-not-found" message', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/complete-authorization')
+          .send({
+            repository_url: 'https://github.com/anaccount/arepo',
+            discharge_macaroon: 'dummy-discharge'
+          })
+          .expect(hasMessage('snap-not-found'))
           .end(done);
       });
     });

@@ -151,6 +151,7 @@ const getSnapcraftYaml = (req, res, callback) => {
 // XXX cjwatson 2016-12-13: We should set an appropriate set of
 // architectures.
 export const newSnap = (req, res) => {
+  // XXX cjwatson 2016-12-15: Limit to only repositories the user owns.
   if (!req.session || !req.session.token) {
     return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
   }
@@ -179,12 +180,17 @@ export const newSnap = (req, res) => {
       }
     }).then(result => {
       logger.info(`Authorizing ${result.self_link}`);
-      lp_client.named_post(result.self_link, 'beginAuthorization', {
-        parameters: { success_url: req.body.success_url }
-      }).then(authUrl => {
-        logger.info(`Authorized ${result.self_link}`);
-        return res.redirect(authUrl);
-      });
+      lp_client.named_post(result.self_link, 'beginAuthorization')
+        .then(caveatId => {
+          logger.info(`Began authorization of ${result.self_link}`);
+          return res.status(201).send({
+            status: 'success',
+            payload: {
+              code: 'snap-created',
+              message: caveatId
+            }
+          });
+        });
     }).catch(error => {
       // At least for the moment, we just wrap the error we get from
       // Launchpad.
@@ -202,47 +208,96 @@ export const newSnap = (req, res) => {
   });
 };
 
-export const findSnap = async (req, res) => {
-  const repositoryUrl = req.query.repository_url;
+const internalFindSnap = async repositoryUrl => {
   const cacheId = `url:${repositoryUrl}`;
 
-  getMemcached().get(cacheId, (err, result) => {
-    if (!err && result !== undefined) {
-      return result;
-    }
-
-    const lp_client = getLaunchpad();
-    lp_client.named_get('/+snaps', 'findByURL', {
-      parameters: { url: repositoryUrl }
-    }).then(async result => {
-      const username = conf.get('LP_API_USERNAME');
-      // https://github.com/babel/babel-eslint/issues/415
-      for await (const entry of result) { // eslint-disable-line semi
-        if (entry.owner_link.endsWith(`/~${username}`)) {
-          return getMemcached().set(cacheId, entry.self_link, 3600, () => {
-            return res.status(200).send({
-              status: 'success',
-              payload: {
-                code: 'snap-found',
-                message: entry.self_link
-              }
-            });
-          });
-        }
+  return new Promise((resolve, reject) => {
+    getMemcached().get(cacheId, (err, result) => {
+      if (!err && result !== undefined) {
+        return resolve(result);
       }
+
+      getLaunchpad().named_get('/+snaps', 'findByURL', {
+        parameters: { url: repositoryUrl }
+      }).then(async result => {
+        const username = conf.get('LP_API_USERNAME');
+        // https://github.com/babel/babel-eslint/issues/415
+        for await (const entry of result) { // eslint-disable-line semi
+          if (entry.owner_link.endsWith(`/~${username}`)) {
+            getMemcached().set(cacheId, entry.self_link, 3600, () => {
+              return resolve(entry.self_link);
+            });
+          }
+        }
+        return resolve(null);
+      }).catch(error => {
+        return error.response.text().then(text => {
+          err = new Error();
+          err.status = error.response.status;
+          err.text = text;
+          return reject(err);
+        });
+      });
+    });
+  });
+};
+
+export const findSnap = (req, res) => {
+  internalFindSnap(req.query.repository_url).then(self_link => {
+    if (self_link !== null) {
+      return res.status(200).send({
+        status: 'success',
+        payload: {
+          code: 'snap-found',
+          message: self_link
+        }
+      });
+    } else {
       return res.status(404).send(RESPONSE_SNAP_NOT_FOUND);
-    }).catch(error => {
-      // At least for the moment, we just wrap the error we get from
-      // Launchpad.
-      return error.response.text().then(text => {
-        return res.status(error.response.status).send({
-          status: 'error',
+    }
+  }).catch(error => {
+    // At least for the moment, we just wrap the error we get from Launchpad.
+    return res.status(error.status).send({
+      status: 'error',
+      payload: {
+        code: 'lp-error',
+        message: error.text
+      }
+    });
+  });
+};
+
+export const completeSnapAuthorization = async (req, res) => {
+  // XXX cjwatson 2016-12-15: Limit to only repositories the user owns.
+  if (!req.session || !req.session.token) {
+    return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
+  }
+
+  internalFindSnap(req.body.repository_url).then(self_link => {
+    if (self_link !== null) {
+      return getLaunchpad().named_post(self_link, 'completeAuthorization', {
+        parameters: { discharge_macaroon: req.body.discharge_macaroon },
+      }).then(() => {
+        logger.info(`Completed authorization of ${self_link}`);
+        return res.status(200).send({
+          status: 'success',
           payload: {
-            code: 'lp-error',
-            message: text
+            code: 'snap-authorized',
+            message: self_link
           }
         });
       });
+    } else {
+      return res.status(404).send(RESPONSE_SNAP_NOT_FOUND);
+    }
+  }).catch(error => {
+    // At least for the moment, we just wrap the error we get from Launchpad.
+    return res.status(error.status).send({
+      status: 'error',
+      payload: {
+        code: 'lp-error',
+        message: error.text
+      }
     });
   });
 };

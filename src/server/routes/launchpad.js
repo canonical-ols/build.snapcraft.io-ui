@@ -1,12 +1,20 @@
 import { Router } from 'express';
 import { json } from 'body-parser';
 
-import { newSnap, findSnap } from '../handlers/launchpad';
+import {
+  completeSnapAuthorization,
+  findSnap,
+  newSnap
+} from '../handlers/launchpad';
 
 const router = Router();
 
 router.use('/launchpad/snaps', json());
 router.post('/launchpad/snaps', newSnap);
 router.get('/launchpad/snaps', findSnap);
+
+router.use('/launchpad/snaps/complete-authorization', json());
+router.post('/launchpad/snaps/complete-authorization',
+            completeSnapAuthorization);
 
 export default router;

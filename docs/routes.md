@@ -16,13 +16,38 @@ To create a snap:
     Accept: application/json
 
     {
-      "repository_url": "https://github.com/:account/:repo",
-      "success_url": ":url"
+      "repository_url": "https://github.com/:account/:repo"
     }
 
-On success, returns 302 with the `Location` header set to a URL that the
-user should visit to continue authorization.  This will ultimately redirect
-back to the URL passed in `success_url`.
+On success, returns:
+
+    HTTP/1.1 201 OK
+    Content-Type: application/json
+
+    {
+      "status": "success",
+      "payload": {
+        "code": "snap-created",
+        "message": ":caveat-id"
+      }
+    }
+
+The caller should proceed to authorize the snap using an OpenID exchange,
+using `:caveat-id` as the parameter to the Macaroon extension.  If
+successful, the result of this OpenID exchange will be a discharge macaroon,
+which it should then store in Launchpad:
+
+    POST /launchpad/snaps/complete-authorization
+    Cookie: <session cookie>
+    Content-Type: application/json
+    Accept: application/json
+
+    {
+      "repository_url": "https://github.com/:account/:repo",
+      "discharge_macaroon": ":discharge"
+    }
+
+On success, this returns 200.
 
 To search for an existing snap:
 
