@@ -8,8 +8,9 @@ import { conf } from '../../../../../src/server/helpers/config.js';
 
 describe('The Launchpad API endpoint', () => {
   const app = Express();
+  const session = { 'token': 'secret' };
   app.use((req, res, next) => {
-    req.session = {};
+    req.session = session;
     next();
   });
   app.use(launchpad);
@@ -33,6 +34,41 @@ describe('The Launchpad API endpoint', () => {
   });
 
   describe('new snap route', () => {
+    context('when user is not logged in', () => {
+      const oldToken = session.token;
+
+      before(() => {
+        delete session.token;
+      });
+
+      after(() => {
+        session.token = oldToken;
+      });
+
+      it('should return a 401 Unauthorized response', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(401, done);
+      });
+
+      it('should return a "error" status', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(hasStatus('error'))
+          .end(done);
+      });
+
+      it('should return a body with a "not-logged-in" message', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(hasMessage('not-logged-in'))
+          .end(done);
+      });
+    });
+
     context('when snap does not exist', () => {
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))

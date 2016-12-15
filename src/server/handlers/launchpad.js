@@ -17,6 +17,14 @@ const DISTRIBUTION = 'ubuntu';
 const DISTRO_SERIES = 'xenial';
 const STORE_SERIES = '16';
 
+const RESPONSE_NOT_LOGGED_IN = {
+  status: 'error',
+  payload: {
+    code: 'not-logged-in',
+    message: 'Not logged in'
+  }
+};
+
 const RESPONSE_GITHUB_BAD_URL = {
   status: 'error',
   payload: {
@@ -143,6 +151,10 @@ const getSnapcraftYaml = (req, res, callback) => {
 // XXX cjwatson 2016-12-13: We should set an appropriate set of
 // architectures.
 export const newSnap = (req, res) => {
+  if (!req.session || !req.session.token) {
+    return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
+  }
+
   getSnapcraftYaml(req, res, snapcraftYaml => {
     const repositoryUrl = req.body.repository_url;
     if (!('name' in snapcraftYaml)) {
