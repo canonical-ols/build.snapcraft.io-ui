@@ -133,13 +133,13 @@ describe('snapBuildFromAPI helper', () => {
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
-    it('should map `Dependency wait` into PENDING', () => {
+    it('should map `Dependency wait` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
         buildstate: 'Dependency wait'
       };
 
-      expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
+      expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
     it('should map `Chroot problem` into ERROR', () => {

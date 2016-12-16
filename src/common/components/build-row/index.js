@@ -52,7 +52,6 @@ BuildRow.propTypes = {
   status:  PropTypes.string,
   statusMessage: PropTypes.string,
   dateStarted: PropTypes.string,
-  dateCompleted: PropTypes.string,
   duration: PropTypes.string
 };
 

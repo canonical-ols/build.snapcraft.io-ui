@@ -20,7 +20,6 @@
 //
 //   dateCreated: '2016-12-01T17:08:36.317805+00:00', // 'datecreated'
 //   dateStarted: '2016-12-01T17:08:36.317805+00:00', // 'date_started'
-//   dateFirstDispatched: '2016-12-01T17:08:36.317805+00:00', // 'date_first_dispatched'
 //   dateCompleted: '2016-12-01T17:10:36.317805+00:00', // 'datebuilt'
 //   duration: '0:02:00.124039' // 'duration'
 // };
@@ -39,7 +38,7 @@ const BuildStatusMapping = {
   'Needs building': BuildStatus.PENDING,
   'Successfully built': BuildStatus.SUCCESS,
   'Failed to build': BuildStatus.ERROR,
-  'Dependency wait': BuildStatus.PENDING,
+  'Dependency wait': BuildStatus.ERROR,
   'Chroot problem': BuildStatus.ERROR,
   'Build for superseded Source': BuildStatus.ERROR,
   'Currently building': BuildStatus.PENDING,
