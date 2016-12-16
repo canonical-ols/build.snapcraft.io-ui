@@ -14,8 +14,7 @@ const BuildRow = (props) => {
     duration,
     status,
     statusMessage,
-    dateStarted,
-    dateCompleted
+    dateStarted
   } = props;
 
   return (
@@ -28,7 +27,7 @@ const BuildRow = (props) => {
         {moment.duration(duration).humanize()}
       </div>
       <div className={ styles.item }>
-        <span title={moment(dateCompleted || dateStarted).format('DD-MM-YYYY HH:mm:ss')}>{ moment(dateCompleted || dateStarted).fromNow() }</span>
+        <span title={moment(dateStarted).format('DD-MM-YYYY HH:mm:ss')}>{ moment(dateStarted).fromNow() }</span>
       </div>
     </div>
   );
