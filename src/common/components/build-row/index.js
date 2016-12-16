@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import moment from 'moment';
 
+import { BuildStatus } from '../../helpers/snap-builds';
+
 import styles from './buildRow.css';
 
 const BuildRow = (props) => {
@@ -17,8 +19,14 @@ const BuildRow = (props) => {
     dateStarted
   } = props;
 
+  const statusStyle = {
+    [BuildStatus.SUCCESS]: styles.success,
+    [BuildStatus.ERROR]: styles.error,
+    [BuildStatus.PENDING]: styles.pending
+  };
+
   return (
-    <div className={ `${styles.buildRow} ${styles[status]}` }>
+    <div className={ `${styles.buildRow} ${statusStyle[status]}` }>
       <div className={ styles.item }><Link to={`/${account}/${repo}/builds/${buildId}`}>{`#${buildId}`}</Link> {statusMessage}</div>
       <div className={ styles.item }>
         {architecture}
@@ -40,11 +48,8 @@ BuildRow.propTypes = {
 
   // build properties
   buildId:  PropTypes.string,
-  username: PropTypes.string,
-  commitId:  PropTypes.string,
-  commitMessage:  PropTypes.string,
   architecture: PropTypes.string,
-  status:  PropTypes.oneOf(['success', 'error', 'pending']),
+  status:  PropTypes.string,
   statusMessage: PropTypes.string,
   dateStarted: PropTypes.string,
   dateCompleted: PropTypes.string,
