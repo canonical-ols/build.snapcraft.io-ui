@@ -32,6 +32,7 @@ describe('snapBuildFromAPI helper', () => {
     'web_link': 'https://launchpad.net/~cjwatson/+snap/godd-test-2/+build/9590',
     'datecreated': '2016-11-09T17:05:52.436792+00:00',
     'archive_link': 'https://api.launchpad.net/devel/ubuntu/+archive/primary',
+    'arch_tag': 'amd64',
     'upload_log_url': null
   };
 
@@ -69,9 +70,8 @@ describe('snapBuildFromAPI helper', () => {
       expect(snapBuild.buildLogUrl).toEqual(SNAP_BUILD_ENTRY.build_log_url);
     });
 
-    it('should parse architecture from distro_arch_series_link field', () => {
-      // 'distro_arch_series_link': 'https://api.launchpad.net/devel/ubuntu/xenial/amd64',
-      expect(snapBuild.architecture).toEqual('amd64');
+    it('should take architecture from arch_tag field', () => {
+      expect(snapBuild.architecture).toEqual(SNAP_BUILD_ENTRY.arch_tag);
     });
 
     it('should take statusMessage from buildstate field', () => {

@@ -70,6 +70,7 @@ const SNAP_BUILDS_RESPONSE = {
     'web_link': 'https://launchpad.net/~cjwatson/+snap/godd-test-2/+build/9590',
     'datecreated': '2016-11-09T17:05:52.436792+00:00',
     'archive_link': 'https://api.launchpad.net/devel/ubuntu/+archive/primary',
+    'arch_tag': 'amd64',
     'upload_log_url': null
   }, {
     'can_be_rescored': false,
@@ -96,6 +97,7 @@ const SNAP_BUILDS_RESPONSE = {
     'web_link': 'https://launchpad.net/~cjwatson/+snap/godd-test-2/+build/1149',
     'datecreated': '2016-06-06T16:40:51.698805+00:00',
     'archive_link': 'https://api.launchpad.net/devel/ubuntu/+archive/primary',
+    'arch_tag': 'amd64',
     'upload_log_url': null
   }, {
     'can_be_rescored': false,
@@ -122,6 +124,7 @@ const SNAP_BUILDS_RESPONSE = {
     'web_link': 'https://launchpad.net/~cjwatson/+snap/godd-test-2/+build/1150',
     'datecreated': '2016-06-06T16:40:51.698805+00:00',
     'archive_link': 'https://api.launchpad.net/devel/ubuntu/+archive/primary',
+    'arch_tag': 'i386',
     'upload_log_url': null
   }, {
     'can_be_rescored': false,
@@ -148,6 +151,7 @@ const SNAP_BUILDS_RESPONSE = {
     'web_link': 'https://launchpad.net/~cjwatson/+snap/godd-test-2/+build/1063',
     'datecreated': '2016-06-01T13:44:04.646067+00:00',
     'archive_link': 'https://api.launchpad.net/devel/ubuntu/+archive/primary',
+    'arch_tag': 'amd64',
     'upload_log_url': null
   }, {
     'can_be_rescored': false,
@@ -174,6 +178,7 @@ const SNAP_BUILDS_RESPONSE = {
     'web_link': 'https://launchpad.net/~cjwatson/+snap/godd-test-2/+build/1064',
     'datecreated': '2016-06-01T13:44:04.646067+00:00',
     'archive_link': 'https://api.launchpad.net/devel/ubuntu/+archive/primary',
+    'arch_tag': 'i386',
     'upload_log_url': null
   }],
   'resource_type_link': 'https://api.launchpad.net/devel/#snap_build-page-resource'

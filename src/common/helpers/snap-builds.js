@@ -12,8 +12,7 @@
 //   // commitId:  'f1d6edb',
 //   // commitMessage:  'Failed commit',
 //
-//   // TODO: use 'arch_tag' once available
-//   architecture: 'i386', // last part of 'distro_arch_series_link'
+//   architecture: 'i386', //'arch_tag'
 //
 //   // https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
 //   status:  'error', // parsed based on 'buildstate' -> success, error, pending
@@ -59,7 +58,7 @@ export function snapBuildFromAPI(entry) {
     buildId: getLastPartOfUrl(entry.self_link),
     buildLogUrl: entry.build_log_url,
 
-    architecture: getLastPartOfUrl(entry.distro_arch_series_link),
+    architecture: entry.arch_tag,
 
     status: BuildStatusMapping[entry.buildstate],
     statusMessage: entry.buildstate,
