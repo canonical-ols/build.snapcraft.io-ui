@@ -2,8 +2,7 @@ import expect from 'expect';
 
 import {
   snapBuildFromAPI,
-  BuildStatus,
-  BuildStatusLP
+  BuildStatus
 } from '../../../../../src/common/helpers/snap-builds';
 
 
@@ -107,100 +106,100 @@ describe('snapBuildFromAPI helper', () => {
 
   context('when mapping build states', () => {
 
-    it('should map NEEDSBUILD into PENDING', () => {
+    it('should map `Needs building` into PENDING', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.NEEDSBUILD
+        buildstate: 'Needs building'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
     });
 
-    it('should map FULLYBUILT into SUCCESS', () => {
+    it('should map `Successfully built` into SUCCESS', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.FULLYBUILT
+        buildstate: 'Successfully built'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.SUCCESS);
     });
 
-    it('should map FAILEDTOBUILD into ERROR', () => {
+    it('should map `Failed to build` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.FAILEDTOBUILD
+        buildstate: 'Failed to build'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
-    it('should map MANUALDEPWAIT into PENDING', () => {
+    it('should map `Dependency wait` into PENDING', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.MANUALDEPWAIT
+        buildstate: 'Dependency wait'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
     });
 
-    it('should map CHROOTWAIT into ERROR', () => {
+    it('should map `Chroot problem` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.CHROOTWAIT
+        buildstate: 'Chroot problem'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
-    it('should map SUPERSEDED into ERROR', () => {
+    it('should map `Build for superseded Source` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.SUPERSEDED
+        buildstate: 'Build for superseded Source'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
-    it('should map BUILDING into PENDING', () => {
+    it('should map `Currently building` into PENDING', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.BUILDING
+        buildstate: 'Currently building'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
     });
 
-    it('should map FAILEDTOUPLOAD into ERROR', () => {
+    it('should map `Failed to upload` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.FAILEDTOUPLOAD
+        buildstate: 'Failed to upload'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
-    it('should map UPLOADING into PENDING', () => {
+    it('should map `Uploading build` into PENDING', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.UPLOADING
+        buildstate: 'Uploading build'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
     });
 
-    it('should map CANCELLING into ERROR', () => {
+    it('should map `Cancelling build` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.CANCELLING
+        buildstate: 'Cancelling build'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);
     });
 
-    it('should map CANCELLED into ERROR', () => {
+    it('should map `Cancelled build` into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
-        buildstate: BuildStatusLP.CANCELLED
+        buildstate: 'Cancelled build'
       };
 
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.ERROR);

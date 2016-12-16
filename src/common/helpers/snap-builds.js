@@ -15,7 +15,6 @@
 //   // TODO: use 'arch_tag' once available
 //   architecture: 'i386', // last part of 'distro_arch_series_link'
 //
-//   // TODO: full list of statuses based on
 //   // https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
 //   status:  'error', // parsed based on 'buildstate' -> success, error, pending
 //   statusMessage: 'Failed to build', // 'buildstate'
@@ -27,45 +26,28 @@
 //   duration: '0:02:00.124039' // 'duration'
 // };
 
-// Based on BuildStatus from LP API
-// https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
-export const BuildStatusLP = {
-  NEEDSBUILD: 'Needs building',     // pending
-  FULLYBUILT: 'Successfully built', // success
-  FAILEDTOBUILD:'Failed to build',  // error
-  MANUALDEPWAIT: 'Dependency wait', // pending
-  CHROOTWAIT: 'Chroot problem',     // error
-  SUPERSEDED: 'Build for superseded Source', // error
-  BUILDING: 'Currently building',   // pending
-  FAILEDTOUPLOAD: 'Failed to upload', // error
-  UPLOADING: 'Uploading build',     // pending
-  CANCELLING: 'Cancelling build',   // pending
-  CANCELLED: 'Cancelled build'      // error
-};
-
 export const BuildStatus = {
   SUCCESS: 'success', // for builds successfully finished
   PENDING: 'pending', // for build currently running or in any way in progress
   ERROR: 'error'      // for builds failed for any reason
 };
 
-// TODO:
-// export enum with build status success/pending/error
-// or export full list of statuses (like in API) and let view do the mapping?
-
+// Based on BuildStatus from LP API
+// https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
+//
 // mapping between build status from LP and pending/success/error internal status
 const BuildStatusMapping = {
-  [BuildStatusLP.NEEDSBUILD]: BuildStatus.PENDING,
-  [BuildStatusLP.FULLYBUILT]: BuildStatus.SUCCESS,
-  [BuildStatusLP.FAILEDTOBUILD]: BuildStatus.ERROR,
-  [BuildStatusLP.MANUALDEPWAIT]: BuildStatus.PENDING,
-  [BuildStatusLP.CHROOTWAIT]: BuildStatus.ERROR,
-  [BuildStatusLP.SUPERSEDED]: BuildStatus.ERROR,
-  [BuildStatusLP.BUILDING]: BuildStatus.PENDING,
-  [BuildStatusLP.FAILEDTOUPLOAD]: BuildStatus.ERROR,
-  [BuildStatusLP.UPLOADING]: BuildStatus.PENDING,
-  [BuildStatusLP.CANCELLING]: BuildStatus.ERROR,
-  [BuildStatusLP.CANCELLED]: BuildStatus.ERROR
+  'Needs building': BuildStatus.PENDING,
+  'Successfully built': BuildStatus.SUCCESS,
+  'Failed to build': BuildStatus.ERROR,
+  'Dependency wait': BuildStatus.PENDING,
+  'Chroot problem': BuildStatus.ERROR,
+  'Build for superseded Source': BuildStatus.ERROR,
+  'Currently building': BuildStatus.PENDING,
+  'Failed to upload': BuildStatus.ERROR,
+  'Uploading build': BuildStatus.PENDING,
+  'Cancelling build': BuildStatus.ERROR,
+  'Cancelled build': BuildStatus.ERROR
 };
 
 function getLastPartOfUrl(url) {
