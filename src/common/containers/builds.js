@@ -21,7 +21,6 @@ class Builds extends Component {
         <Helmet
           title={`${fullName} builds`}
         />
-        {/* TODO: make into title component? */}
         <h1>{fullName} builds</h1>
         <BuildHistory account={account} repo={repo}/>
         { this.props.isFetching &&

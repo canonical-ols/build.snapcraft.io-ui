@@ -188,7 +188,7 @@ describe('snapBuildFromAPI helper', () => {
       expect(snapBuildFromAPI(entry).status).toEqual(BuildStatus.PENDING);
     });
 
-    it('should map CANCELLING into PENDING', () => {
+    it('should map CANCELLING into ERROR', () => {
       const entry = {
         ...SNAP_BUILD_ENTRY,
         buildstate: BuildStatusLP.CANCELLING
