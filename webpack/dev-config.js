@@ -12,7 +12,6 @@ const sharedVars = require('../src/common/style/variables');
 module.exports = {
   context: path.resolve(__dirname, '..'),
   entry: [
-    'babel-polyfill',
     `webpack-hot-middleware/client?path=${WEBPACK_DEV_URL}/__webpack_hmr`,
     'webpack/hot/only-dev-server',
     'react-hot-loader/patch',
