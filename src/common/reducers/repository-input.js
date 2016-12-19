@@ -43,6 +43,18 @@ export function repositoryInput(state = {
         success: false,
         error: action.payload
       };
+    case ActionTypes.CREATE_SNAP:
+      return {
+        ...state,
+        isFetching: true
+      };
+    case ActionTypes.CREATE_SNAP_ERROR:
+      return {
+        ...state,
+        isFetching: false,
+        success: false,
+        error: action.payload
+      };
     default:
       return state;
   }

@@ -5,9 +5,11 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
 import {
+  createSnap,
   setGitHubRepository,
   verifyGitHubRepository
 } from '../../actions/repository-input';
+import conf from '../../helpers/config';
 
 import Button from '../button';
 import { Form, InputField, Message } from '../forms';
@@ -48,6 +50,24 @@ export class RepositoryInput extends Component {
     const isTouched = input.inputValue.length > 2;
     const isValid = !!input.repository && !input.error;
 
+    let submitButton;
+    if (conf.get('LP_API_USERNAME')) {
+      // Main path, for use in production.
+      submitButton = (
+        <Button type='submit' disabled={!isValid || input.isFetching}>
+          { input.isFetching ? 'Creating...' : 'Create' }
+        </Button>
+      );
+    } else {
+      // If the Launchpad API isn't configured, fall back to just verifying
+      // the repository.  This is handy in development.
+      submitButton = (
+        <Button type='submit' disabled={!isValid || input.isFetching}>
+          { input.isFetching ? 'Verifying...' : 'Verify' }
+        </Button>
+      );
+    }
+
     return (
       <Form onSubmit={this.onSubmit.bind(this)}>
 
@@ -65,9 +85,7 @@ export class RepositoryInput extends Component {
             Repository <a href={input.repositoryUrl}>{input.repository}</a> contains snapcraft project and can be built.
           </Message>
         }
-        <Button type='submit' disabled={!isValid || input.isFetching}>
-          { input.isFetching ? 'Verifying...' : 'Verify' }
-        </Button>
+        {submitButton}
       </Form>
     );
   }
@@ -80,7 +98,14 @@ export class RepositoryInput extends Component {
     const { repository } = this.props.repositoryInput;
 
     if (repository) {
-      this.props.dispatch(verifyGitHubRepository(repository));
+      if (conf.get('LP_API_USERNAME')) {
+        // Main path, for use in production.
+        this.props.dispatch(createSnap(repository));
+      } else {
+        // If the Launchpad API isn't configured, fall back to just
+        // verifying the repository.  This is handy in development.
+        this.props.dispatch(verifyGitHubRepository(repository));
+      }
     }
     event.preventDefault();
   }
