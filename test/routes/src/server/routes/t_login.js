@@ -1,36 +1,22 @@
-// load server/server.js via proxyquire to stub webpack-assets.json
-import proxyquire from 'proxyquire';
-
-// import login routes for testing
-import loginRoutes from '../../../../../src/server/routes/login';
-
-const routesStub = {
-  login: loginRoutes,
-  api: () => {},
-  github: () => {},
-  githubAuth: () => {},
-  universal: () => {},
-  // tell proxyquire not to try to load stubbed module
-  '@noCallThru': true
-};
-const stubDependencies = {
-  './routes/': routesStub
-};
-
-const app = proxyquire(
-  '../../../../../src/server/server.js',
-  stubDependencies
-).default;
-
-import { conf } from '../../../../../src/server/helpers/config';
+import Express from 'express';
 import nock from 'nock';
 import supertest from 'supertest';
 import url from 'url';
+
+import login from '../../../../../src/server/routes/login';
+import { conf } from '../../../../../src/server/helpers/config';
 
 const UBUNTU_SSO_URL = conf.get('UBUNTU_SSO_URL');
 const OPENID_VERIFY_URL = conf.get('OPENID_VERIFY_URL');
 
 describe('login routes', () => {
+  const app = Express();
+  app.use((req, res, next) => {
+    req.session = {};
+    next();
+  });
+  app.use(login);
+
   beforeEach(() => {
     nock(UBUNTU_SSO_URL)
       .get('/')
