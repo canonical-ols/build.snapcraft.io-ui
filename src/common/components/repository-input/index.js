@@ -44,16 +44,10 @@ export class RepositoryInput extends Component {
     }
   }
 
-  render() {
-    const input = this.props.repositoryInput;
-
-    const isTouched = input.inputValue.length > 2;
-    const isValid = !!input.repository && !input.error;
-
-    let submitButton;
+  submitButton(input, isValid) {
     if (conf.get('LP_API_USERNAME')) {
       // Main path, for use in production.
-      submitButton = (
+      return (
         <Button type='submit' disabled={!isValid || input.isFetching}>
           { input.isFetching ? 'Creating...' : 'Create' }
         </Button>
@@ -61,12 +55,19 @@ export class RepositoryInput extends Component {
     } else {
       // If the Launchpad API isn't configured, fall back to just verifying
       // the repository.  This is handy in development.
-      submitButton = (
+      return (
         <Button type='submit' disabled={!isValid || input.isFetching}>
           { input.isFetching ? 'Verifying...' : 'Verify' }
         </Button>
       );
     }
+  }
+
+  render() {
+    const input = this.props.repositoryInput;
+
+    const isTouched = input.inputValue.length > 2;
+    const isValid = !!input.repository && !input.error;
 
     return (
       <Form onSubmit={this.onSubmit.bind(this)}>
@@ -85,7 +86,7 @@ export class RepositoryInput extends Component {
             Repository <a href={input.repositoryUrl}>{input.repository}</a> contains snapcraft project and can be built.
           </Message>
         }
-        {submitButton}
+        { this.submitButton.call(this, input, isValid) }
       </Form>
     );
   }
