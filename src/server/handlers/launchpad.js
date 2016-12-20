@@ -301,3 +301,57 @@ export const completeSnapAuthorization = async (req, res) => {
     });
   });
 };
+
+export const getSnapBuilds = (req, res) => {
+  const snap_link = req.query.snap_link;
+
+  if (snap_link) {
+    return getLaunchpad().get(snap_link).then(snap => {
+      // TODO: bartaz: currently just limiting to 10 recent builds
+      // we will need to process it properly later for paging/loading more
+      return getLaunchpad().get(snap.builds_collection_link, { start: 0, size: 10 })
+        .then(builds => {
+          return res.status(200).send({
+            status: 'success',
+            payload: {
+              code: 'snap-builds-found',
+              message: builds.entries
+            }
+          });
+        });
+    })
+    .catch(error => {
+      if (error.response) {
+        // At least for the moment, we just wrap the error we get from
+        // Launchpad.
+        return error.response.text().then(text => {
+          logger.info('Launchpad API error:', text);
+          return res.status(error.response.status).send({
+            status: 'error',
+            payload: {
+              code: 'lp-error',
+              message: text
+            }
+          });
+        });
+      } else {
+        return res.status(500).send({
+          status: 'error',
+          payload: {
+            code: 'internal-error',
+            message: error.message
+          }
+        });
+      }
+    });
+  }
+  else {
+    return res.status(404).send({
+      status: 'error',
+      payload: {
+        code: 'missing-snap-link',
+        message: 'Missing query parameter snap_link'
+      }
+    });
+  }
+};
