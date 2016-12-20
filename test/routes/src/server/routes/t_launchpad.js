@@ -590,8 +590,14 @@ describe('The Launchpad API endpoint', () => {
     });
 
     context('when snap and builds are successfully fetched', () => {
+      let test_build;
 
       beforeEach(() => {
+        test_build = {
+          'resource_type_link': `${lp_api_url}/devel/#snap_build`,
+          'self_link': `${lp_api_url}${lp_snap_path}/+build/12345`,
+        };
+
         // when getting snap data from API (via self_link)
         nock(lp_api_url)
           .get(lp_snap_path)
@@ -610,19 +616,7 @@ describe('The Launchpad API endpoint', () => {
           .reply(200, {
             total_size: 1,
             start: 0,
-            entries: [
-              {
-                'self_link': `${lp_api_url}${lp_snap_path}/+build/12345`,
-                'date_started': '2016-12-06T10:40:17.751937+00:00',
-                'datebuilt': '2016-12-06T10:47:59.384231+00:00',
-                'duration': '0:07:41.632294',
-                'datecreated': '2016-12-06T10:30:29.285058+00:00',
-                'buildstate': 'Successfully built',
-                'resource_type_link': `${lp_api_url}/devel/#snap_build`,
-                'build_log_url': `${lp_api_url}${lp_snap_path}/+build/12345/+files/buildlog_snap_ubuntu_xenial_armhf_${lp_snap_name}_BUILDING.txt.gz`,
-                'arch_tag': 'armhf',
-              }
-            ]
+            entries: [ test_build ]
           });
       });
 
@@ -653,12 +647,76 @@ describe('The Launchpad API endpoint', () => {
           .end(done);
       });
 
-      it('should return builds list as payload message', (done) => {
+      it('should return builds list in payload', (done) => {
         supertest(app)
           .get('/launchpad/builds')
           .query({ snap_link: lp_snap_link })
           .end((err, res) => {
-            expect(res.body.payload.message.length).toEqual(1);
+            const build = res.body.payload.builds[0];
+            // XXX bartaz
+            // Wanted to use `expect(build).toEqual(test_build)`
+            // but LP client adds more propeties to the object...
+            // also `expect(build).toContain(test_build)` doesnt work
+            // because `expect` fails to iterate over keys on the object
+            // for some reason (async maybe).
+            // To be investigated later...
+            expect(build.self_link).toEqual(test_build.self_link);
+            done(err);
+          });
+      });
+
+    });
+
+    context('when passing start and size params', () => {
+
+      beforeEach(() => {
+        // when getting snap data from API (via self_link)
+        nock(lp_api_url)
+          .get(lp_snap_path)
+          .reply(200, {
+            name: lp_snap_name,
+            builds_collection_link: `${lp_api_url}${lp_builds_path}`
+          });
+      });
+
+      afterEach(() => {
+        nock.cleanAll();
+      });
+
+      it('should default start to 0 and size to 10', (done) => {
+        // when getting builds list (via builds_collection_link)
+        const lp = nock(lp_api_url)
+          .get(lp_builds_path)
+          .query({
+            'ws.start': 0,
+            'ws.size': 10
+          })
+          .reply(200,{ entries: [] });
+
+        supertest(app)
+          .get('/launchpad/builds')
+          .query({ snap_link: lp_snap_link })
+          .expect(200, (err) => {
+            lp.done();
+            done(err);
+          });
+      });
+
+      it('should pass start and size params to builds_collection_link call', (done) => {
+        // when getting builds list (via builds_collection_link)
+        const lp = nock(lp_api_url)
+          .get(lp_builds_path)
+          .query({
+            'ws.start': 7,
+            'ws.size': 42
+          })
+          .reply(200, { entries: [] });
+
+        supertest(app)
+          .get('/launchpad/builds')
+          .query({ snap_link: lp_snap_link, size: 42, start: 7 })
+          .expect(200, (err) => {
+            lp.done();
             done(err);
           });
       });
