@@ -2,6 +2,8 @@ import 'isomorphic-fetch';
 
 import conf from '../helpers/config';
 
+const BASE_URL = conf.get('BASE_URL');
+
 export const SET_GITHUB_REPOSITORY = 'SET_GITHUB_REPOSITORY';
 export const VERIFY_GITHUB_REPOSITORY = 'VERIFY_GITHUB_REPOSITORY';
 export const VERIFY_GITHUB_REPOSITORY_SUCCESS = 'VERIFY_GITHUB_REPOSITORY_SUCCESS';
@@ -65,7 +67,6 @@ export function createSnap(repository, location) {
         payload: repository
       });
 
-      const BASE_URL = conf.get('BASE_URL');
       return fetch(`${BASE_URL}/api/launchpad/snaps`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
