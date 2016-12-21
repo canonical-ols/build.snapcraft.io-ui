@@ -3,14 +3,14 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
 import BuildHistory from '../components/build-history';
-import { fetchBuilds } from '../actions/snap-builds';
+import { fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
 
 class Builds extends Component {
 
   componentWillMount() {
-    this.props.dispatch(fetchBuilds(this.props.fullName));
+    this.props.dispatch(fetchSnap(this.props.fullName));
   }
 
   render() {

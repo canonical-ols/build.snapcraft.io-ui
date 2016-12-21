@@ -32,21 +32,39 @@ function checkStatus(response) {
   }
 }
 
-export function fetchBuilds(repository) {
+export function fetchSnap(repository) {
   return (dispatch) => {
-
     if (repository) {
       dispatch({
-        type: FETCH_BUILDS,
-        payload: repository
+        type: FETCH_BUILDS
       });
 
-      // TODO: bartaz
-      // mocked URL just for dev test purposes, to be replaced with fetched self_link
-      const snap_link = encodeURIComponent('https://api.launchpad.net/devel/~snappy-dev/+snap/core');
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            status: 'success',
+            payload: {
+              code: 'snap-found',
+              message: 'https://api.launchpad.net/devel/~snappy-dev/+snap/core'
+            }
+          });
+        }, 1000);
+      })
+      .then(json => dispatch(fetchBuilds(json.payload.message)))
+      .catch(error => dispatch(fetchBuildsError(error)));
+    }
+  };
+}
 
+export function fetchBuilds(snapLink) {
+  return (dispatch) => {
+    if (snapLink) {
+      dispatch({
+        type: FETCH_BUILDS
+      });
 
-      const url = `${BASE_URL}/api/launchpad/builds?snap_link=${snap_link}`;
+      snapLink = encodeURIComponent(snapLink);
+      const url = `${BASE_URL}/api/launchpad/builds?snap_link=${snapLink}`;
       return fetch(url)
         .then(checkStatus)
         .then(response => response.json())

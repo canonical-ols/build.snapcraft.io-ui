@@ -7,6 +7,7 @@ import { isFSA } from 'flux-standard-action';
 import { conf } from '../../../../../src/server/helpers/config';
 
 import {
+  fetchSnap,
   fetchBuilds,
   fetchBuildsSuccess,
   fetchBuildsError
@@ -76,7 +77,49 @@ describe('repository input actions', () => {
   });
 
   context('fetchBuilds', () => {
+    let api;
 
+    beforeEach(() => {
+      api = nock(conf.get('BASE_URL'));
+    });
+
+    afterEach(() => {
+      nock.cleanAll();
+    });
+
+    it('should store builds on fetch success', () => {
+      api.get('/api/launchpad/builds')
+        .query({ snap_link: 'http://api.example.com/test/+snap' }) // accept any snap_link in query
+        .reply(200, {
+          status: 'success',
+          payload: {
+            code: 'snap-builds-found',
+            builds: []
+          }
+        });
+
+      return store.dispatch(fetchBuilds('http://api.example.com/test/+snap'))
+        .then(() => {
+          api.done();
+          expect(store.getActions()).toHaveActionOfType(
+            ActionTypes.FETCH_BUILDS_SUCCESS
+          );
+        });
+    });
+
+    // TODO: pending - mocked actions never fail
+    xit('should store error on Launchpad request failure', () => {
+      // return store.dispatch(fetchBuilds( '...' ))
+      //   .then(() => {
+      //     expect(store.getActions()).toHaveActionOfType(
+      //       ActionTypes.FETCH_BUILDS_ERROR
+      //     );
+      //   });
+    });
+
+  });
+
+  context('fetchSnap', () => {
     let api;
 
     beforeEach(() => {
@@ -98,7 +141,7 @@ describe('repository input actions', () => {
           }
         });
 
-      return store.dispatch(fetchBuilds('foo/bar'))
+      return store.dispatch(fetchSnap('foo/bar'))
         .then(() => {
           api.done();
           expect(store.getActions()).toHaveActionOfType(
@@ -109,7 +152,7 @@ describe('repository input actions', () => {
 
     // TODO: pending - mocked actions never fail
     xit('should store error on Launchpad request failure', () => {
-      // return store.dispatch(fetchBuilds('foo/bar'))
+      // return store.dispatch(fetchSnap('foo/bar'))
       //   .then(() => {
       //     expect(store.getActions()).toHaveActionOfType(
       //       ActionTypes.FETCH_BUILDS_ERROR
