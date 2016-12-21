@@ -44,25 +44,6 @@ export class RepositoryInput extends Component {
     }
   }
 
-  submitButton(input, isValid) {
-    if (conf.get('LP_API_USERNAME')) {
-      // Main path, for use in production.
-      return (
-        <Button type='submit' disabled={!isValid || input.isFetching}>
-          { input.isFetching ? 'Creating...' : 'Create' }
-        </Button>
-      );
-    } else {
-      // If the Launchpad API isn't configured, fall back to just verifying
-      // the repository.  This is handy in development.
-      return (
-        <Button type='submit' disabled={!isValid || input.isFetching}>
-          { input.isFetching ? 'Verifying...' : 'Verify' }
-        </Button>
-      );
-    }
-  }
-
   render() {
     const input = this.props.repositoryInput;
 
@@ -86,7 +67,9 @@ export class RepositoryInput extends Component {
             Repository <a href={input.repositoryUrl}>{input.repository}</a> contains snapcraft project and can be built.
           </Message>
         }
-        { this.submitButton.call(this, input, isValid) }
+        <Button type='submit' disabled={!isValid || input.isFetching}>
+          { input.isFetching ? 'Creating...' : 'Create' }
+        </Button>
       </Form>
     );
   }
@@ -99,14 +82,7 @@ export class RepositoryInput extends Component {
     const { repository } = this.props.repositoryInput;
 
     if (repository) {
-      if (conf.get('LP_API_USERNAME')) {
-        // Main path, for use in production.
-        this.props.dispatch(createSnap(repository));
-      } else {
-        // If the Launchpad API isn't configured, fall back to just
-        // verifying the repository.  This is handy in development.
-        this.props.dispatch(verifyGitHubRepository(repository));
-      }
+      this.props.dispatch(createSnap(repository));
     }
     event.preventDefault();
   }

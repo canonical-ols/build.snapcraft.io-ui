@@ -9,8 +9,7 @@ import dotenv from 'dotenv';
  */
 const CLIENT_SIDE_WHITELIST = [
   'NODE_ENV',
-  'BASE_URL',
-  'LP_API_USERNAME'
+  'BASE_URL'
 ];
 
 let configForClient;
