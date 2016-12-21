@@ -1,7 +1,10 @@
 import expect from 'expect';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import nock from 'nock';
 import { isFSA } from 'flux-standard-action';
+
+import { conf } from '../../../../../src/server/helpers/config';
 
 import {
   fetchBuilds,
@@ -74,9 +77,30 @@ describe('repository input actions', () => {
 
   context('fetchBuilds', () => {
 
+    let api;
+
+    beforeEach(() => {
+      api = nock(conf.get('BASE_URL'));
+    });
+
+    afterEach(() => {
+      nock.cleanAll();
+    });
+
     it('should store builds on fetch success', () => {
+      api.get('/api/launchpad/builds')
+        .query((query) => query.snap_link) // accept any snap_link in query
+        .reply(200, {
+          status: 'success',
+          payload: {
+            code: 'snap-builds-found',
+            builds: []
+          }
+        });
+
       return store.dispatch(fetchBuilds('foo/bar'))
         .then(() => {
+          api.done();
           expect(store.getActions()).toHaveActionOfType(
             ActionTypes.FETCH_BUILDS_SUCCESS
           );
