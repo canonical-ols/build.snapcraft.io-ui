@@ -6,10 +6,8 @@ import { connect } from 'react-redux';
 
 import {
   createSnap,
-  setGitHubRepository,
-  verifyGitHubRepository
+  setGitHubRepository
 } from '../../actions/repository-input';
-import conf from '../../helpers/config';
 
 import Button from '../button';
 import { Form, InputField, Message } from '../forms';
