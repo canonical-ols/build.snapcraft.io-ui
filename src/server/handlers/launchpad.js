@@ -15,6 +15,7 @@ const logger = logging.getLogger('express-error');
 // configurable.
 const DISTRIBUTION = 'ubuntu';
 const DISTRO_SERIES = 'xenial';
+const ARCHITECTURES = ['amd64', 'armhf'];
 const STORE_SERIES = '16';
 
 const RESPONSE_NOT_LOGGED_IN = {
@@ -148,8 +149,6 @@ const getSnapcraftYaml = (req, res, callback) => {
   });
 };
 
-// XXX cjwatson 2016-12-13: We should set an appropriate set of
-// architectures.
 export const newSnap = (req, res) => {
   // XXX cjwatson 2016-12-15: Limit to only repositories the user owns.
   if (!req.session || !req.session.token) {
@@ -174,6 +173,9 @@ export const newSnap = (req, res) => {
         auto_build: true,
         auto_build_archive: `/${DISTRIBUTION}/+archive/primary`,
         auto_build_pocket: 'Updates',
+        processors: ARCHITECTURES.map(arch => {
+          return `/+processors/${arch}`;
+        }),
         store_upload: true,
         store_series: `/+snappy-series/${STORE_SERIES}`,
         store_name: snapcraftYaml.name
