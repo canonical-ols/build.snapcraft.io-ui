@@ -166,22 +166,15 @@ const makeSnapName = (url) => {
   return createHash('md5').update(url).digest('hex');
 };
 
-const getSnapcraftYaml = (req) => {
-  const repositoryUrl = req.body.repository_url;
-  const parsed = parseGitHubUrl(repositoryUrl);
-  if (parsed === null || parsed.owner === null || parsed.name === null) {
-    logger.info(`Cannot parse "${repositoryUrl}"`);
-    return Promise.reject(new PreparedError(400, RESPONSE_GITHUB_BAD_URL));
-  }
-
-  const uri = `/repos/${parsed.owner}/${parsed.name}/contents/snapcraft.yaml`;
+const getSnapcraftYaml = (owner, name, token) => {
+  const uri = `/repos/${owner}/${name}/contents/snapcraft.yaml`;
   const options = {
     headers: {
-      'Authorization': `token ${req.session.token}`,
+      'Authorization': `token ${token}`,
       'Accept': 'application/vnd.github.v3.raw'
     }
   };
-  logger.info(`Fetching snapcraft.yaml from ${repositoryUrl}`);
+  logger.info(`Fetching snapcraft.yaml from ${owner}/${name}`);
   return requestGitHub.get(uri, options)
     .then(checkStatus)
     .then((response) => {
@@ -198,12 +191,19 @@ export const newSnap = (req, res) => {
   if (!req.session || !req.session.token) {
     return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
   }
+  const token = req.session.token;
+
+  const repositoryUrl = req.body.repository_url;
+  const parsed = parseGitHubUrl(repositoryUrl);
+  if (parsed === null || parsed.owner === null || parsed.name === null) {
+    logger.info(`Cannot parse "${repositoryUrl}"`);
+    return res.status(400).send(RESPONSE_GITHUB_BAD_URL);
+  }
 
   const lp_client = getLaunchpad();
   let self_link;
-  getSnapcraftYaml(req)
+  getSnapcraftYaml(parsed.owner, parsed.name, token)
     .then((snapcraftYaml) => {
-      const repositoryUrl = req.body.repository_url;
       if (!('name' in snapcraftYaml)) {
         return res.status(400).send(RESPONSE_SNAPCRAFT_YAML_NO_NAME);
       }
