@@ -131,8 +131,25 @@ describe('repository input actions', () => {
     });
 
     it('should store builds on fetch success', () => {
+      const repo = 'foo/bar';
+      const repositoryUrl = `https://github.com/${repo}.git`;
+      const snapUrl = 'https://api.launchpad.net/devel/~foo/+snap/bar';
+
+      api.get('/api/launchpad/snaps')
+        .query({
+          repository_url: repositoryUrl // should be called with valid GH url
+        })
+        .reply(200, {
+          status: 'success',
+          payload: {
+            code: 'snap-found',
+            message: snapUrl
+          }
+        });
       api.get('/api/launchpad/builds')
-        .query((query) => query.snap_link) // accept any snap_link in query
+        .query({
+          snap_link: snapUrl // should match what /api/launchpad/snaps returned
+        })
         .reply(200, {
           status: 'success',
           payload: {

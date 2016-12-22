@@ -39,19 +39,13 @@ export function fetchSnap(repository) {
         type: FETCH_BUILDS
       });
 
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            status: 'success',
-            payload: {
-              code: 'snap-found',
-              message: 'https://api.launchpad.net/devel/~snappy-dev/+snap/core'
-            }
-          });
-        }, 1000);
-      })
-      .then(json => dispatch(fetchBuilds(json.payload.message)))
-      .catch(error => dispatch(fetchBuildsError(error)));
+      const repositoryUrl = encodeURIComponent(`https://github.com/${repository}.git`);
+      const url = `${BASE_URL}/api/launchpad/snaps?repository_url=${repositoryUrl}`;
+      return fetch(url)
+        .then(checkStatus)
+        .then(response => response.json())
+        .then((json) => dispatch(fetchBuilds(json.payload.message)))
+        .catch( error => dispatch(fetchBuildsError(error)));
     }
   };
 }
