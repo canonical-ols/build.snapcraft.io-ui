@@ -25,10 +25,13 @@ function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
   } else {
-    const error = new Error(response.statusText);
-    error.status = response.status;
-    error.response = response;
-    throw error;
+    return response.json().then(json => {
+      // throw an error based on message from response body or status text
+      const error = new Error(json.payload.message || response.statusText);
+      error.status = response.status;
+      error.response = response;
+      throw error;
+    });
   }
 }
 
