@@ -75,6 +75,9 @@ describe('The Launchpad API endpoint', () => {
 
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
+          .get('/repos/anaccount/arepo')
+          .reply(200, { permissions: { admin: true } });
+        nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
           .reply(200, 'name: test-snap\n');
         const lp_api_url = conf.get('LP_API_URL');
@@ -133,6 +136,9 @@ describe('The Launchpad API endpoint', () => {
 
     context('when snap already exists', () => {
       beforeEach(() => {
+        nock(conf.get('GITHUB_API_ENDPOINT'))
+          .get('/repos/anaccount/arepo')
+          .reply(200, { permissions: { admin: true } });
         nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
           .reply(200, 'name: test-snap\n');
@@ -199,10 +205,46 @@ describe('The Launchpad API endpoint', () => {
       });
     });
 
+    context('when user has no admin permissions on GitHub repository', () => {
+      beforeEach(() => {
+        nock(conf.get('GITHUB_API_ENDPOINT'))
+          .get('/repos/anaccount/arepo')
+          .reply(200, { permissions: { admin: false } });
+      });
+
+      afterEach(() => {
+        nock.cleanAll();
+      });
+
+      it('should return a 401 Unauthorized response', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(401, done);
+      });
+
+      it('should return a "error" status', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(hasStatus('error'))
+          .end(done);
+      });
+
+      it('should return a body with a "github-no-admin-permissions" ' +
+         'message', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps')
+          .send({ repository_url: 'https://github.com/anaccount/arepo' })
+          .expect(hasMessage('github-no-admin-permissions'))
+          .end(done);
+      });
+    });
+
     context('when repo does not exist', () => {
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
+          .get('/repos/anaccount/arepo')
           .reply(404, { message: 'Not Found' });
       });
 
@@ -238,7 +280,7 @@ describe('The Launchpad API endpoint', () => {
     context('when authentication has failed', () => {
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
+          .get('/repos/anaccount/arepo')
           .reply(401, { message: 'Bad credentials' });
       });
 

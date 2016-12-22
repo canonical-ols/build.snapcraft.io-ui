@@ -34,6 +34,14 @@ const RESPONSE_GITHUB_BAD_URL = {
   }
 };
 
+const RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS = {
+  status: 'error',
+  payload: {
+    code: 'github-no-admin-permissions',
+    message: 'You do not have admin permissions for this GitHub repository'
+  }
+};
+
 const RESPONSE_GITHUB_NOT_FOUND = {
   status: 'error',
   payload: {
@@ -162,6 +170,22 @@ const checkStatus = (response) => {
   return response;
 };
 
+const checkAdminPermissions = (owner, name, token) => {
+  const uri = `/repos/${owner}/${name}`;
+  const options = {
+    headers: { 'Authorization': `token ${token}` },
+    json: true
+  };
+  logger.info(`Checking permissions for ${owner}/${name}`);
+  return requestGitHub.get(uri, options)
+    .then(checkStatus)
+    .then(response => {
+      if (!response.body.permissions || !response.body.permissions.admin) {
+        throw new PreparedError(401, RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS);
+      }
+    });
+};
+
 const makeSnapName = (url) => {
   return createHash('md5').update(url).digest('hex');
 };
@@ -187,7 +211,6 @@ const getSnapcraftYaml = (owner, name, token) => {
 };
 
 export const newSnap = (req, res) => {
-  // XXX cjwatson 2016-12-15: Limit to only repositories the user owns.
   if (!req.session || !req.session.token) {
     return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
   }
@@ -202,7 +225,9 @@ export const newSnap = (req, res) => {
 
   const lp_client = getLaunchpad();
   let self_link;
-  getSnapcraftYaml(parsed.owner, parsed.name, token)
+  // We need admin permissions in order to be able to install a webhook later.
+  checkAdminPermissions(parsed.owner, parsed.name, token)
+    .then(() => getSnapcraftYaml(parsed.owner, parsed.name, token))
     .then((snapcraftYaml) => {
       if (!('name' in snapcraftYaml)) {
         return res.status(400).send(RESPONSE_SNAPCRAFT_YAML_NO_NAME);
