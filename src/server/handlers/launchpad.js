@@ -97,11 +97,24 @@ export const setMemcached = (value) => {
   memcached = value;
 };
 
+class PreparedError extends Error {
+  constructor(status, body) {
+    super();
+    this.status = status;
+    this.body = body;
+  }
+}
+
 const responseError = (res, error) => {
-  if (error.response) {
+  if (error.status && error.body) {
+    // The error comes with a prepared representation.
+    return res.status(error.status).send(error.body);
+  } else if (error.response) {
     // if it's ResourceError from LP client at least for the moment
     // we just wrap the error we get from LP
-    return error.response.text().then(text => {
+    // XXX cjwatson 2016-12-22: Perhaps refactor to use the PreparedError
+    // system above?
+    return error.response.text().then((text) => {
       logger.info('Launchpad API error:', text);
       return res.status(error.response.status).send({
         status: 'error',
@@ -122,16 +135,43 @@ const responseError = (res, error) => {
   }
 };
 
-const makeSnapName = url => {
+const checkStatus = (response) => {
+  if (response.statusCode !== 200) {
+    let body = response.body;
+    if (typeof body !== 'object') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        logger.info('Invalid JSON received', e, body);
+        throw new PreparedError(500, RESPONSE_GITHUB_OTHER);
+      }
+    }
+    switch (body.message) {
+      case 'Not Found':
+        // snapcraft.yaml not found
+        throw new PreparedError(404, RESPONSE_GITHUB_NOT_FOUND);
+      case 'Bad credentials':
+        // Authentication failed
+        throw new PreparedError(401, RESPONSE_GITHUB_AUTHENTICATION_FAILED);
+      default:
+        // Something else
+        logger.info('GitHub API error:', response.statusCode, body);
+        throw new PreparedError(500, RESPONSE_GITHUB_OTHER);
+    }
+  }
+  return response;
+};
+
+const makeSnapName = (url) => {
   return createHash('md5').update(url).digest('hex');
 };
 
-const getSnapcraftYaml = (req, res, callback) => {
+const getSnapcraftYaml = (req) => {
   const repositoryUrl = req.body.repository_url;
   const parsed = parseGitHubUrl(repositoryUrl);
   if (parsed === null || parsed.owner === null || parsed.name === null) {
     logger.info(`Cannot parse "${repositoryUrl}"`);
-    return res.status(400).send(RESPONSE_GITHUB_BAD_URL);
+    return Promise.reject(new PreparedError(400, RESPONSE_GITHUB_BAD_URL));
   }
 
   const uri = `/repos/${parsed.owner}/${parsed.name}/contents/snapcraft.yaml`;
@@ -142,36 +182,15 @@ const getSnapcraftYaml = (req, res, callback) => {
     }
   };
   logger.info(`Fetching snapcraft.yaml from ${repositoryUrl}`);
-  return requestGitHub.get(uri, options, (err, response, body) => {
-    if (response.statusCode !== 200) {
+  return requestGitHub.get(uri, options)
+    .then(checkStatus)
+    .then((response) => {
       try {
-        body = JSON.parse(body);
+        return yaml.safeLoad(response.body);
       } catch (e) {
-        logger.info('Invalid JSON received', err, body);
-        return res.status(500).send(RESPONSE_GITHUB_OTHER);
+        throw new PreparedError(400, RESPONSE_SNAPCRAFT_YAML_PARSE_FAILED);
       }
-      switch (body.message) {
-        case 'Not Found':
-          // snapcraft.yaml not found
-          return res.status(404).send(RESPONSE_GITHUB_NOT_FOUND);
-        case 'Bad credentials':
-          // Authentication failed
-          return res.status(401).send(RESPONSE_GITHUB_AUTHENTICATION_FAILED);
-        default:
-          // Something else
-          logger.info('GitHub API error:', err, body);
-          return res.status(500).send(RESPONSE_GITHUB_OTHER);
-      }
-    }
-
-    let snapcraftYaml;
-    try {
-      snapcraftYaml = yaml.safeLoad(body);
-    } catch (e) {
-      return res.status(400).send(RESPONSE_SNAPCRAFT_YAML_PARSE_FAILED);
-    }
-    return callback(snapcraftYaml);
-  });
+    });
 };
 
 export const newSnap = (req, res) => {
@@ -180,49 +199,54 @@ export const newSnap = (req, res) => {
     return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
   }
 
-  getSnapcraftYaml(req, res, snapcraftYaml => {
-    const repositoryUrl = req.body.repository_url;
-    if (!('name' in snapcraftYaml)) {
-      return res.status(400).send(RESPONSE_SNAPCRAFT_YAML_NO_NAME);
-    }
-    const lp_client = getLaunchpad();
-    const username = conf.get('LP_API_USERNAME');
-    logger.info(`Creating new snap for ${repositoryUrl}`);
-    lp_client.named_post('/+snaps', 'new', {
-      parameters: {
-        owner: `/~${username}`,
-        distro_series: `/${DISTRIBUTION}/${DISTRO_SERIES}`,
-        name: `${makeSnapName(repositoryUrl)}-${DISTRO_SERIES}`,
-        git_repository_url: repositoryUrl,
-        git_path: 'refs/heads/master',
-        auto_build: true,
-        auto_build_archive: `/${DISTRIBUTION}/+archive/primary`,
-        auto_build_pocket: 'Updates',
-        processors: ARCHITECTURES.map(arch => {
-          return `/+processors/${arch}`;
-        }),
-        store_upload: true,
-        store_series: `/+snappy-series/${STORE_SERIES}`,
-        store_name: snapcraftYaml.name
+  const lp_client = getLaunchpad();
+  let self_link;
+  getSnapcraftYaml(req)
+    .then((snapcraftYaml) => {
+      const repositoryUrl = req.body.repository_url;
+      if (!('name' in snapcraftYaml)) {
+        return res.status(400).send(RESPONSE_SNAPCRAFT_YAML_NO_NAME);
       }
-    }).then(result => {
-      logger.info(`Authorizing ${result.self_link}`);
-      return lp_client.named_post(result.self_link, 'beginAuthorization')
-        .then(caveatId => {
-          logger.info(`Began authorization of ${result.self_link}`);
-          return res.status(201).send({
-            status: 'success',
-            payload: {
-              code: 'snap-created',
-              message: caveatId
-            }
-          });
-        });
-    }).catch(error => responseError(res, error));
-  });
+      const username = conf.get('LP_API_USERNAME');
+      logger.info(`Creating new snap for ${repositoryUrl}`);
+      return lp_client.named_post('/+snaps', 'new', {
+        parameters: {
+          owner: `/~${username}`,
+          distro_series: `/${DISTRIBUTION}/${DISTRO_SERIES}`,
+          name: `${makeSnapName(repositoryUrl)}-${DISTRO_SERIES}`,
+          git_repository_url: repositoryUrl,
+          git_path: 'refs/heads/master',
+          auto_build: true,
+          auto_build_archive: `/${DISTRIBUTION}/+archive/primary`,
+          auto_build_pocket: 'Updates',
+          processors: ARCHITECTURES.map((arch) => {
+            return `/+processors/${arch}`;
+          }),
+          store_upload: true,
+          store_series: `/+snappy-series/${STORE_SERIES}`,
+          store_name: snapcraftYaml.name
+        }
+      });
+    })
+    .then((result) => {
+      self_link = result.self_link;
+      logger.info(`Authorizing ${self_link}`);
+      return lp_client.named_post(self_link, 'beginAuthorization');
+    })
+    .then((caveatId) => {
+      logger.info(`Began authorization of ${self_link}`);
+      return res.status(201).send({
+        status: 'success',
+        payload: {
+          code: 'snap-created',
+          message: caveatId
+        }
+      });
+    })
+    .catch((error) => responseError(res, error));
 };
 
-const internalFindSnap = async repositoryUrl => {
+const internalFindSnap = async (repositoryUrl) => {
   const cacheId = `url:${repositoryUrl}`;
 
   return new Promise((resolve, reject) => {
@@ -233,7 +257,7 @@ const internalFindSnap = async repositoryUrl => {
 
       getLaunchpad().named_get('/+snaps', 'findByURL', {
         parameters: { url: repositoryUrl }
-      }).then(async result => {
+      }).then(async (result) => {
         const username = conf.get('LP_API_USERNAME');
         // https://github.com/babel/babel-eslint/issues/415
         for await (const entry of result) { // eslint-disable-line semi
@@ -244,8 +268,8 @@ const internalFindSnap = async repositoryUrl => {
           }
         }
         return resolve(null);
-      }).catch(error => {
-        return error.response.text().then(text => {
+      }).catch((error) => {
+        return error.response.text().then((text) => {
           err = new Error();
           err.status = error.response.status;
           err.text = text;
@@ -257,7 +281,7 @@ const internalFindSnap = async repositoryUrl => {
 };
 
 export const findSnap = (req, res) => {
-  internalFindSnap(req.query.repository_url).then(self_link => {
+  internalFindSnap(req.query.repository_url).then((self_link) => {
     if (self_link !== null) {
       return res.status(200).send({
         status: 'success',
@@ -269,7 +293,7 @@ export const findSnap = (req, res) => {
     } else {
       return res.status(404).send(RESPONSE_SNAP_NOT_FOUND);
     }
-  }).catch(error => {
+  }).catch((error) => {
     // At least for the moment, we just wrap the error we get from Launchpad.
     return res.status(error.status).send({
       status: 'error',
@@ -287,7 +311,7 @@ export const completeSnapAuthorization = async (req, res) => {
     return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
   }
 
-  internalFindSnap(req.body.repository_url).then(self_link => {
+  internalFindSnap(req.body.repository_url).then((self_link) => {
     if (self_link !== null) {
       return getLaunchpad().named_post(self_link, 'completeAuthorization', {
         parameters: { discharge_macaroon: req.body.discharge_macaroon },
@@ -304,7 +328,7 @@ export const completeSnapAuthorization = async (req, res) => {
     } else {
       return res.status(404).send(RESPONSE_SNAP_NOT_FOUND);
     }
-  }).catch(error => {
+  }).catch((error) => {
     // At least for the moment, we just wrap the error we get from Launchpad.
     return res.status(error.status).send({
       status: 'error',
@@ -332,9 +356,9 @@ export const getSnapBuilds = (req, res) => {
     });
   }
 
-  return getLaunchpad().get(snapUrl).then(snap => {
+  return getLaunchpad().get(snapUrl).then((snap) => {
     return getLaunchpad().get(snap.builds_collection_link, { start: start, size: size })
-      .then(builds => {
+      .then((builds) => {
         return res.status(200).send({
           status: 'success',
           payload: {
@@ -344,6 +368,6 @@ export const getSnapBuilds = (req, res) => {
         });
       });
   })
-  .catch(error => responseError(res, error));
+  .catch((error) => responseError(res, error));
 
 };
