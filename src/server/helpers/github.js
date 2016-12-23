@@ -33,12 +33,12 @@ export const requestGitHub = (options) => {
 };
 
 requestGitHub.get = (uri, options) => {
-  const params = { ...options, uri: uri, method: 'GET' };
+  const params = { ...options, uri, method: 'GET' };
   return requestGitHub(params);
 };
 
 requestGitHub.post = (uri, options) => {
-  const params = { ...options, uri: uri, method: 'POST' };
+  const params = { ...options, uri, method: 'POST' };
   return requestGitHub(params);
 };
 
