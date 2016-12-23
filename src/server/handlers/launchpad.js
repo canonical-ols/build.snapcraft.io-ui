@@ -191,7 +191,7 @@ const checkAdminPermissions = (req) => {
   logger.info(`Checking permissions for ${parsed.owner}/${parsed.name}`);
   return requestGitHub.get(uri, options)
     .then(checkStatus)
-    .then(response => {
+    .then((response) => {
       if (!response.body.permissions || !response.body.permissions.admin) {
         throw new PreparedError(401, RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS);
       }

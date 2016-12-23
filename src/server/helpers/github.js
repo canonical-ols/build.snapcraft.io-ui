@@ -11,7 +11,7 @@ import { conf } from '../helpers/config';
 const GITHUB_API_ENDPOINT = conf.get('GITHUB_API_ENDPOINT');
 const HTTP_PROXY = conf.get('HTTP_PROXY');
 
-export const requestGitHub = options => {
+export const requestGitHub = (options) => {
   return new Promise((resolve, reject) => {
     const params = {
       ...options,
