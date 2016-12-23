@@ -184,10 +184,7 @@ const checkAdminPermissions = (req) => {
   }
 
   const uri = `/repos/${parsed.owner}/${parsed.name}`;
-  const options = {
-    headers: { 'Authorization': `token ${token}` },
-    json: true
-  };
+  const options = { token, json: true };
   logger.info(`Checking permissions for ${parsed.owner}/${parsed.name}`);
   return requestGitHub.get(uri, options)
     .then(checkGitHubStatus)
@@ -206,10 +203,8 @@ const makeSnapName = (url) => {
 const getSnapcraftYaml = (owner, name, token) => {
   const uri = `/repos/${owner}/${name}/contents/snapcraft.yaml`;
   const options = {
-    headers: {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github.v3.raw'
-    }
+    token,
+    headers: { 'Accept': 'application/vnd.github.v3.raw' }
   };
   logger.info(`Fetching snapcraft.yaml from ${owner}/${name}`);
   return requestGitHub.get(uri, options)

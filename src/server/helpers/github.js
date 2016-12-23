@@ -21,6 +21,10 @@ export const requestGitHub = (options) => {
     if (!params.headers) {
       params.headers = {};
     }
+    if (params.token) {
+      params.headers['Authorization'] = `token ${params.token}`;
+      delete params.token;
+    }
     params.headers['User-Agent'] = 'SnapcraftBuild';
     request(params, (err, response) => {
       if (err) {

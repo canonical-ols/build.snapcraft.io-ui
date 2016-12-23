@@ -93,9 +93,7 @@ export const createWebhook = (req, res) => {
 
 const getRequest = (account, repo, token, secret) => {
   return {
-    headers: {
-      'Authorization': `token ${token}`
-    },
+    token,
     json: {
       name: 'web',
       active: true,
@@ -105,7 +103,7 @@ const getRequest = (account, repo, token, secret) => {
       config: {
         url: `${conf.get('BASE_URL')}/${account}/${repo}/webhook/notify`,
         content_type: 'json',
-        secret: secret
+        secret
       }
     }
   };
