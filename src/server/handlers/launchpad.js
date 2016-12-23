@@ -225,8 +225,8 @@ const getSnapcraftYaml = (owner, name, token) => {
 
 export const newSnap = (req, res) => {
   const repositoryUrl = req.body.repository_url;
-  const lp_client = getLaunchpad();
-  let self_link;
+  const lpClient = getLaunchpad();
+  let snapUrl;
   // We need admin permissions in order to be able to install a webhook later.
   checkAdminPermissions(req)
     .then(([owner, name, token]) => getSnapcraftYaml(owner, name, token))
@@ -236,7 +236,7 @@ export const newSnap = (req, res) => {
       }
       const username = conf.get('LP_API_USERNAME');
       logger.info(`Creating new snap for ${repositoryUrl}`);
-      return lp_client.named_post('/+snaps', 'new', {
+      return lpClient.named_post('/+snaps', 'new', {
         parameters: {
           owner: `/~${username}`,
           distro_series: `/${DISTRIBUTION}/${DISTRO_SERIES}`,
@@ -256,12 +256,12 @@ export const newSnap = (req, res) => {
       });
     })
     .then((result) => {
-      self_link = result.self_link;
-      logger.info(`Authorizing ${self_link}`);
-      return lp_client.named_post(self_link, 'beginAuthorization');
+      snapUrl = result.self_link;
+      logger.info(`Authorizing ${snapUrl}`);
+      return lpClient.named_post(snapUrl, 'beginAuthorization');
     })
     .then((caveatId) => {
-      logger.info(`Began authorization of ${self_link}`);
+      logger.info(`Began authorization of ${snapUrl}`);
       return res.status(201).send({
         status: 'success',
         payload: {
@@ -319,12 +319,12 @@ const internalFindSnap = async (repositoryUrl) => {
 
 export const findSnap = (req, res) => {
   internalFindSnap(req.query.repository_url)
-    .then((snap_link) => {
+    .then((snapUrl) => {
       return res.status(200).send({
         status: 'success',
         payload: {
           code: 'snap-found',
-          message: snap_link
+          message: snapUrl
         }
       });
     })
@@ -332,22 +332,22 @@ export const findSnap = (req, res) => {
 };
 
 export const completeSnapAuthorization = async (req, res) => {
-  let snap_link;
+  let snapUrl;
   checkAdminPermissions(req)
     .then(() => internalFindSnap(req.body.repository_url))
     .then((result) => {
-      snap_link = result;
-      return getLaunchpad().named_post(snap_link, 'completeAuthorization', {
+      snapUrl = result;
+      return getLaunchpad().named_post(snapUrl, 'completeAuthorization', {
         parameters: { discharge_macaroon: req.body.discharge_macaroon },
       });
     })
     .then(() => {
-      logger.info(`Completed authorization of ${snap_link}`);
+      logger.info(`Completed authorization of ${snapUrl}`);
       return res.status(200).send({
         status: 'success',
         payload: {
           code: 'snap-authorized',
-          message: snap_link
+          message: snapUrl
         }
       });
     })
