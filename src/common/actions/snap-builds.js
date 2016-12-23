@@ -61,7 +61,7 @@ export function fetchBuilds(snapLink) {
       });
 
       snapLink = encodeURIComponent(snapLink);
-      const url = `${BASE_URL}/api/launchpad/builds?snap_link=${snapLink}`;
+      const url = `${BASE_URL}/api/launchpad/builds?snap=${snapLink}`;
       return fetch(url)
         .then(checkStatus)
         .then(response => response.json())

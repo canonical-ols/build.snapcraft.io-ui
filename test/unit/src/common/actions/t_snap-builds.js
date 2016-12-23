@@ -91,7 +91,7 @@ describe('repository input actions', () => {
       const snapUrl = 'https://api.launchpad.net/devel/~foo/+snap/bar';
 
       api.get('/api/launchpad/builds')
-        .query({ snap_link: snapUrl })
+        .query({ snap: snapUrl })
         .reply(200, {
           status: 'success',
           payload: {
@@ -113,7 +113,7 @@ describe('repository input actions', () => {
       const barUrl = 'https://api.launchpad.net/devel/~foo/+snap/bad';
 
       api.get('/api/launchpad/builds')
-        .query({ snap_link: barUrl })
+        .query({ snap: barUrl })
         .reply(404, {
           status: 'error',
           payload: {
@@ -161,7 +161,7 @@ describe('repository input actions', () => {
         });
       api.get('/api/launchpad/builds')
         .query({
-          snap_link: snapUrl // should match what /api/launchpad/snaps returned
+          snap: snapUrl // should match what /api/launchpad/snaps returned
         })
         .reply(200, {
           status: 'success',
@@ -185,7 +185,7 @@ describe('repository input actions', () => {
 
       beforeEach(() => {
         api.get('/api/launchpad/builds')
-        .query({ snap_link: barUrl })
+        .query({ snap: barUrl })
         .reply(404, {
           status: 'error',
           payload: {
