@@ -143,7 +143,7 @@ const responseError = (res, error) => {
   }
 };
 
-const checkStatus = (response) => {
+const checkGitHubStatus = (response) => {
   if (response.statusCode !== 200) {
     let body = response.body;
     if (typeof body !== 'object') {
@@ -190,7 +190,7 @@ const checkAdminPermissions = (req) => {
   };
   logger.info(`Checking permissions for ${parsed.owner}/${parsed.name}`);
   return requestGitHub.get(uri, options)
-    .then(checkStatus)
+    .then(checkGitHubStatus)
     .then((response) => {
       if (!response.body.permissions || !response.body.permissions.admin) {
         throw new PreparedError(401, RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS);
@@ -213,7 +213,7 @@ const getSnapcraftYaml = (owner, name, token) => {
   };
   logger.info(`Fetching snapcraft.yaml from ${owner}/${name}`);
   return requestGitHub.get(uri, options)
-    .then(checkStatus)
+    .then(checkGitHubStatus)
     .then((response) => {
       try {
         return yaml.safeLoad(response.body);
