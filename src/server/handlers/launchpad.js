@@ -332,13 +332,9 @@ export const findSnap = (req, res) => {
 };
 
 export const completeSnapAuthorization = async (req, res) => {
-  // XXX cjwatson 2016-12-15: Limit to only repositories the user owns.
-  if (!req.session || !req.session.token) {
-    return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
-  }
-
   let snap_link;
-  internalFindSnap(req.body.repository_url)
+  checkAdminPermissions(req)
+    .then(() => internalFindSnap(req.body.repository_url))
     .then((result) => {
       snap_link = result;
       return getLaunchpad().named_post(snap_link, 'completeAuthorization', {
