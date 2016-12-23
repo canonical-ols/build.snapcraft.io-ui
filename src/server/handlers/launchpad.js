@@ -170,19 +170,32 @@ const checkStatus = (response) => {
   return response;
 };
 
-const checkAdminPermissions = (owner, name, token) => {
-  const uri = `/repos/${owner}/${name}`;
+const checkAdminPermissions = (req) => {
+  if (!req.session || !req.session.token) {
+    return Promise.reject(new PreparedError(401, RESPONSE_NOT_LOGGED_IN));
+  }
+  const token = req.session.token;
+
+  const repositoryUrl = req.body.repository_url;
+  const parsed = parseGitHubUrl(repositoryUrl);
+  if (parsed === null || parsed.owner === null || parsed.name === null) {
+    logger.info(`Cannot parse "${repositoryUrl}"`);
+    return Promise.reject(new PreparedError(400, RESPONSE_GITHUB_BAD_URL));
+  }
+
+  const uri = `/repos/${parsed.owner}/${parsed.name}`;
   const options = {
     headers: { 'Authorization': `token ${token}` },
     json: true
   };
-  logger.info(`Checking permissions for ${owner}/${name}`);
+  logger.info(`Checking permissions for ${parsed.owner}/${parsed.name}`);
   return requestGitHub.get(uri, options)
     .then(checkStatus)
     .then(response => {
       if (!response.body.permissions || !response.body.permissions.admin) {
         throw new PreparedError(401, RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS);
       }
+      return [parsed.owner, parsed.name, token];
     });
 };
 
@@ -211,26 +224,15 @@ const getSnapcraftYaml = (owner, name, token) => {
 };
 
 export const newSnap = (req, res) => {
-  if (!req.session || !req.session.token) {
-    return res.status(401).send(RESPONSE_NOT_LOGGED_IN);
-  }
-  const token = req.session.token;
-
   const repositoryUrl = req.body.repository_url;
-  const parsed = parseGitHubUrl(repositoryUrl);
-  if (parsed === null || parsed.owner === null || parsed.name === null) {
-    logger.info(`Cannot parse "${repositoryUrl}"`);
-    return res.status(400).send(RESPONSE_GITHUB_BAD_URL);
-  }
-
   const lp_client = getLaunchpad();
   let self_link;
   // We need admin permissions in order to be able to install a webhook later.
-  checkAdminPermissions(parsed.owner, parsed.name, token)
-    .then(() => getSnapcraftYaml(parsed.owner, parsed.name, token))
+  checkAdminPermissions(req)
+    .then(([owner, name, token]) => getSnapcraftYaml(owner, name, token))
     .then((snapcraftYaml) => {
       if (!('name' in snapcraftYaml)) {
-        return res.status(400).send(RESPONSE_SNAPCRAFT_YAML_NO_NAME);
+        throw new PreparedError(400, RESPONSE_SNAPCRAFT_YAML_NO_NAME);
       }
       const username = conf.get('LP_API_USERNAME');
       logger.info(`Creating new snap for ${repositoryUrl}`);
