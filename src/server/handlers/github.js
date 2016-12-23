@@ -76,7 +76,6 @@ export const createWebhook = (req, res) => {
 const getRequest = (account, repo, token) => {
   return {
     headers: {
-      'User-Agent': 'SnapCraftBuild',
       'Authorization': `token ${token}`
     },
     json: {
