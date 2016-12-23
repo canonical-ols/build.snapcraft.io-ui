@@ -53,8 +53,11 @@ export const verify = (req, res, next) => {
 
   // Exchange code for token
   request.post(options, (error, response, body) => {
-    if (error || response.statusCode !== 200) {
-      return next(new Error('Authentication token exchange failed'));
+    // XXX bartaz
+    // it seems that we get 200 response with error in body
+    // https://developer.github.com/v3/oauth/#common-errors-for-the-access-token-request
+    if (error || response.statusCode !== 200 || (body && body.error)) {
+      return next(new Error(`Authentication token exchange failed. ${(body && body.error_message) || ''}`));
     }
 
     // Save auth token to session
