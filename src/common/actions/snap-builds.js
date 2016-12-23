@@ -25,7 +25,7 @@ function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
   } else {
-    return response.json().then(json => {
+    return response.json().then((json) => {
       // throw an error based on message from response body or status text
       const error = new Error(json.payload.message || response.statusText);
       error.status = response.status;
@@ -48,7 +48,7 @@ export function fetchSnap(repository) {
         .then(checkStatus)
         .then(response => response.json())
         .then((json) => dispatch(fetchBuilds(json.payload.message)))
-        .catch( error => dispatch(fetchBuildsError(error)));
+        .catch((error) => dispatch(fetchBuildsError(error)));
     }
   };
 }
@@ -66,7 +66,7 @@ export function fetchBuilds(snapLink) {
         .then(checkStatus)
         .then(response => response.json())
         .then((json) => dispatch(fetchBuildsSuccess(json.payload.builds)))
-        .catch( error => dispatch(fetchBuildsError(error)));
+        .catch((error) => dispatch(fetchBuildsError(error)));
     }
   };
 }

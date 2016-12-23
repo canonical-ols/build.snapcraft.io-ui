@@ -41,7 +41,7 @@ Builds.propTypes = {
   repo: PropTypes.string.isRequired,
   fullName: PropTypes.string.isRequired,
   isFetching: PropTypes.bool,
-  error: PropTypes.oneOfType([ PropTypes.object, PropTypes.bool ]),
+  error: PropTypes.object,
   dispatch: PropTypes.func.isRequired
 };
 
