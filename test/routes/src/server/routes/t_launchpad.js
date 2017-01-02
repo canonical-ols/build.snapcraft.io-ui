@@ -3,7 +3,6 @@ import nock from 'nock';
 import supertest from 'supertest';
 import expect from 'expect';
 
-import { setMemcached } from '../../../../../src/server/handlers/launchpad';
 import launchpad from '../../../../../src/server/routes/launchpad';
 import { conf } from '../../../../../src/server/helpers/config.js';
 
@@ -315,21 +314,6 @@ describe('The Launchpad API endpoint', () => {
   });
 
   describe('find snap route', () => {
-    beforeEach(() => {
-      const memcachedStub = { cache: {} };
-      memcachedStub.get = (key, callback) => {
-        callback(undefined, memcachedStub.cache[key]);
-      };
-      memcachedStub.set = (key, value, lifetime, callback) => {
-        memcachedStub.cache[key] = value;
-        callback(undefined, true);
-      };
-      setMemcached(memcachedStub);
-    });
-
-    afterEach(() => {
-      setMemcached(null);
-    });
 
     context('when snap exists', () => {
       beforeEach(() => {
@@ -476,21 +460,6 @@ describe('The Launchpad API endpoint', () => {
   });
 
   describe('complete snap authorization route', () => {
-    beforeEach(() => {
-      const memcachedStub = { cache: {} };
-      memcachedStub.get = (key, callback) => {
-        callback(undefined, memcachedStub.cache[key]);
-      };
-      memcachedStub.set = (key, value, lifetime, callback) => {
-        memcachedStub.cache[key] = value;
-        callback(undefined, true);
-      };
-      setMemcached(memcachedStub);
-    });
-
-    afterEach(() => {
-      setMemcached(null);
-    });
 
     context('when snap exists', () => {
       beforeEach(() => {

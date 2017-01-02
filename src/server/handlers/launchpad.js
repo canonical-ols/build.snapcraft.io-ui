@@ -92,17 +92,24 @@ const RESPONSE_SNAP_NOT_FOUND = {
 
 let memcached = null;
 
-const getMemcached = () => {
-  if (memcached === null) {
-    memcached = new Memcached(conf.get('MEMCACHED_HOST').split(','),
-                              { namespace: 'lp:' });
-  }
-  return memcached;
+const getMemcachedStub = () => {
+  return {
+    get: (key, callback) => callback(),
+    set: (key, value, lifetime, callback) => callback()
+  };
 };
 
-// Test affordance.
-export const setMemcached = (value) => {
-  memcached = value;
+const getMemcached = () => {
+  const host = conf.get('MEMCACHED_HOST') ? conf.get('MEMCACHED_HOST').split(',') : null;
+
+  if (memcached === null) {
+    if (host) {
+      memcached = new Memcached(host, { namespace: 'lp:' });
+    } else {
+      memcached = getMemcachedStub();
+    }
+  }
+  return memcached;
 };
 
 class PreparedError extends Error {
