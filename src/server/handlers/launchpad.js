@@ -112,6 +112,11 @@ const getMemcached = () => {
   return memcached;
 };
 
+// Test affordance.
+export const setMemcached = (value) => {
+  memcached = value;
+};
+
 class PreparedError extends Error {
   constructor(status, body) {
     super();
