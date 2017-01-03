@@ -954,22 +954,6 @@ describe('The Launchpad API endpoint', () => {
     const lp_snap_user = 'test-user';
     const lp_snap_path = `/~${lp_snap_user}/+snap/test-snap`;
 
-    beforeEach(() => {
-      const memcachedStub = { cache: {} };
-      memcachedStub.get = (key, callback) => {
-        callback(undefined, memcachedStub.cache[key]);
-      };
-      memcachedStub.set = (key, value, lifetime, callback) => {
-        memcachedStub.cache[key] = value;
-        callback(undefined, true);
-      };
-      setMemcached(memcachedStub);
-    });
-
-    afterEach(() => {
-      setMemcached(null);
-    });
-
     context('when snap exists', () => {
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
