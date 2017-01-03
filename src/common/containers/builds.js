@@ -4,6 +4,8 @@ import Helmet from 'react-helmet';
 
 import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
+import Spinner from '../components/spinner';
+
 import { fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -25,7 +27,6 @@ class Builds extends Component {
 
   render() {
     const { account, repo, fullName } = this.props;
-    const isLoading = this.props.isFetching && !this.props.success;
 
     return (
       <div className={ styles.container }>
@@ -34,8 +35,8 @@ class Builds extends Component {
         />
         <h1>{fullName} builds</h1>
         <BuildHistory account={account} repo={repo}/>
-        { isLoading &&
-          <span>Loading...</span>
+        { this.props.isFetching &&
+          <div className={styles.spinner}><Spinner /></div>
         }
         { this.props.error &&
           <Message status='error'>{ this.props.error.message || this.props.error }</Message>
