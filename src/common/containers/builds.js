@@ -25,6 +25,7 @@ class Builds extends Component {
 
   render() {
     const { account, repo, fullName } = this.props;
+    const isLoading = this.props.isFetching && !this.props.success;
 
     return (
       <div className={ styles.container }>
@@ -33,7 +34,7 @@ class Builds extends Component {
         />
         <h1>{fullName} builds</h1>
         <BuildHistory account={account} repo={repo}/>
-        { this.props.isFetching &&
+        { isLoading &&
           <span>Loading...</span>
         }
         { this.props.error &&
@@ -50,6 +51,7 @@ Builds.propTypes = {
   repo: PropTypes.string.isRequired,
   fullName: PropTypes.string.isRequired,
   isFetching: PropTypes.bool,
+  success: PropTypes.bool,
   error: PropTypes.object,
   dispatch: PropTypes.func.isRequired
 };
@@ -60,10 +62,12 @@ const mapStateToProps = (state, ownProps) => {
   const fullName = `${account}/${repo}`;
 
   const isFetching = state.snapBuilds.isFetching;
+  const success = state.snapBuilds.success;
   const error = state.snapBuilds.error;
 
   return {
     isFetching,
+    success,
     error,
     account,
     repo,
