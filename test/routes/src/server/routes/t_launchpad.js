@@ -3,7 +3,7 @@ import nock from 'nock';
 import supertest from 'supertest';
 import expect from 'expect';
 
-import { setMemcached } from '../../../../../src/server/handlers/launchpad';
+import { setMemcached } from '../../../../../src/server/helpers/memcached';
 import launchpad from '../../../../../src/server/routes/launchpad';
 import { conf } from '../../../../../src/server/helpers/config.js';
 
