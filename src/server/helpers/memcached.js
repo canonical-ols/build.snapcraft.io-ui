@@ -11,6 +11,24 @@ const getMemcachedStub = () => {
   };
 };
 
+const getInMemoryMemcachedStub = () => {
+  const memcachedStub = { cache: {} };
+
+  memcachedStub.get = (key, callback) => {
+    if (callback) {
+      callback(undefined, memcachedStub.cache[key]);
+    }
+  };
+  memcachedStub.set = (key, value, lifetime, callback) => {
+    memcachedStub.cache[key] = value;
+    if (callback) {
+      callback(undefined, true);
+    }
+  };
+
+  return memcachedStub;
+};
+
 export const getMemcached = () => {
   const host = conf.get('MEMCACHED_HOST') ? conf.get('MEMCACHED_HOST').split(',') : null;
 
@@ -24,7 +42,11 @@ export const getMemcached = () => {
   return memcached;
 };
 
-// Test affordance.
-export const setMemcached = (value) => {
-  memcached = value;
+// Test affordance
+export const initInMemoryMemcached = () => {
+  memcached = getInMemoryMemcachedStub();
+};
+
+export const resetMemcached = () => {
+  memcached = null;
 };

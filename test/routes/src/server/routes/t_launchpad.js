@@ -3,7 +3,11 @@ import nock from 'nock';
 import supertest from 'supertest';
 import expect from 'expect';
 
-import { setMemcached } from '../../../../../src/server/helpers/memcached';
+import {
+  getMemcached,
+  resetMemcached,
+  setupInMemoryMemcached
+} from '../../../../../src/server/helpers/memcached';
 import launchpad from '../../../../../src/server/routes/launchpad';
 import { conf } from '../../../../../src/server/helpers/config.js';
 
@@ -463,22 +467,13 @@ describe('The Launchpad API endpoint', () => {
       const repositoryUrl = 'https://github.com/anaccount/arepo';
       const snapUrl = `${conf.get('LP_API_URL')}/devel/~test-user/+snap/test-snap`;
 
-      beforeEach(() => {
-        const memcachedStub = { cache: {} };
-        memcachedStub.get = (key, callback) => {
-          callback(undefined, memcachedStub.cache[key]);
-        };
-        memcachedStub.set = (key, value, lifetime, callback) => {
-          memcachedStub.cache[key] = value;
-          callback(undefined, true);
-        };
-        setMemcached(memcachedStub);
-
-        memcachedStub.cache[`url:${repositoryUrl}`] = snapUrl;
+      before(() => {
+        setupInMemoryMemcached();
+        getMemcached().set(`url:${repositoryUrl}`, snapUrl);
       });
 
-      afterEach(() => {
-        setMemcached(null);
+      after(() => {
+        resetMemcached();
       });
 
       it('should return a 200 response', (done) => {
