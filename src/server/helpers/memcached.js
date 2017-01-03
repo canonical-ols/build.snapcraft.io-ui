@@ -43,7 +43,7 @@ export const getMemcached = () => {
 };
 
 // Test affordance
-export const initInMemoryMemcached = () => {
+export const setupInMemoryMemcached = () => {
   memcached = getInMemoryMemcachedStub();
 };
 
