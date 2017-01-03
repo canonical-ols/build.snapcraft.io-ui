@@ -5,13 +5,17 @@ import BuildRow from '../build-row';
 
 const BuildHistory = (props) => {
   const { account, repo } = props;
+
   const builds = props.builds.map((build) => (
     <BuildRow key={build.buildId} {...build} account={account} repo={repo} />
   ));
 
   return (
     <div>
-      {builds}
+      {builds.length > 0
+        ? builds
+        : <span>This snap package has not been built yet.</span>
+      }
     </div>
   );
 };

@@ -9,9 +9,18 @@ import { fetchSnap } from '../actions/snap-builds';
 import styles from './container.css';
 
 class Builds extends Component {
+  fetchInterval = null
 
   componentWillMount() {
     this.props.dispatch(fetchSnap(this.props.fullName));
+
+    this.fetchInterval = setInterval(() => {
+      this.props.dispatch(fetchSnap(this.props.fullName));
+    }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fetchInterval);
   }
 
   render() {
