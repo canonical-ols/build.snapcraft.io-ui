@@ -18,7 +18,7 @@ class Builds extends Component {
 
     this.fetchInterval = setInterval(() => {
       this.props.dispatch(fetchSnap(this.props.fullName));
-    }, 5000);
+    }, 15000);
   }
 
   componentWillUnmount() {
