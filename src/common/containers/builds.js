@@ -27,6 +27,8 @@ class Builds extends Component {
 
   render() {
     const { account, repo, fullName } = this.props;
+    // only show spinner when data is loading for the first time
+    const isLoading = this.props.isFetching && !this.props.success;
 
     return (
       <div className={ styles.container }>
@@ -35,7 +37,7 @@ class Builds extends Component {
         />
         <h1>{fullName} builds</h1>
         <BuildHistory account={account} repo={repo}/>
-        { this.props.isFetching &&
+        { isLoading &&
           <div className={styles.spinner}><Spinner /></div>
         }
         { this.props.error &&
