@@ -2,8 +2,14 @@ import expect from 'expect';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
-import { createWebhook } from '../../../../../src/common/actions/webhook';
+const browserHistoryStub = {};
+const { createWebhook } = proxyquire(
+  '../../../../../src/common/actions/webhook',
+  { 'react-router': { browserHistory: browserHistoryStub } }
+);
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
@@ -12,17 +18,19 @@ const BASE_URL = 'http://localhost:8000';
 describe('The createWebhook action creator', () => {
   let store;
 
-  before(() => {
+  beforeEach(() => {
     global.window = {
       location: {
         protocol: 'http:',
         host: 'localhost:8000'
       }
     };
+    browserHistoryStub.push = sinon.spy();
   });
 
-  after(() => {
+  afterEach(() => {
     global.window = undefined;
+    delete browserHistoryStub.push;
   });
 
   context('when submitted repository exists and does not have a build', () => {
@@ -41,16 +49,16 @@ describe('The createWebhook action creator', () => {
         success: false,
         error: false
       });
-
     });
 
     afterEach(() => {
       nock.cleanAll();
     });
 
-    it('should dispatch the CREATE_SNAP action', (done) => {
-      store.dispatch(createWebhook('example/example')).then(() => {
-        expect(store.getActions()).toHaveActionOfType('CREATE_SNAP');
+    it('should navigate to builds page', (done) => {
+      store.dispatch(createWebhook('example', 'example')).then(() => {
+        expect(browserHistoryStub.push.calledWith('/example/example/builds'))
+          .toBeTruthy();
         done();
       });
     });
@@ -78,9 +86,10 @@ describe('The createWebhook action creator', () => {
       nock.cleanAll();
     });
 
-    it('should dispatch the CREATE_SNAP action', (done) => {
-      store.dispatch(createWebhook('example/example')).then(() => {
-        expect(store.getActions()).toHaveActionOfType('CREATE_SNAP');
+    it('should navigate to builds page', (done) => {
+      store.dispatch(createWebhook('example', 'example')).then(() => {
+        expect(browserHistoryStub.push.calledWith('/example/example/builds'))
+          .toBeTruthy();
         done();
       });
     });
@@ -109,7 +118,7 @@ describe('The createWebhook action creator', () => {
     });
 
     it('should create an error message action', (done) => {
-      store.dispatch(createWebhook('example/example')).then(() => {
+      store.dispatch(createWebhook('example', 'example')).then(() => {
         expect(store.getActions()).toInclude({
           type: 'WEBHOOK_FAILURE',
           code: 'github-repository-not-found'
@@ -137,7 +146,7 @@ describe('The createWebhook action creator', () => {
     });
 
     it('should create an error message action', (done) => {
-      store.dispatch(createWebhook('example/example')).then(() => {
+      store.dispatch(createWebhook('example', 'example')).then(() => {
         expect(store.getActions()).toInclude({
           type: 'WEBHOOK_FAILURE',
           code: 'github-error-other'
