@@ -103,13 +103,13 @@ class PreparedError extends Error {
 const prepareError = (error) => {
   if (error.status && error.body) {
     // The error comes with a prepared representation.
-    throw error;
+    return Promise.resolve(error);
   } else if (error.response) {
     // if it's ResourceError from LP client at least for the moment
     // we just wrap the error we get from LP
     return error.response.text().then((text) => {
       logger.info('Launchpad API error:', text);
-      throw new PreparedError(error.response.status, {
+      return new PreparedError(error.response.status, {
         status: 'error',
         payload: {
           code: 'lp-error',
@@ -118,14 +118,21 @@ const prepareError = (error) => {
       });
     });
   } else {
-    throw new PreparedError(500, {
+    return Promise.resolve(new PreparedError(500, {
       status: 'error',
       payload: {
         code: 'internal-error',
         message: error.message
       }
-    });
+    }));
   }
+};
+
+const sendError = (res, error) => {
+  return prepareError(error)
+    .then((preparedError) => {
+      res.status(preparedError.status).send(preparedError.body);
+    });
 };
 
 const checkGitHubStatus = (response) => {
@@ -251,8 +258,7 @@ export const newSnap = (req, res) => {
         }
       });
     })
-    .catch((error) => prepareError(error))
-    .catch((error) => res.status(error.status).send(error.body));
+    .catch((error) => sendError(res, error));
 };
 
 const internalFindSnap = async (repositoryUrl) => {
@@ -310,8 +316,7 @@ export const findSnap = (req, res) => {
         }
       });
     })
-    .catch((error) => prepareError(error))
-    .catch((error) => res.status(error.status).send(error.body));
+    .catch((error) => sendError(res, error));
 };
 
 // Not a route handler, but kept here so that the beginAuthorization and
@@ -328,7 +333,10 @@ export const completeSnapAuthorization = (session, repositoryUrl,
       });
     })
     .then(() => logger.info(`Completed authorization of ${snapUrl}`))
-    .catch((error) => prepareError(error));
+    .catch((error) => {
+      return prepareError(error)
+	.then((preparedError) => { throw preparedError; });
+    });
 };
 
 export const getSnapBuilds = (req, res) => {
@@ -359,8 +367,7 @@ export const getSnapBuilds = (req, res) => {
         });
       });
   })
-  .catch((error) => prepareError(error))
-  .catch((error) => res.status(error.status).send(error.body));
+  .catch((error) => sendError(res, error));
 };
 
 // This version does not check repository permissions, so use it only in
@@ -383,6 +390,5 @@ export const requestSnapBuilds = (req, res) => {
         }
       });
     })
-    .catch((error) => prepareError(error))
-    .catch((error) => res.status(error.status).send(error.body));
+    .catch((error) => sendError(res, error));
 };
