@@ -219,9 +219,7 @@ const getSnapcraftYaml = (owner, name, token) => {
 };
 
 const verifySnapNameRegistered = (name) => {
-  const MACAROON_API_URL = 'https://myapps.developer.ubuntu.com/dev/api/acl/';
-
-  return fetch(MACAROON_API_URL, {
+  return fetch(`${conf.get('STORE_MACAROON_API_URL')}/acl/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
