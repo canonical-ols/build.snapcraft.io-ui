@@ -29,7 +29,6 @@ class RepositorySetup extends Component {
           <Helmet
             title={`Setting up ${fullName}`}
           />
-          <h1>Setting up {fullName}</h1>
           { isFetching &&
             <div className={styles.spinner}><Spinner /></div>
           }
