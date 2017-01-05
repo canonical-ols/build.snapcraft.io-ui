@@ -96,7 +96,7 @@ describe('The Launchpad API endpoint', () => {
           nock(conf.get('STORE_API_URL'))
             .post('/acl/', {
               'packages': [{ 'name': snapName, 'series': '16' }],
-              'permissions':['package_upload']
+              'permissions': ['package_upload']
             })
             .reply(404, {
               status: 404,
@@ -136,7 +136,7 @@ describe('The Launchpad API endpoint', () => {
           nock(conf.get('STORE_API_URL'))
             .post('/acl/', {
               'packages': [{ 'name': snapName, 'series': '16' }],
-              'permissions':['package_upload']
+              'permissions': ['package_upload']
             })
             .reply(200, { macaroon: 'successfull-macaroon' });
         });

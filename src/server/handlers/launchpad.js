@@ -221,7 +221,10 @@ const getSnapcraftYaml = (owner, name, token) => {
 const verifySnapNameRegistered = (name) => {
   return fetch(`${conf.get('STORE_API_URL')}/acl/`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
     body: JSON.stringify({
       packages: [{ name: name, series: STORE_SERIES }],
       permissions: ['package_upload']
