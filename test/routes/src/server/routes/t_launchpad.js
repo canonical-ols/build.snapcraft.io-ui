@@ -76,6 +76,7 @@ describe('The Launchpad API endpoint', () => {
 
     context('when snap does not exist', () => {
       const caveatId = 'dummy caveat';
+      const snapName = 'dummy-test-snap';
 
       beforeEach(() => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
@@ -83,26 +84,34 @@ describe('The Launchpad API endpoint', () => {
           .reply(200, { permissions: { admin: true } });
         nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
-          .reply(200, 'name: test-snap\n');
+          .reply(200, `name: ${snapName}\n`);
+
+        nock(conf.get('STORE_MACAROON_API_URL'))
+          .post('/acl/', {
+            'packages': [{ 'name': snapName, 'series': '16' }],
+            'permissions':['package_upload']
+          })
+          .reply(200, { macaroon: 'successfull-macaroon' });
+
         const lp_api_url = conf.get('LP_API_URL');
         nock(lp_api_url)
           .post('/devel/+snaps', {
             'ws.op': 'new',
             git_repository_url: 'https://github.com/anaccount/arepo',
             processors: ['/+processors/amd64', '/+processors/armhf'],
-            store_name: 'test-snap'
+            store_name: snapName
           })
           .reply(201, 'Created', {
-            Location: `${lp_api_url}/devel/~test-user/+snap/test-snap`
+            Location: `${lp_api_url}/devel/~test-user/+snap/${snapName}`
           });
         nock(lp_api_url)
-          .get('/devel/~test-user/+snap/test-snap')
+          .get(`/devel/~test-user/+snap/${snapName}`)
           .reply(200, {
             resource_type_link: `${lp_api_url}/devel/#snap`,
-            self_link: `${lp_api_url}/devel/~test-user/+snap/test-snap`
+            self_link: `${lp_api_url}/devel/~test-user/+snap/${snapName}`
           });
         nock(lp_api_url)
-          .post('/devel/~test-user/+snap/test-snap', {
+          .post(`/devel/~test-user/+snap/${snapName}`, {
             'ws.op': 'beginAuthorization'
           })
           .reply(200, JSON.stringify(caveatId), {
@@ -140,12 +149,22 @@ describe('The Launchpad API endpoint', () => {
 
     context('when snap already exists', () => {
       beforeEach(() => {
+        const snapName = 'dummy-test-snap';
+
         nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo')
           .reply(200, { permissions: { admin: true } });
         nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
-          .reply(200, 'name: test-snap\n');
+          .reply(200, `name: ${snapName}\n`);
+
+        nock(conf.get('STORE_MACAROON_API_URL'))
+          .post('/acl/', {
+            'packages': [{ 'name': snapName, 'series': '16' }],
+            'permissions':['package_upload']
+          })
+          .reply(200, { macaroon: 'successfull-macaroon' });
+
         const lp_api_url = conf.get('LP_API_URL');
         nock(lp_api_url)
           .post('/devel/+snaps', { 'ws.op': 'new' })
