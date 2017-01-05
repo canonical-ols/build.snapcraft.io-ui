@@ -2,14 +2,8 @@ import expect from 'expect';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
 
-const browserHistoryStub = {};
-const { createWebhook } = proxyquire(
-  '../../../../../src/common/actions/webhook',
-  { 'react-router': { browserHistory: browserHistoryStub } }
-);
+import { createWebhook } from '../../../../../src/common/actions/webhook';
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
@@ -18,19 +12,17 @@ const BASE_URL = 'http://localhost:8000';
 describe('The createWebhook action creator', () => {
   let store;
 
-  beforeEach(() => {
+  before(() => {
     global.window = {
       location: {
         protocol: 'http:',
         host: 'localhost:8000'
       }
     };
-    browserHistoryStub.push = sinon.spy();
   });
 
-  afterEach(() => {
+  after(() => {
     global.window = undefined;
-    delete browserHistoryStub.push;
   });
 
   context('when submitted repository exists and does not have a build', () => {
@@ -55,10 +47,9 @@ describe('The createWebhook action creator', () => {
       nock.cleanAll();
     });
 
-    it('should navigate to builds page', (done) => {
+    it('should dispatch the WEBHOOK_SUCCESS action', (done) => {
       store.dispatch(createWebhook('example', 'example')).then(() => {
-        expect(browserHistoryStub.push.calledWith('/example/example/builds'))
-          .toBeTruthy();
+        expect(store.getActions()).toHaveActionOfType('WEBHOOK_SUCCESS');
         done();
       });
     });
@@ -86,10 +77,9 @@ describe('The createWebhook action creator', () => {
       nock.cleanAll();
     });
 
-    it('should navigate to builds page', (done) => {
+    it('should dispatch the WEBHOOK_SUCCESS', (done) => {
       store.dispatch(createWebhook('example', 'example')).then(() => {
-        expect(browserHistoryStub.push.calledWith('/example/example/builds'))
-          .toBeTruthy();
+        expect(store.getActions()).toHaveActionOfType('WEBHOOK_SUCCESS');
         done();
       });
     });

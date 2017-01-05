@@ -1,7 +1,9 @@
 import 'isomorphic-fetch';
-import { browserHistory } from 'react-router';
 
+export const WEBHOOK = 'WEBHOOK';
+export const WEBHOOK_SUCCESS = 'WEBHOOK_SUCCESS';
 export const WEBHOOK_FAILURE = 'WEBHOOK_FAILURE';
+
 const REQUEST_OPTIONS = {
   method: 'POST',
   headers: {
@@ -10,8 +12,27 @@ const REQUEST_OPTIONS = {
   credentials: 'same-origin'
 };
 
+export function createWebhookSuccess() {
+  return {
+    type: WEBHOOK_SUCCESS
+  };
+}
+
+export function createWebhookFailure(code, message) {
+  const action = {
+    type: WEBHOOK_FAILURE,
+    code
+  };
+  if (message) {
+    action.message = message;
+  }
+  return action;
+}
+
 export function createWebhook(account, repo) {
   return (dispatch) => {
+    dispatch({ type: WEBHOOK });
+
     const settings = REQUEST_OPTIONS;
     settings.body = JSON.stringify({ account, repo });
 
@@ -24,19 +45,18 @@ export function createWebhook(account, repo) {
         if (result.status && result.payload) {
           if (result.status == 'success' || result.payload.code == 'github-already-created') {
             // Treat pre-existing builds like a new build
-            browserHistory.push(`/${account}/${repo}/builds`);
-            return;
+            return dispatch(createWebhookSuccess());
           }
 
           if (result.status == 'error') {
-            return dispatch({ type: WEBHOOK_FAILURE, code: result.payload.code });
+            return dispatch(createWebhookFailure(result.payload.code));
           }
         }
 
-        return dispatch({ type: WEBHOOK_FAILURE, code: 'github-error-other' });
+        return dispatch(createWebhookFailure('github-error-other'));
       })
       .catch((error) => {
-        dispatch({ type: WEBHOOK_FAILURE, code: 'github-error-other', message: error });
+        dispatch(createWebhookFailure('github-error-other', error));
       });
   };
 }
