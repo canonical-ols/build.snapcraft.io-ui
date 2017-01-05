@@ -93,7 +93,7 @@ describe('The Launchpad API endpoint', () => {
       context('when name is not registered yet', () => {
 
         beforeEach(() => {
-          nock(conf.get('STORE_MACAROON_API_URL'))
+          nock(conf.get('STORE_API_URL'))
             .post('/acl/', {
               'packages': [{ 'name': snapName, 'series': '16' }],
               'permissions':['package_upload']
@@ -133,7 +133,7 @@ describe('The Launchpad API endpoint', () => {
       context('when snap name is registered', () => {
 
         beforeEach(() => {
-          nock(conf.get('STORE_MACAROON_API_URL'))
+          nock(conf.get('STORE_API_URL'))
             .post('/acl/', {
               'packages': [{ 'name': snapName, 'series': '16' }],
               'permissions':['package_upload']

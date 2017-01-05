@@ -219,7 +219,7 @@ const getSnapcraftYaml = (owner, name, token) => {
 };
 
 const verifySnapNameRegistered = (name) => {
-  return fetch(`${conf.get('STORE_MACAROON_API_URL')}/acl/`, {
+  return fetch(`${conf.get('STORE_API_URL')}/acl/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
