@@ -30,8 +30,7 @@ export const notify = (req, res) => {
     logger.info(`Unexpected token ${firstchar}`);
     return res.status(400).send();
   }
-  const body = JSON.parse(req.body);
-  logger.debug('Received webhook: ', body);
+  logger.debug('Received webhook: ', req.body);
 
   let hmac;
   try {
