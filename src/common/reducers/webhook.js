@@ -1,7 +1,7 @@
 import * as ActionTypes from '../actions/webhook';
 
 const INITIAL_STATE = {
-  isPending: false,
+  isFetching: false,
   success: false,
   error: null
 };
@@ -17,19 +17,19 @@ export function webhook(state = INITIAL_STATE, action) {
     case ActionTypes.WEBHOOK:
       return {
         ...state,
-        isPending: true
+        isFetching: true
       };
     case ActionTypes.WEBHOOK_SUCCESS:
       return {
         ...state,
-        isPending: false,
+        isFetching: false,
         success: true,
         error: null
       };
     case ActionTypes.WEBHOOK_FAILURE:
       return {
         ...state,
-        isPending: false,
+        isFetching: false,
         success: false,
         error: { message: ERROR_MESSAGES[action.code] }
       };

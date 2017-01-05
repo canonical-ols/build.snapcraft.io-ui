@@ -37,7 +37,7 @@ describe('The createWebhook action creator', () => {
         })
       );
       store = mockStore({
-        isPending: false,
+        isFetching: false,
         success: false,
         error: false
       });
@@ -67,7 +67,7 @@ describe('The createWebhook action creator', () => {
         })
       );
       store = mockStore({
-        isPending: false,
+        isFetching: false,
         success: false,
         error: false
       });
@@ -97,7 +97,7 @@ describe('The createWebhook action creator', () => {
         })
       );
       store = mockStore({
-        isPending: false,
+        isFetching: false,
         success: false,
         error: false
       });
@@ -125,7 +125,7 @@ describe('The createWebhook action creator', () => {
         .reply('500', JSON.stringify({}));
 
       store = mockStore({
-        isPending: false,
+        isFetching: false,
         success: false,
         error: false
       });

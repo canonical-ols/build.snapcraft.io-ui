@@ -4,7 +4,7 @@ import { webhook } from '../../../../../src/common/reducers/webhook';
 
 describe('webhook reducers', () => {
   const initialState = {
-    isPending: false,
+    isFetching: false,
     success: false,
     error: null
   };
@@ -18,20 +18,20 @@ describe('webhook reducers', () => {
   context('WEBHOOK', () => {
     const action = { type: 'WEBHOOK' };
 
-    it('should store pending state', () => {
+    it('should store fetching state', () => {
       expect(webhook(initialState, action)).toEqual({
         ...initialState,
-        isPending: true
+        isFetching: true
       });
     });
   });
 
   context('WEBHOOK_SUCCESS', () => {
-    const state = { ...initialState, isPending: true };
+    const state = { ...initialState, isFetching: true };
     const action = { type: 'WEBHOOK_SUCCESS' };
 
-    it('should clear pending state', () => {
-      expect(webhook(state, action).isPending).toBe(false);
+    it('should clear fetching state', () => {
+      expect(webhook(state, action).isFetching).toBe(false);
     });
 
     it('should store success state', () => {
@@ -41,14 +41,14 @@ describe('webhook reducers', () => {
 
   context('WEBHOOK_FAILURE', () => {
     context('code github-repository-not-found', () => {
-      const state = { ...initialState, isPending: true };
+      const state = { ...initialState, isFetching: true };
       const action = {
         type: 'WEBHOOK_FAILURE',
         code: 'github-repository-not-found'
       };
 
-      it('should clear pending state', () => {
-        expect(webhook(state, action).isPending).toBe(false);
+      it('should clear fetching state', () => {
+        expect(webhook(state, action).isFetching).toBe(false);
       });
 
       it('should clear success state', () => {
@@ -63,14 +63,14 @@ describe('webhook reducers', () => {
     });
 
     context('code github-authentication-failed', () => {
-      const state = { ...initialState, isPending: true };
+      const state = { ...initialState, isFetching: true };
       const action = {
         type: 'WEBHOOK_FAILURE',
         code: 'github-authentication-failed'
       };
 
-      it('should clear pending state', () => {
-        expect(webhook(state, action).isPending).toBe(false);
+      it('should clear fetching state', () => {
+        expect(webhook(state, action).isFetching).toBe(false);
       });
 
       it('should clear success state', () => {
@@ -85,14 +85,14 @@ describe('webhook reducers', () => {
     });
 
     context('code github-error-other', () => {
-      const state = { ...initialState, isPending: true };
+      const state = { ...initialState, isFetching: true };
       const action = {
         type: 'WEBHOOK_FAILURE',
         code: 'github-error-other'
       };
 
-      it('should clear pending state', () => {
-        expect(webhook(state, action).isPending).toBe(false);
+      it('should clear fetching state', () => {
+        expect(webhook(state, action).isFetching).toBe(false);
       });
 
       it('should clear success state', () => {

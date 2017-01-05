@@ -11,15 +11,15 @@ import styles from './container.css';
 
 class RepositorySetup extends Component {
   componentDidMount() {
-    const { account, repo, isPending } = this.props;
+    const { account, repo, isFetching } = this.props;
 
-    if (!isPending) {
+    if (!isFetching) {
       this.props.dispatch(createWebhook(account, repo));
     }
   }
 
   render() {
-    const { fullName, isPending, success, error } = this.props;
+    const { fullName, isFetching, success, error } = this.props;
 
     if (success) {
       this.props.router.push(`/${fullName}/builds`);
@@ -30,7 +30,7 @@ class RepositorySetup extends Component {
             title={`Setting up ${fullName}`}
           />
           <h1>Setting up {fullName}</h1>
-          { isPending &&
+          { isFetching &&
             <div className={styles.spinner}><Spinner /></div>
           }
           { error &&
@@ -46,7 +46,7 @@ RepositorySetup.propTypes = {
   account: PropTypes.string.isRequired,
   repo: PropTypes.string.isRequired,
   fullName: PropTypes.string.isRequired,
-  isPending: PropTypes.bool,
+  isFetching: PropTypes.bool,
   success: PropTypes.bool,
   error: PropTypes.object,
   router: PropTypes.object.isRequired,
@@ -58,7 +58,7 @@ const mapStateToProps = (state, ownProps) => {
   const repo = ownProps.params.repo.toLowerCase();
   const fullName = `${account}/${repo}`;
 
-  const isPending = state.webhook.isPending;
+  const isFetching = state.webhook.isFetching;
   const success = state.webhook.success;
   const error = state.webhook.error;
 
@@ -66,7 +66,7 @@ const mapStateToProps = (state, ownProps) => {
     account,
     repo,
     fullName,
-    isPending,
+    isFetching,
     success,
     error
   };
