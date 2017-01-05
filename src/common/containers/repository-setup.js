@@ -22,7 +22,7 @@ class RepositorySetup extends Component {
     const { fullName, isFetching, success, error } = this.props;
 
     if (success) {
-      this.props.router.push(`/${fullName}/builds`);
+      this.props.router.replace(`/${fullName}/builds`);
     } else {
       return (
         <div className={styles.container}>
