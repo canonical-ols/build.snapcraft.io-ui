@@ -74,7 +74,7 @@ describe('The Launchpad API endpoint', () => {
       });
     });
 
-    context('when name is not registered yet', () => {
+    context('when repo contains valid snapcraft.yaml', () => {
       const snapName = 'dummy-test-snap';
 
       beforeEach(() => {
@@ -84,174 +84,153 @@ describe('The Launchpad API endpoint', () => {
         nock(conf.get('GITHUB_API_ENDPOINT'))
           .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
           .reply(200, `name: ${snapName}\n`);
-
-        nock(conf.get('STORE_MACAROON_API_URL'))
-          .post('/acl/', {
-            'packages': [{ 'name': snapName, 'series': '16' }],
-            'permissions':['package_upload']
-          })
-          .reply(404, {
-            status: 404,
-            error_code: 'resource-not-found',
-          });
       });
 
       afterEach(() => {
         nock.cleanAll();
       });
 
-      it('should return a 400 Bad Request response', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(400, done);
+      context('when name is not registered yet', () => {
+
+        beforeEach(() => {
+          nock(conf.get('STORE_MACAROON_API_URL'))
+            .post('/acl/', {
+              'packages': [{ 'name': snapName, 'series': '16' }],
+              'permissions':['package_upload']
+            })
+            .reply(404, {
+              status: 404,
+              error_code: 'resource-not-found',
+            });
+        });
+
+        it('should return a 400 Bad Request response', (done) => {
+          supertest(app)
+            .post('/launchpad/snaps')
+            .send({ repository_url: 'https://github.com/anaccount/arepo' })
+            .expect(400, done);
+        });
+
+        it('should return a "error" status', (done) => {
+          supertest(app)
+            .post('/launchpad/snaps')
+            .send({ repository_url: 'https://github.com/anaccount/arepo' })
+            .expect(hasStatus('error'))
+            .end(done);
+        });
+
+        it('should return a body with an "lp-error" message', (done) => {
+          supertest(app)
+            .post('/launchpad/snaps')
+            .send({ repository_url: 'https://github.com/anaccount/arepo' })
+            .expect(hasMessage(
+                'snap-name-not-registered',
+                'Snap name is not registered in the store'))
+            .end(done);
+        });
       });
 
-      it('should return a "error" status', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(hasStatus('error'))
-          .end(done);
-      });
+      context('when snap name is registered', () => {
 
-      it('should return a body with an "lp-error" message', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(hasMessage(
-              'snap-name-not-registered',
-              'Snap name is not registered in the store'))
-          .end(done);
-      });
-    });
+        beforeEach(() => {
+          nock(conf.get('STORE_MACAROON_API_URL'))
+            .post('/acl/', {
+              'packages': [{ 'name': snapName, 'series': '16' }],
+              'permissions':['package_upload']
+            })
+            .reply(200, { macaroon: 'successfull-macaroon' });
+        });
 
-    context('when snap does not exist', () => {
-      const caveatId = 'dummy caveat';
-      const snapName = 'dummy-test-snap';
+        context('when snap already exists', () => {
 
-      beforeEach(() => {
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anaccount/arepo')
-          .reply(200, { permissions: { admin: true } });
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
-          .reply(200, `name: ${snapName}\n`);
-
-        nock(conf.get('STORE_MACAROON_API_URL'))
-          .post('/acl/', {
-            'packages': [{ 'name': snapName, 'series': '16' }],
-            'permissions':['package_upload']
-          })
-          .reply(200, { macaroon: 'successfull-macaroon' });
-
-        const lp_api_url = conf.get('LP_API_URL');
-        nock(lp_api_url)
-          .post('/devel/+snaps', {
-            'ws.op': 'new',
-            git_repository_url: 'https://github.com/anaccount/arepo',
-            processors: ['/+processors/amd64', '/+processors/armhf'],
-            store_name: snapName
-          })
-          .reply(201, 'Created', {
-            Location: `${lp_api_url}/devel/~test-user/+snap/${snapName}`
+          beforeEach(() => {
+            const lp_api_url = conf.get('LP_API_URL');
+            nock(lp_api_url)
+              .post('/devel/+snaps', { 'ws.op': 'new' })
+              .reply(
+                400,
+                'There is already a snap package with the same name and owner.');
           });
-        nock(lp_api_url)
-          .get(`/devel/~test-user/+snap/${snapName}`)
-          .reply(200, {
-            resource_type_link: `${lp_api_url}/devel/#snap`,
-            self_link: `${lp_api_url}/devel/~test-user/+snap/${snapName}`
+
+          it('should return a 400 Bad Request response', (done) => {
+            supertest(app)
+              .post('/launchpad/snaps')
+              .send({ repository_url: 'https://github.com/anaccount/arepo' })
+              .expect(400, done);
           });
-        nock(lp_api_url)
-          .post(`/devel/~test-user/+snap/${snapName}`, {
-            'ws.op': 'beginAuthorization'
-          })
-          .reply(200, JSON.stringify(caveatId), {
-            'Content-Type': 'application/json'
+
+          it('should return a "error" status', (done) => {
+            supertest(app)
+              .post('/launchpad/snaps')
+              .send({ repository_url: 'https://github.com/anaccount/arepo' })
+              .expect(hasStatus('error'))
+              .end(done);
           });
-      });
 
-      afterEach(() => {
-        nock.cleanAll();
-      });
+          it('should return a body with an "lp-error" message', (done) => {
+            supertest(app)
+              .post('/launchpad/snaps')
+              .send({ repository_url: 'https://github.com/anaccount/arepo' })
+              .expect(hasMessage(
+                  'lp-error',
+                  'There is already a snap package with the same name and owner.'))
+              .end(done);
+          });
+        });
 
-      it('should return a 201 Created response', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(201, done);
-      });
+        context('when snap does not exist', () => {
+          const caveatId = 'dummy caveat';
 
-      it('should return a "success" status', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(hasStatus('success'))
-          .end(done);
-      });
+          beforeEach(() => {
+            const lp_api_url = conf.get('LP_API_URL');
+            nock(lp_api_url)
+              .post('/devel/+snaps', {
+                'ws.op': 'new',
+                git_repository_url: 'https://github.com/anaccount/arepo',
+                processors: ['/+processors/amd64', '/+processors/armhf'],
+                store_name: snapName
+              })
+              .reply(201, 'Created', {
+                Location: `${lp_api_url}/devel/~test-user/+snap/${snapName}`
+              });
+            nock(lp_api_url)
+              .get(`/devel/~test-user/+snap/${snapName}`)
+              .reply(200, {
+                resource_type_link: `${lp_api_url}/devel/#snap`,
+                self_link: `${lp_api_url}/devel/~test-user/+snap/${snapName}`
+              });
+            nock(lp_api_url)
+              .post(`/devel/~test-user/+snap/${snapName}`, {
+                'ws.op': 'beginAuthorization'
+              })
+              .reply(200, JSON.stringify(caveatId), {
+                'Content-Type': 'application/json'
+              });
+          });
 
-      it('should return a body with an appropriate caveat ID', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(hasMessage('snap-created', caveatId))
-          .end(done);
-      });
-    });
+          it('should return a 201 Created response', (done) => {
+            supertest(app)
+              .post('/launchpad/snaps')
+              .send({ repository_url: 'https://github.com/anaccount/arepo' })
+              .expect(201, done);
+          });
 
-    context('when snap already exists', () => {
-      beforeEach(() => {
-        const snapName = 'dummy-test-snap';
+          it('should return a "success" status', (done) => {
+            supertest(app)
+              .post('/launchpad/snaps')
+              .send({ repository_url: 'https://github.com/anaccount/arepo' })
+              .expect(hasStatus('success'))
+              .end(done);
+          });
 
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anaccount/arepo')
-          .reply(200, { permissions: { admin: true } });
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anaccount/arepo/contents/snapcraft.yaml')
-          .reply(200, `name: ${snapName}\n`);
-
-        nock(conf.get('STORE_MACAROON_API_URL'))
-          .post('/acl/', {
-            'packages': [{ 'name': snapName, 'series': '16' }],
-            'permissions':['package_upload']
-          })
-          .reply(200, { macaroon: 'successfull-macaroon' });
-
-        const lp_api_url = conf.get('LP_API_URL');
-        nock(lp_api_url)
-          .post('/devel/+snaps', { 'ws.op': 'new' })
-          .reply(
-            400,
-            'There is already a snap package with the same name and owner.');
-      });
-
-      afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should return a 400 Bad Request response', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(400, done);
-      });
-
-      it('should return a "error" status', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(hasStatus('error'))
-          .end(done);
-      });
-
-      it('should return a body with an "lp-error" message', (done) => {
-        supertest(app)
-          .post('/launchpad/snaps')
-          .send({ repository_url: 'https://github.com/anaccount/arepo' })
-          .expect(hasMessage(
-              'lp-error',
-              'There is already a snap package with the same name and owner.'))
-          .end(done);
+          it('should return a body with an appropriate caveat ID', (done) => {
+            supertest(app)
+              .post('/launchpad/snaps')
+              .send({ repository_url: 'https://github.com/anaccount/arepo' })
+              .expect(hasMessage('snap-created', caveatId))
+              .end(done);
+          });
+        });
       });
     });
 
