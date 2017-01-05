@@ -210,6 +210,32 @@ const getSnapcraftYaml = (owner, name, token) => {
     });
 };
 
+const requestNewSnap = (name, repositoryUrl) => {
+  const lpClient = getLaunchpad();
+  const username = conf.get('LP_API_USERNAME');
+
+  logger.info(`Creating new snap for ${repositoryUrl}`);
+  return lpClient.named_post('/+snaps', 'new', {
+    parameters: {
+      owner: `/~${username}`,
+      distro_series: `/${DISTRIBUTION}/${DISTRO_SERIES}`,
+      name: `${makeSnapName(repositoryUrl)}-${DISTRO_SERIES}`,
+      git_repository_url: repositoryUrl,
+      git_path: 'refs/heads/master',
+      auto_build: true,
+      auto_build_archive: `/${DISTRIBUTION}/+archive/primary`,
+      auto_build_pocket: 'Updates',
+      processors: ARCHITECTURES.map((arch) => {
+        return `/+processors/${arch}`;
+      }),
+      store_upload: true,
+      store_series: `/+snappy-series/${STORE_SERIES}`,
+      store_name: name,
+      store_channels: STORE_CHANNELS
+    }
+  });
+};
+
 export const newSnap = (req, res) => {
   const repositoryUrl = req.body.repository_url;
   const lpClient = getLaunchpad();
@@ -223,27 +249,7 @@ export const newSnap = (req, res) => {
       if (!('name' in snapcraftYaml)) {
         throw new PreparedError(400, RESPONSE_SNAPCRAFT_YAML_NO_NAME);
       }
-      const username = conf.get('LP_API_USERNAME');
-      logger.info(`Creating new snap for ${repositoryUrl}`);
-      return lpClient.named_post('/+snaps', 'new', {
-        parameters: {
-          owner: `/~${username}`,
-          distro_series: `/${DISTRIBUTION}/${DISTRO_SERIES}`,
-          name: `${makeSnapName(repositoryUrl)}-${DISTRO_SERIES}`,
-          git_repository_url: repositoryUrl,
-          git_path: 'refs/heads/master',
-          auto_build: true,
-          auto_build_archive: `/${DISTRIBUTION}/+archive/primary`,
-          auto_build_pocket: 'Updates',
-          processors: ARCHITECTURES.map((arch) => {
-            return `/+processors/${arch}`;
-          }),
-          store_upload: true,
-          store_series: `/+snappy-series/${STORE_SERIES}`,
-          store_name: snapcraftYaml.name,
-          store_channels: STORE_CHANNELS
-        }
-      });
+      return requestNewSnap(snapcraftYaml.name, repositoryUrl);
     })
     .then((result) => {
       snapUrl = result.self_link;
