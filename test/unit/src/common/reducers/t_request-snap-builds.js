@@ -28,7 +28,7 @@ describe('requestSnapBuilds reducers', () => {
   });
 
   context('REQUEST_BUILDS', () => {
-    it('should store requesting status when requesting builds', () => {
+    it('should store fetching status when requesting builds', () => {
       const action = {
         type: ActionTypes.REQUEST_BUILDS,
         payload: 'test'
