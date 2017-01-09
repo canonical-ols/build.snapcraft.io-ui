@@ -2,9 +2,11 @@ import { createHmac } from 'crypto';
 
 import getGitHubRepoUrl from '../../common/helpers/github-url';
 import { conf } from '../helpers/config';
-const logging = require('../logging/').default;
-const logger = logging.getLogger('express-error');
+import logging from '../logging';
 import { uncheckedRequestSnapBuilds } from './launchpad';
+
+const logger = logging.getLogger('express');
+const errorLogger = logging.getLogger('express-error');
 
 export const makeWebhookSecret = (account, repo) => {
   const rootSecret = conf.get('GITHUB_WEBHOOK_SECRET');
@@ -36,7 +38,7 @@ export const notify = (req, res) => {
   try {
     secret = makeWebhookSecret(req.params.account, req.params.repo);
   } catch (e) {
-    logger.info(e.message);
+    errorLogger.info(e.message);
     return res.status(500).send();
   }
   const hmac = createHmac('sha1', secret);
@@ -60,7 +62,8 @@ export const notify = (req, res) => {
         return res.status(200).send();
       })
       .catch((error) => {
-        logger.info(`Failed to request builds of ${repositoryUrl}: ${error}.`);
+        errorLogger.info(`Failed to request builds of ${repositoryUrl}: ` +
+                         `${error}.`);
         return res.status(500).send();
       });
   }
