@@ -31,7 +31,15 @@ app.use(setRevisionHeader);
 app.use(raven.middleware.express.requestHandler(conf.get('SENTRY_DSN')));
 app.use(expressWinston.logger({
   winstonInstance: accessLogger,
-  level: 'info'
+  level: 'info',
+  requestFilter: (req, propName) => {
+    if (propName === 'headers') {
+      const filteredHeaders = { ...req[propName] };
+      delete filteredHeaders.cookie;
+      return filteredHeaders;
+    }
+    return req[propName];
+  }
 }));
 app.use(helmet());
 app.use(session(sessionConfig(conf)));
