@@ -14,7 +14,6 @@ import setRevisionHeader from './middleware/set-revision-header.js';
 const appUrl = url.parse(conf.get('BASE_URL'));
 const app = Express();
 const accessLogger = logging.getLogger('express-access');
-const errorLogger = logging.getLogger('express-error');
 const logger = logging.getLogger('express');
 
 app.set('logger', logger);
@@ -58,8 +57,8 @@ app.use('/', routes.universal);
 // https://github.com/canonical-ols/javan-rhino/issues/210
 app.use(raven.middleware.express.errorHandler(conf.get('SENTRY_DSN')));
 app.use(expressWinston.errorLogger({
-  winstonInstance: errorLogger,
-  level: 'info'
+  winstonInstance: logger,
+  level: 'error'
 }));
 
 export { app as default };

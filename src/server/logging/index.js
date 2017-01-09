@@ -14,8 +14,9 @@ const debug = process.env.DEBUGLOG;
 const loggerDefaults = {
   exitOnError: false,
   levels: {
-    info: 0,
-    debug: 1
+    error: 0,
+    info: 1,
+    debug: 2
   },
   rewriters: [ idRewriter ]
 };

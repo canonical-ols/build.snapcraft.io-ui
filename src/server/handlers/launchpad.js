@@ -10,7 +10,6 @@ import getLaunchpad from '../launchpad';
 import logging from '../logging';
 
 const logger = logging.getLogger('express');
-const errorLogger = logging.getLogger('express-error');
 
 // XXX cjwatson 2016-12-08: Hardcoded for now, but should eventually be
 // configurable.
@@ -110,7 +109,7 @@ const prepareError = (error) => {
     // if it's ResourceError from LP client at least for the moment
     // we just wrap the error we get from LP
     return error.response.text().then((text) => {
-      errorLogger.info('Launchpad API error:', text);
+      logger.error('Launchpad API error:', text);
       return new PreparedError(error.response.status, {
         status: 'error',
         payload: {
@@ -144,7 +143,7 @@ const checkGitHubStatus = (response) => {
       try {
         body = JSON.parse(body);
       } catch (e) {
-        errorLogger.info('Invalid JSON received', e, body);
+        logger.error('Invalid JSON received', e, body);
         throw new PreparedError(500, RESPONSE_GITHUB_OTHER);
       }
     }
@@ -157,7 +156,7 @@ const checkGitHubStatus = (response) => {
         throw new PreparedError(401, RESPONSE_GITHUB_AUTHENTICATION_FAILED);
       default:
         // Something else
-        errorLogger.info('GitHub API error:', response.statusCode, body);
+        logger.error('GitHub API error:', response.statusCode, body);
         throw new PreparedError(500, RESPONSE_GITHUB_OTHER);
     }
   }
