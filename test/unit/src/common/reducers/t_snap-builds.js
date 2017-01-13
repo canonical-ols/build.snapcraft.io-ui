@@ -8,6 +8,7 @@ import { snapBuildFromAPI } from '../../../../../src/common/helpers/snap-builds'
 describe('snapBuilds reducers', () => {
   const initialState = {
     isFetching: false,
+    snapLink: null,
     builds: [],
     success: false,
     error: null
@@ -82,6 +83,27 @@ describe('snapBuilds reducers', () => {
         ...initialState,
         isFetching: true
       });
+    });
+  });
+
+  context('FETCH_SNAP_SUCCESS', () => {
+    const SNAP_LINK = 'https://api.launchpad.net/devel/~cjwatson/+snap/godd-test-2';
+
+    const state = {
+      ...initialState,
+      isFetching: true
+    };
+    const action = {
+      type: ActionTypes.FETCH_SNAP_SUCCESS,
+      payload: SNAP_LINK
+    };
+
+    it('should stop fetching', () => {
+      expect(snapBuilds(state, action).isFetching).toBe(false);
+    });
+
+    it('should store snap link', () => {
+      expect(snapBuilds(state, action).snapLink).toEqual(SNAP_LINK);
     });
   });
 

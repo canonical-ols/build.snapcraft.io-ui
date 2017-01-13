@@ -6,23 +6,39 @@ import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
 
-import { fetchSnap } from '../actions/snap-builds';
+import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
 
 class Builds extends Component {
   fetchInterval = null
 
+  fetchData({ snapLink, fullName }) {
+    if (snapLink) {
+      this.props.dispatch(fetchBuilds(snapLink));
+    } else {
+      this.props.dispatch(fetchSnap(fullName));
+    }
+  }
+
   componentWillMount() {
-    this.props.dispatch(fetchSnap(this.props.fullName));
+    this.fetchData(this.props);
 
     this.fetchInterval = setInterval(() => {
-      this.props.dispatch(fetchSnap(this.props.fullName));
+      this.fetchData(this.props);
     }, 15000);
   }
 
   componentWillUnmount() {
     clearInterval(this.fetchInterval);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // if snap link or repo name changed, fetch new data
+    if ((this.props.snapLink !== nextProps.snapLink) ||
+        (this.props.fullName !== nextProps.fullName)) {
+      this.fetchData(nextProps);
+    }
   }
 
   render() {
@@ -54,6 +70,7 @@ Builds.propTypes = {
   repo: PropTypes.string.isRequired,
   fullName: PropTypes.string.isRequired,
   isFetching: PropTypes.bool,
+  snapLink: PropTypes.string,
   success: PropTypes.bool,
   error: PropTypes.object,
   dispatch: PropTypes.func.isRequired
@@ -65,11 +82,13 @@ const mapStateToProps = (state, ownProps) => {
   const fullName = `${account}/${repo}`;
 
   const isFetching = state.snapBuilds.isFetching;
+  const snapLink = state.snapBuilds.snapLink;
   const success = state.snapBuilds.success;
   const error = state.snapBuilds.error;
 
   return {
     isFetching,
+    snapLink,
     success,
     error,
     account,
