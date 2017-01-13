@@ -110,7 +110,8 @@ describe('snapBuilds reducers', () => {
   context('FETCH_BUILDS_SUCCESS', () => {
     const state = {
       ...initialState,
-      isFetching: true
+      isFetching: true,
+      error: 'Previous error'
     };
 
     const action = {
