@@ -73,12 +73,12 @@ describe('snapBuilds reducers', () => {
   });
 
   context('FETCH_BUILDS', () => {
-    it('should store fetching status when fetching builds', () => {
-      const action = {
-        type: ActionTypes.FETCH_BUILDS,
-        payload: 'test'
-      };
+    const action = {
+      type: ActionTypes.FETCH_BUILDS,
+      payload: 'test'
+    };
 
+    it('should store fetching status when fetching builds', () => {
       expect(snapBuilds(initialState, action)).toEqual({
         ...initialState,
         isFetching: true
@@ -108,79 +108,48 @@ describe('snapBuilds reducers', () => {
   });
 
   context('FETCH_BUILDS_SUCCESS', () => {
+    const state = {
+      ...initialState,
+      isFetching: true
+    };
+
+    const action = {
+      type: ActionTypes.FETCH_BUILDS_SUCCESS,
+      payload: SNAP_ENTRIES
+    };
 
     it('should stop fetching', () => {
-      const state = {
-        ...initialState,
-        isFetching: true
-      };
-
-      const action = {
-        type: ActionTypes.FETCH_BUILDS_SUCCESS,
-        payload: SNAP_ENTRIES
-      };
-
       expect(snapBuilds(state, action).isFetching).toBe(false);
     });
 
     it('should store builds on fetch success', () => {
-      const state = {
-        ...initialState,
-        isFetching: true
-      };
-
-      const action = {
-        type: ActionTypes.FETCH_BUILDS_SUCCESS,
-        payload: SNAP_ENTRIES
-      };
-
       expect(snapBuilds(state, action).builds).toEqual(SNAP_ENTRIES.map(snapBuildFromAPI));
     });
 
     it('should store success state', () => {
-      const state = {
-        ...initialState,
-        isFetching: true
-      };
-
-      const action = {
-        type: ActionTypes.FETCH_BUILDS_SUCCESS,
-        payload: SNAP_ENTRIES
-      };
-
       expect(snapBuilds(state, action).success).toBe(true);
     });
 
     it('should clean error', () => {
-      const state = {
-        ...initialState,
-        error: 'Previous error'
-      };
-
-      const action = {
-        type: ActionTypes.FETCH_BUILDS_SUCCESS,
-        payload: SNAP_ENTRIES
-      };
-
       expect(snapBuilds(state, action).error).toBe(null);
     });
   });
 
   context('FETCH_BUILDS_ERROR', () => {
+    const state = {
+      ...initialState,
+      success: true,
+      builds: SNAP_ENTRIES,
+      isFetching: true
+    };
+
+    const action = {
+      type: ActionTypes.FETCH_BUILDS_ERROR,
+      payload: 'Something went wrong!',
+      error: true
+    };
+
     it('should handle fetch builds failure', () => {
-      const state = {
-        ...initialState,
-        success: true,
-        builds: SNAP_ENTRIES,
-        isFetching: true
-      };
-
-      const action = {
-        type: ActionTypes.FETCH_BUILDS_ERROR,
-        payload: 'Something went wrong!',
-        error: true
-      };
-
       expect(snapBuilds(state, action)).toEqual({
         ...state,
         isFetching: false,
