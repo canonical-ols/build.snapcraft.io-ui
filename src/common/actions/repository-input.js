@@ -4,12 +4,8 @@ import conf from '../helpers/config';
 import getGitHubRepoUrl from '../helpers/github-url';
 
 const BASE_URL = conf.get('BASE_URL');
-const GITHUB_API_ENDPOINT = conf.get('GITHUB_API_ENDPOINT');
 
 export const SET_GITHUB_REPOSITORY = 'SET_GITHUB_REPOSITORY';
-export const VERIFY_GITHUB_REPOSITORY = 'VERIFY_GITHUB_REPOSITORY';
-export const VERIFY_GITHUB_REPOSITORY_SUCCESS = 'VERIFY_GITHUB_REPOSITORY_SUCCESS';
-export const VERIFY_GITHUB_REPOSITORY_ERROR = 'VERIFY_GITHUB_REPOSITORY_ERROR';
 export const CREATE_SNAP = 'CREATE_SNAP';
 export const CREATE_SNAP_ERROR = 'CREATE_SNAP_ERROR';
 
@@ -36,38 +32,6 @@ function checkStatus(response) {
       throw getError(response, json);
     });
   }
-}
-
-export function verifyGitHubRepository(repository) {
-  const fullName = repository;
-  return (dispatch) => {
-    if (fullName) {
-      dispatch({
-        type: VERIFY_GITHUB_REPOSITORY,
-        payload: fullName
-      });
-
-      return fetch(`${GITHUB_API_ENDPOINT}/repos/${fullName}/contents/snapcraft.yaml`)
-        .then(checkStatus)
-        .then(() => dispatch(verifyGitHubRepositorySuccess(getGitHubRepoUrl(fullName))))
-        .catch(error => dispatch(verifyGitHubRepositoryError(error)));
-    }
-  };
-}
-
-export function verifyGitHubRepositorySuccess(repositoryUrl) {
-  return {
-    type: VERIFY_GITHUB_REPOSITORY_SUCCESS,
-    payload: repositoryUrl
-  };
-}
-
-export function verifyGitHubRepositoryError(error) {
-  return {
-    type: VERIFY_GITHUB_REPOSITORY_ERROR,
-    payload: error,
-    error: true
-  };
 }
 
 // TODO: bartaz (accept repository object)?

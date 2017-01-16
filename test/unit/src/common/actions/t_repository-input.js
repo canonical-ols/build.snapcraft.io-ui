@@ -8,10 +8,7 @@ import url from 'url';
 import {
   createSnap,
   createSnapError,
-  setGitHubRepository,
-  verifyGitHubRepository,
-  verifyGitHubRepositorySuccess,
-  verifyGitHubRepositoryError
+  setGitHubRepository
 } from '../../../../../src/common/actions/repository-input';
 import * as ActionTypes from '../../../../../src/common/actions/repository-input';
 import conf from '../../../../../src/common/helpers/config';
@@ -24,8 +21,7 @@ describe('repository input actions', () => {
     isFetching: false,
     inputValue: '',
     repository: {
-      fullName: null,
-      url: null
+      fullName: null
     },
     statusMessage: '',
     success: false,
@@ -58,93 +54,6 @@ describe('repository input actions', () => {
 
     it('should create a valid flux standard action', () => {
       expect(isFSA(action)).toBe(true);
-    });
-  });
-
-  context('verifyGitHubRepositorySuccess', () => {
-    let payload = 'http://github.com/foo/bar.git';
-
-    beforeEach(() => {
-      action = verifyGitHubRepositorySuccess(payload);
-    });
-
-    it('should create an action to save github repo url on success', () => {
-      const expectedAction = {
-        type: ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS,
-        payload
-      };
-
-      store.dispatch(action);
-      expect(store.getActions()).toInclude(expectedAction);
-    });
-
-    it('should create a valid flux standard action', () => {
-      expect(isFSA(action)).toBe(true);
-    });
-  });
-
-  context('verifyGitHubRepositoryError', () => {
-    let payload = 'Something went wrong!';
-
-    beforeEach(() => {
-      action = verifyGitHubRepositoryError(payload);
-    });
-
-    it('should create an action to store github repo error on failure', () => {
-      const expectedAction = {
-        type: ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR,
-        error: true,
-        payload
-      };
-
-      store.dispatch(action);
-      expect(store.getActions()).toInclude(expectedAction);
-    });
-
-    it('should create a valid flux standard action', () => {
-      expect(isFSA(action)).toBe(true);
-    });
-  });
-
-  context('verifyGitHubRepository', () => {
-    const GITHUB_API_ENDPOINT = conf.get('GITHUB_API_ENDPOINT');
-    let scope;
-
-    beforeEach(() => {
-      scope = nock(GITHUB_API_ENDPOINT);
-    });
-
-    afterEach(() => {
-      nock.cleanAll();
-    });
-
-    it('should save GitHub repo on successful verification', () => {
-      scope.get('/repos/foo/bar/contents/snapcraft.yaml')
-        .reply(200, {
-          'name': 'snapcraft.yaml'
-        });
-
-      return store.dispatch(verifyGitHubRepository('foo/bar'))
-        .then(() => {
-          expect(store.getActions()).toHaveActionOfType(
-            ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS
-          );
-        });
-    });
-
-    it('should store error on GitHub verification failure', () => {
-      scope.get('/repos/foo/bar/contents/snapcraft.yaml')
-        .reply(404, {
-          'message': 'Not Found',
-          'documentation_url': 'https://developer.github.com/v3'
-        });
-
-      return store.dispatch(verifyGitHubRepository('foo/bar'))
-        .then(() => {
-          expect(store.getActions()).toHaveActionOfType(
-            ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR
-          );
-        });
     });
   });
 

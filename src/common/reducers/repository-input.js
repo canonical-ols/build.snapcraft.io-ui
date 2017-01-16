@@ -14,8 +14,7 @@ export function repositoryInput(state = {
 // keep also parsed owner and name here?
 //    owner: null,
 //    name: null,
-    fullName: null,
-    url: null
+    fullName: null
   },
   success: false,
   error: false
@@ -32,38 +31,11 @@ export function repositoryInput(state = {
         success: false,
         error: false
       };
-    case ActionTypes.VERIFY_GITHUB_REPOSITORY:
-      return {
-        ...state,
-        isFetching: true
-      };
-    case ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        success: true,
-        error: false,
-        repository: {
-          ...state.repository,
-          url: action.payload,
-        }
-      };
-    case ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR:
-      return {
-        ...state,
-        isFetching: false,
-        success: false,
-        error: action.payload
-      };
-    // XXX cjwatson 2016-12-21: Merge with
-    // ActionTypes.VERIFY_GITHUB_REPOSITORY?
     case ActionTypes.CREATE_SNAP:
       return {
         ...state,
         isFetching: true
       };
-    // XXX cjwatson 2016-12-21: Merge with
-    // ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR?
     case ActionTypes.CREATE_SNAP_ERROR:
       return {
         ...state,

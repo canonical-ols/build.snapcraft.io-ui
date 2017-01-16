@@ -8,8 +8,7 @@ describe('repositoryInput reducers', () => {
     isFetching: false,
     inputValue: '',
     repository: {
-      fullName: null,
-      url: null
+      fullName: null
     },
     success: false,
     error: false
@@ -81,86 +80,6 @@ describe('repositoryInput reducers', () => {
       };
 
       expect(repositoryInput(state, action).success).toBe(false);
-    });
-  });
-
-  context('VERIFY_GITHUB_REPOSITORY', () => {
-    it('should store fetching status when repository is verified via GH API', () => {
-      const action = {
-        type: ActionTypes.VERIFY_GITHUB_REPOSITORY,
-        payload: 'dummy/repo'
-      };
-
-      expect(repositoryInput(initialState, action)).toEqual({
-        ...initialState,
-        isFetching: true
-      });
-    });
-  });
-
-  context('VERIFY_GITHUB_REPOSITORY_SUCCESS', () => {
-    it('should handle verify repo success', () => {
-      const state = {
-        ...initialState,
-        repository: {
-          ...initialState.repository,
-          fullName: 'dummy/repo'
-        },
-        isFetching: true
-      };
-
-      const action = {
-        type: ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS,
-        payload: 'http://github.com/dummy/repo.git'
-      };
-
-      expect(repositoryInput(state, action)).toEqual({
-        ...state,
-        isFetching: false,
-        repository: {
-          ...state.repository,
-          url: 'http://github.com/dummy/repo.git'
-        },
-        success: true
-      });
-    });
-
-    it('should clean error', () => {
-      const state = {
-        ...initialState,
-        repository: 'dummy/repo',
-        error: new Error('Previous error')
-      };
-
-      const action = {
-        type: ActionTypes.VERIFY_GITHUB_REPOSITORY_SUCCESS,
-        payload: 'http://github.com/dummy/repo.git'
-      };
-
-      expect(repositoryInput(state, action).error).toBe(false);
-    });
-  });
-
-  context('VERIFY_GITHUB_REPOSITORY_ERROR', () => {
-    it('should handle verify repo failure', () => {
-      const state = {
-        ...initialState,
-        repository: 'dummy/repo',
-        isFetching: true
-      };
-
-      const action = {
-        type: ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR,
-        payload: new Error('Something went wrong!'),
-        error: true
-      };
-
-      expect(repositoryInput(state, action)).toEqual({
-        ...state,
-        isFetching: false,
-        success: false,
-        error: action.payload
-      });
     });
   });
 
