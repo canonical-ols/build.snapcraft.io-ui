@@ -132,10 +132,10 @@ describe('The RepositoryInput component', () => {
           repositoryInput: {
             ...baseProps.repositoryInput,
             success: true,
-            inputValue: 'account/repo',
+            inputValue: 'test-owner/test-name',
             repository: {
               ...baseProps.repositoryInput.repository,
-              fullName: 'account/repo'
+              fullName: 'test-owner/test-name'
             }
           },
         };
