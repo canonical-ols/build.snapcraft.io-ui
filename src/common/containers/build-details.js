@@ -5,18 +5,35 @@ import Helmet from 'react-helmet';
 import BuildRow from '../components/build-row';
 import BuildLog from '../components/build-log';
 import { Message } from '../components/forms';
-import { fetchSnap } from '../actions/snap-builds';
+import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
 
 class BuildDetails extends Component {
 
+  fetchData({ snapLink, repository }) {
+    if (snapLink) {
+      this.props.dispatch(fetchBuilds(snapLink));
+    } else {
+      this.props.dispatch(fetchSnap(repository.fullName));
+    }
+  }
+
   componentWillMount() {
-    this.props.dispatch(fetchSnap(this.props.fullName));
+    this.fetchData(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // if snap link or repo name changed, fetch new data
+    if ((this.props.snapLink !== nextProps.snapLink) ||
+        (this.props.repository.fullName !== nextProps.repository.fullName)) {
+      this.fetchData(nextProps);
+    }
   }
 
   render() {
-    const { account, repo, fullName, buildId, build } = this.props;
+    const { repository, buildId, build } = this.props;
+    const { fullName } = repository;
 
     return (
       <div className={ styles.container }>
@@ -32,7 +49,7 @@ class BuildDetails extends Component {
         }
         { build &&
           <div>
-            <BuildRow account={account} repo={repo} {...build} />
+            <BuildRow repository={repository} {...build} />
             <h3>Build log:</h3>
             <BuildLog logUrl={build.buildLogUrl} />
           </div>
@@ -43,33 +60,41 @@ class BuildDetails extends Component {
 
 }
 BuildDetails.propTypes = {
-  account: PropTypes.string.isRequired,
-  repo: PropTypes.string.isRequired,
-  fullName: PropTypes.string.isRequired,
+  repository: PropTypes.shape({
+    owner: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
+  }),
   buildId: PropTypes.string.isRequired,
   build: PropTypes.object,
   isFetching: PropTypes.bool,
+  snapLink: PropTypes.string,
   error: PropTypes.object,
   dispatch: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state, ownProps) => {
-  const account = ownProps.params.account.toLowerCase();
-  const repo = ownProps.params.repo.toLowerCase();
+  const owner = ownProps.params.owner.toLowerCase();
+  const name = ownProps.params.name.toLowerCase();
+  const fullName = `${owner}/${name}`;
+
   const buildId = ownProps.params.buildId.toLowerCase();
 
-  const fullName = `${account}/${repo}`;
   const build = state.snapBuilds.builds.filter((build) => build.buildId === buildId)[0];
   const isFetching = state.snapBuilds.isFetching;
   const error = state.snapBuilds.error;
+  const snapLink = state.snapBuilds.snapLink;
 
   return {
-    account,
-    repo,
-    fullName,
+    repository: {
+      owner,
+      name,
+      fullName
+    },
     buildId,
     build,
     isFetching,
+    snapLink,
     error
   };
 };

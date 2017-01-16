@@ -7,9 +7,8 @@ import { Message } from '../forms';
 const BuildHistory = (props) => {
   const { repository, success } = props;
 
-  // TODO: bartaz account/repo to rename
   const builds = props.builds.map((build) => (
-    <BuildRow key={build.buildId} {...build} account={repository.owner} repo={repository.name} />
+    <BuildRow key={build.buildId} {...build} repository={repository} />
   ));
 
   return success ? (
