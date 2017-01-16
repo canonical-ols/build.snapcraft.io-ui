@@ -42,7 +42,7 @@ class Builds extends Component {
   }
 
   render() {
-    const { owner, name, fullName } = this.props.repository;
+    const { fullName } = this.props.repository;
     // only show spinner when data is loading for the first time
     const isLoading = this.props.isFetching && !this.props.success;
 
@@ -52,8 +52,7 @@ class Builds extends Component {
           title={`${fullName} builds`}
         />
         <h1>{fullName} builds</h1>
-        {/* TODO: bartaz account/repo to rename */}
-        <BuildHistory account={owner} repo={name}/>
+        <BuildHistory repository={this.props.repository} />
         { isLoading &&
           <div className={styles.spinner}><Spinner /></div>
         }
