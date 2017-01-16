@@ -35,8 +35,7 @@ export function createWebhook(owner, name) {
     dispatch({ type: WEBHOOK });
 
     const settings = REQUEST_OPTIONS;
-    // TODO: bartaz: serverside need to accept owner and name
-    settings.body = JSON.stringify({ account: owner, repo: name });
+    settings.body = JSON.stringify({ owner, name });
 
     return fetch(`${getBaseUrl()}/api/github/webhook`, settings)
       .then((response) => {
