@@ -10,7 +10,7 @@ import RepositorySetup from './containers/repository-setup.js';
 export default (
   <Route component={App}>
     <Route path="/" component={Home}/>
-    <Route path="/:account/:repo/setup" component={RepositorySetup}/>
+    <Route path="/:owner/:name/setup" component={RepositorySetup}/>
     <Route path="/:account/:repo/builds" component={Builds}/>
     <Route path="/:account/:repo/builds/:buildId" component={BuildDetails}/>
     <Route path="/login/failed" component={LoginFailed}/>

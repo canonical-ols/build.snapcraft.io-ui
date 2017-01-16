@@ -29,12 +29,14 @@ export function createWebhookFailure(code, message) {
   return action;
 }
 
-export function createWebhook(account, repo) {
+// TODO: bartaz (accept repository object)?
+export function createWebhook(owner, name) {
   return (dispatch) => {
     dispatch({ type: WEBHOOK });
 
     const settings = REQUEST_OPTIONS;
-    settings.body = JSON.stringify({ account, repo });
+    // TODO: bartaz: serverside need to accept owner and name
+    settings.body = JSON.stringify({ account: owner, repo: name });
 
     return fetch(`${getBaseUrl()}/api/github/webhook`, settings)
       .then((response) => {

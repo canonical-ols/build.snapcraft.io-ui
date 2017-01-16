@@ -47,6 +47,7 @@ function checkStatus(response) {
   }
 }
 
+// TODO: bartaz: repository = fullName
 // Fetch snap info (self_link) for given repository
 export function fetchSnap(repository) {
   return (dispatch) => {
@@ -91,15 +92,16 @@ export function fetchBuilds(snapLink) {
   };
 }
 
+// TODO: bartaz (accept repository object)?
 // Reguest new builds for given repository
-export function requestBuilds(repository) {
+export function requestBuilds(fullName) {
   return (dispatch) => {
-    if (repository) {
+    if (fullName) {
       dispatch({
         type: FETCH_BUILDS
       });
 
-      const repositoryUrl = getGitHubRepoUrl(repository);
+      const repositoryUrl = getGitHubRepoUrl(fullName);
       const url = `${BASE_URL}/api/launchpad/snaps/request-builds`;
       const settings = {
         ...REQUEST_POST_OPTIONS,
