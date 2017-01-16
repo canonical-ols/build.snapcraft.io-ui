@@ -104,7 +104,7 @@ class RepositoryInput extends Component {
     event.preventDefault();
     const { repository } = this.props.repositoryInput;
 
-    if (repository) {
+    if (repository.fullName) {
       this.props.dispatch(createSnap(repository.fullName));
     }
   }

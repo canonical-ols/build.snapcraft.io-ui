@@ -39,16 +39,17 @@ function checkStatus(response) {
 }
 
 export function verifyGitHubRepository(repository) {
+  const fullName = repository;
   return (dispatch) => {
-    if (repository) {
+    if (fullName) {
       dispatch({
         type: VERIFY_GITHUB_REPOSITORY,
-        payload: repository
+        payload: fullName
       });
 
-      return fetch(`${GITHUB_API_ENDPOINT}/repos/${repository}/contents/snapcraft.yaml`)
+      return fetch(`${GITHUB_API_ENDPOINT}/repos/${fullName}/contents/snapcraft.yaml`)
         .then(checkStatus)
-        .then(() => dispatch(verifyGitHubRepositorySuccess(getGitHubRepoUrl(repository))))
+        .then(() => dispatch(verifyGitHubRepositorySuccess(getGitHubRepoUrl(fullName))))
         .catch(error => dispatch(verifyGitHubRepositoryError(error)));
     }
   };
@@ -69,14 +70,17 @@ export function verifyGitHubRepositoryError(error) {
   };
 }
 
+// TODO: bartaz (accept repository object)?
 export function createSnap(repository, location) {
+  const fullName = repository;
+
   return (dispatch) => {
-    if (repository) {
+    if (fullName) {
       dispatch({
         type: CREATE_SNAP,
-        payload: repository
+        payload: fullName
       });
-      const repositoryUrl = getGitHubRepoUrl(repository);
+      const repositoryUrl = getGitHubRepoUrl(fullName);
 
       return fetch(`${BASE_URL}/api/launchpad/snaps`, {
         method: 'POST',
@@ -91,7 +95,7 @@ export function createSnap(repository, location) {
                 result.payload.code !== 'snap-created') {
               throw getError(response, result);
             }
-            const startingUrl = `${BASE_URL}/${repository}/setup`;
+            const startingUrl = `${BASE_URL}/${fullName}/setup`;
             (location || window.location).href =
               `${BASE_URL}/login/authenticate` +
               `?starting_url=${encodeURIComponent(startingUrl)}` +
@@ -102,7 +106,7 @@ export function createSnap(repository, location) {
         .catch(error => {
           // if LP error says there is already such snap, just redirect to builds page
           if (error.message === 'There is already a snap package with the same name and owner.') {
-            (location || window.location).href = `${BASE_URL}/${repository}/builds`;
+            (location || window.location).href = `${BASE_URL}/${fullName}/builds`;
           } else {
             dispatch(createSnapError(error));
           }
