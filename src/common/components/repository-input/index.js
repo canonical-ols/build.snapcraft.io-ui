@@ -14,8 +14,9 @@ import { Form, InputField, Message } from '../forms';
 class RepositoryInput extends Component {
   getErrorMessage() {
     const input = this.props.repositoryInput;
+    const repository = input.repository;
 
-    if (input.inputValue.length > 2 && !input.repository) {
+    if (input.inputValue.length > 2 && !repository.fullName) {
       return 'Please enter a valid GitHub repository name or URL.';
     } else if (input.error) {
       const payload = input.error.json.payload;
@@ -84,7 +85,7 @@ class RepositoryInput extends Component {
           />
           { input.success &&
             <Message status='info'>
-              Repository <a href={input.repositoryUrl}>{input.repository}</a> contains snapcraft project and can be built.
+              Repository <a href={input.repository.url}>{input.repository.fullName}</a> contains snapcraft project and can be built.
             </Message>
           }
           <Button type='submit' disabled={!isValid || input.isFetching || !authenticated }>
@@ -104,7 +105,7 @@ class RepositoryInput extends Component {
     const { repository } = this.props.repositoryInput;
 
     if (repository) {
-      this.props.dispatch(createSnap(repository));
+      this.props.dispatch(createSnap(repository.fullName));
     }
   }
 }

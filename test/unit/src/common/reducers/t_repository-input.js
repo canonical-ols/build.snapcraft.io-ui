@@ -7,8 +7,10 @@ describe('repositoryInput reducers', () => {
   const initialState = {
     isFetching: false,
     inputValue: '',
-    repository: null,
-    repositoryUrl: null,
+    repository: {
+      fullName: null,
+      url: null
+    },
     success: false,
     error: false
   };
@@ -37,16 +39,16 @@ describe('repositoryInput reducers', () => {
     it('should save repository name for valid user/repo pair', () => {
       action.payload = 'foo/bar';
 
-      expect(repositoryInput(initialState, action)).toInclude({
-        repository: 'foo/bar'
+      expect(repositoryInput(initialState, action).repository).toInclude({
+        fullName: 'foo/bar'
       });
     });
 
     it('should save repository name for valid repo URL', () => {
       action.payload = 'http://github.com/foo/bar';
 
-      expect(repositoryInput(initialState, action)).toInclude({
-        repository: 'foo/bar'
+      expect(repositoryInput(initialState, action).repository).toInclude({
+        fullName: 'foo/bar'
       });
     });
 
@@ -58,8 +60,8 @@ describe('repositoryInput reducers', () => {
         repository: 'foo/bar'
       };
 
-      expect(repositoryInput(state, action)).toInclude({
-        repository: null
+      expect(repositoryInput(state, action).repository).toInclude({
+        fullName: null
       });
     });
 
@@ -100,7 +102,10 @@ describe('repositoryInput reducers', () => {
     it('should handle verify repo success', () => {
       const state = {
         ...initialState,
-        repository: 'dummy/repo',
+        repository: {
+          ...initialState.repository,
+          fullName: 'dummy/repo'
+        },
         isFetching: true
       };
 
@@ -112,7 +117,10 @@ describe('repositoryInput reducers', () => {
       expect(repositoryInput(state, action)).toEqual({
         ...state,
         isFetching: false,
-        repositoryUrl: 'http://github.com/dummy/repo.git',
+        repository: {
+          ...state.repository,
+          url: 'http://github.com/dummy/repo.git'
+        },
         success: true
       });
     });
@@ -174,7 +182,10 @@ describe('repositoryInput reducers', () => {
     it('handles snap creation failure', () => {
       const state = {
         ...initialState,
-        repository: 'dummy/repo',
+        repository: {
+          ...initialState.repository,
+          fullName: 'dummy/repo'
+        },
         isFetching: true
       };
 

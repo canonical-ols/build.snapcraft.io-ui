@@ -9,8 +9,14 @@ function parseRepository(input) {
 export function repositoryInput(state = {
   isFetching: false,
   inputValue: '',
-  repository: null,
-  repositoryUrl: null,
+  repository: {
+// TODO: bartaz
+// keep also parsed owner and name here?
+//    owner: null,
+//    name: null,
+    fullName: null,
+    url: null
+  },
   success: false,
   error: false
 }, action) {
@@ -19,7 +25,10 @@ export function repositoryInput(state = {
       return {
         ...state,
         inputValue: action.payload,
-        repository: parseRepository(action.payload),
+        repository: {
+          ...state.repository,
+          fullName: parseRepository(action.payload),
+        },
         success: false,
         error: false
       };
@@ -34,7 +43,10 @@ export function repositoryInput(state = {
         isFetching: false,
         success: true,
         error: false,
-        repositoryUrl: action.payload
+        repository: {
+          ...state.repository,
+          url: action.payload,
+        }
       };
     case ActionTypes.VERIFY_GITHUB_REPOSITORY_ERROR:
       return {

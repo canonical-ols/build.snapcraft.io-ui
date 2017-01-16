@@ -23,8 +23,10 @@ describe('repository input actions', () => {
   const initialState = {
     isFetching: false,
     inputValue: '',
-    repository: null,
-    repositoryUrl: null,
+    repository: {
+      fullName: null,
+      url: null
+    },
     statusMessage: '',
     success: false,
     error: false
