@@ -13,11 +13,11 @@ import styles from './container.css';
 class Builds extends Component {
   fetchInterval = null
 
-  fetchData({ snapLink, repoFullName }) {
+  fetchData({ snapLink, repository }) {
     if (snapLink) {
       this.props.dispatch(fetchBuilds(snapLink));
     } else {
-      this.props.dispatch(fetchSnap(repoFullName));
+      this.props.dispatch(fetchSnap(repository.fullName));
     }
   }
 
@@ -36,23 +36,24 @@ class Builds extends Component {
   componentWillReceiveProps(nextProps) {
     // if snap link or repo name changed, fetch new data
     if ((this.props.snapLink !== nextProps.snapLink) ||
-        (this.props.repoFullName !== nextProps.repoFullName)) {
+        (this.props.repository.fullName !== nextProps.repository.fullName)) {
       this.fetchData(nextProps);
     }
   }
 
   render() {
-    const { account, repo, repoFullName } = this.props;
+    const { owner, name, fullName } = this.props.repository;
     // only show spinner when data is loading for the first time
     const isLoading = this.props.isFetching && !this.props.success;
 
     return (
       <div className={ styles.container }>
         <Helmet
-          title={`${repoFullName} builds`}
+          title={`${fullName} builds`}
         />
-        <h1>{repoFullName} builds</h1>
-        <BuildHistory account={account} repo={repo}/>
+        <h1>{fullName} builds</h1>
+        {/* TODO: bartaz account/repo to rename */}
+        <BuildHistory account={owner} repo={name}/>
         { isLoading &&
           <div className={styles.spinner}><Spinner /></div>
         }
@@ -66,9 +67,11 @@ class Builds extends Component {
 }
 
 Builds.propTypes = {
-  account: PropTypes.string.isRequired,
-  repo: PropTypes.string.isRequired,
-  repoFullName: PropTypes.string.isRequired,
+  repository: PropTypes.shape({
+    owner: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    fullName: PropTypes.string.isRequired,
+  }),
   isFetching: PropTypes.bool,
   snapLink: PropTypes.string,
   success: PropTypes.bool,
@@ -77,9 +80,9 @@ Builds.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-  const account = ownProps.params.account.toLowerCase();
-  const repo = ownProps.params.repo.toLowerCase();
-  const repoFullName = `${account}/${repo}`;
+  const owner = ownProps.params.owner.toLowerCase();
+  const name = ownProps.params.name.toLowerCase();
+  const fullName = `${owner}/${name}`;
 
   const isFetching = state.snapBuilds.isFetching;
   const snapLink = state.snapBuilds.snapLink;
@@ -91,9 +94,11 @@ const mapStateToProps = (state, ownProps) => {
     snapLink,
     success,
     error,
-    account,
-    repo,
-    repoFullName
+    repository: {
+      owner,
+      name,
+      fullName
+    }
   };
 };
 

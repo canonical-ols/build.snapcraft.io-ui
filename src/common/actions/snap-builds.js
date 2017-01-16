@@ -48,15 +48,16 @@ function checkStatus(response) {
 }
 
 // TODO: bartaz: repository = fullName
+// TODO: bartaz (accept repository object)?
 // Fetch snap info (self_link) for given repository
-export function fetchSnap(repository) {
+export function fetchSnap(fullName) {
   return (dispatch) => {
-    if (repository) {
+    if (fullName) {
       dispatch({
         type: FETCH_BUILDS
       });
 
-      const repositoryUrl = encodeURIComponent(getGitHubRepoUrl(repository));
+      const repositoryUrl = encodeURIComponent(getGitHubRepoUrl(fullName));
       const url = `${BASE_URL}/api/launchpad/snaps?repository_url=${repositoryUrl}`;
       return fetch(url)
         .then(checkStatus)
