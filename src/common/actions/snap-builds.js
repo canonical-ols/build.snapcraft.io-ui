@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 
 import conf from '../helpers/config';
-import { getGitHubRepoUrl } from '../helpers/github-url';
 
 const BASE_URL = conf.get('BASE_URL');
 
@@ -47,17 +46,15 @@ function checkStatus(response) {
   }
 }
 
-// TODO: bartaz: repository = fullName
-// TODO: bartaz (accept repository object)?
 // Fetch snap info (self_link) for given repository
-export function fetchSnap(fullName) {
+export function fetchSnap(repositoryUrl) {
   return (dispatch) => {
-    if (fullName) {
+    if (repositoryUrl) {
       dispatch({
         type: FETCH_BUILDS
       });
 
-      const repositoryUrl = encodeURIComponent(getGitHubRepoUrl(fullName));
+      repositoryUrl = encodeURIComponent(repositoryUrl);
       const url = `${BASE_URL}/api/launchpad/snaps?repository_url=${repositoryUrl}`;
       return fetch(url)
         .then(checkStatus)

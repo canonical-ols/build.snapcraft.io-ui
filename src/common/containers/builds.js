@@ -6,6 +6,7 @@ import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
 
+import { getGitHubRepoUrl } from '../helpers/github-url';
 import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -17,7 +18,7 @@ class Builds extends Component {
     if (snapLink) {
       this.props.dispatch(fetchBuilds(snapLink));
     } else {
-      this.props.dispatch(fetchSnap(repository.fullName));
+      this.props.dispatch(fetchSnap(repository.url));
     }
   }
 
@@ -70,6 +71,7 @@ Builds.propTypes = {
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired
   }),
   isFetching: PropTypes.bool,
   snapLink: PropTypes.string,
@@ -82,6 +84,7 @@ const mapStateToProps = (state, ownProps) => {
   const owner = ownProps.params.owner.toLowerCase();
   const name = ownProps.params.name.toLowerCase();
   const fullName = `${owner}/${name}`;
+  const url = getGitHubRepoUrl(fullName);
 
   const isFetching = state.snapBuilds.isFetching;
   const snapLink = state.snapBuilds.snapLink;
@@ -96,7 +99,8 @@ const mapStateToProps = (state, ownProps) => {
     repository: {
       owner,
       name,
-      fullName
+      fullName,
+      url
     }
   };
 };

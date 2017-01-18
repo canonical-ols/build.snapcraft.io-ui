@@ -5,6 +5,8 @@ import Helmet from 'react-helmet';
 import BuildRow from '../components/build-row';
 import BuildLog from '../components/build-log';
 import { Message } from '../components/forms';
+
+import { getGitHubRepoUrl } from '../helpers/github-url';
 import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -15,7 +17,7 @@ class BuildDetails extends Component {
     if (snapLink) {
       this.props.dispatch(fetchBuilds(snapLink));
     } else {
-      this.props.dispatch(fetchSnap(repository.fullName));
+      this.props.dispatch(fetchSnap(repository.url));
     }
   }
 
@@ -64,6 +66,7 @@ BuildDetails.propTypes = {
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired
   }),
   buildId: PropTypes.string.isRequired,
   build: PropTypes.object,
@@ -77,6 +80,7 @@ const mapStateToProps = (state, ownProps) => {
   const owner = ownProps.params.owner.toLowerCase();
   const name = ownProps.params.name.toLowerCase();
   const fullName = `${owner}/${name}`;
+  const url = getGitHubRepoUrl(fullName);
 
   const buildId = ownProps.params.buildId.toLowerCase();
 
@@ -89,7 +93,8 @@ const mapStateToProps = (state, ownProps) => {
     repository: {
       owner,
       name,
-      fullName
+      fullName,
+      url
     },
     buildId,
     build,
