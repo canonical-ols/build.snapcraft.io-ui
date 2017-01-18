@@ -270,7 +270,7 @@ describe('snap builds actions', () => {
           }
         });
 
-      return store.dispatch(requestBuilds(repo))
+      return store.dispatch(requestBuilds(repositoryUrl))
         .then(() => {
           api.done();
           expect(store.getActions()).toHaveActionOfType(
@@ -292,7 +292,7 @@ describe('snap builds actions', () => {
           }
         });
 
-      return store.dispatch(requestBuilds(repo))
+      return store.dispatch(requestBuilds(repositoryUrl))
         .then(() => {
           expect(store.getActions()).toHaveActionOfType(
             ActionTypes.FETCH_BUILDS_ERROR

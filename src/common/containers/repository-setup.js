@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
+import { getGitHubRepoUrl } from '../helpers/github-url';
 import { createWebhook } from '../actions/webhook';
 import { requestBuilds } from '../actions/snap-builds';
 import { Message } from '../components/forms';
@@ -22,12 +23,11 @@ class RepositorySetup extends Component {
   componentDidMount() {
     const { repository, webhook, builds } = this.props;
 
-    // TODO: bartaz - createWebhook and requestBuilds should have same params
     if (!webhook.isFetching) {
       this.props.dispatch(createWebhook(repository.owner, repository.name));
     }
     if (!builds.isFetching) {
-      this.props.dispatch(requestBuilds(repository.fullName));
+      this.props.dispatch(requestBuilds(repository.url));
     }
   }
 
@@ -59,7 +59,8 @@ RepositorySetup.propTypes = {
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    fullName: PropTypes.string.isRequired
+    fullName: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired
   }),
   webhook: PropTypes.shape({
     isFetching: PropTypes.bool,
@@ -79,23 +80,17 @@ const mapStateToProps = (state, ownProps) => {
   const owner = ownProps.params.owner.toLowerCase();
   const name = ownProps.params.name.toLowerCase();
   const fullName = `${owner}/${name}`;
+  const url = getGitHubRepoUrl(fullName);
 
   return {
     repository: {
       owner,
       name,
-      fullName
+      fullName,
+      url
     },
-    webhook: {
-      isFetching: state.webhook.isFetching,
-      success: state.webhook.success,
-      error: state.webhook.error
-    },
-    builds: {
-      isFetching: state.snapBuilds.isFetching,
-      success: state.snapBuilds.success,
-      error: state.snapBuilds.error
-    }
+    webhook: state.webhook,
+    builds: state.snapBuilds
   };
 };
 

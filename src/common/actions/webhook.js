@@ -29,7 +29,6 @@ export function createWebhookFailure(code, message) {
   return action;
 }
 
-// TODO: bartaz (accept repository object)?
 export function createWebhook(owner, name) {
   return (dispatch) => {
     dispatch({ type: WEBHOOK });
