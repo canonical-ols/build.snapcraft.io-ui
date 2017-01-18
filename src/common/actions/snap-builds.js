@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 
 import conf from '../helpers/config';
-import getGitHubRepoUrl from '../helpers/github-url';
+import { getGitHubRepoUrl } from '../helpers/github-url';
 
 const BASE_URL = conf.get('BASE_URL');
 

@@ -16,10 +16,7 @@ const baseProps = {
   },
   repositoryInput: {
     success: false,
-    repository: {
-      fullName: null,
-      url: null
-    },
+    repository: null,
     inputValue: '',
   },
   webhook: {
@@ -94,6 +91,10 @@ describe('The RepositoryInput component', () => {
           repositoryInput: {
             ...baseProps.repositoryInput,
             inputValue: 'example/example',
+            repository: {
+              fullName: 'example/example',
+              url: 'https://github.com/example/example'
+            },
             success: true
           }
         };
@@ -134,9 +135,9 @@ describe('The RepositoryInput component', () => {
             success: true,
             inputValue: 'test-owner/test-name',
             repository: {
-              ...baseProps.repositoryInput.repository,
-              fullName: 'test-owner/test-name'
-            }
+              fullName: 'test-owner/test-name',
+              url: 'https://github.com/test-owner/test-name'
+            },
           },
         };
         store = mockStore(props);

@@ -1,6 +1,6 @@
 import { createHmac } from 'crypto';
 
-import getGitHubRepoUrl from '../../common/helpers/github-url';
+import { getGitHubRepoUrl } from '../../common/helpers/github-url';
 import { conf } from '../helpers/config';
 import logging from '../logging';
 import { uncheckedRequestSnapBuilds } from './launchpad';

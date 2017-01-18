@@ -1,21 +1,10 @@
 import * as ActionTypes from '../actions/repository-input';
-import parseGitHubUrl from 'parse-github-url';
-
-function parseRepository(input) {
-  const gitHubRepo = parseGitHubUrl(input);
-  return gitHubRepo ? gitHubRepo.repo : null;
-}
+import { parseGitHubRepoUrl } from '../helpers/github-url';
 
 export function repositoryInput(state = {
   isFetching: false,
   inputValue: '',
-  repository: {
-// TODO: bartaz
-// keep also parsed owner and name here?
-//    owner: null,
-//    name: null,
-    fullName: null
-  },
+  repository: null,
   success: false,
   error: false
 }, action) {
@@ -24,10 +13,7 @@ export function repositoryInput(state = {
       return {
         ...state,
         inputValue: action.payload,
-        repository: {
-          ...state.repository,
-          fullName: parseRepository(action.payload),
-        },
+        repository: parseGitHubRepoUrl(action.payload),
         success: false,
         error: false
       };

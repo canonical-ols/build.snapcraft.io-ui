@@ -16,7 +16,7 @@ class RepositoryInput extends Component {
     const input = this.props.repositoryInput;
     const repository = input.repository;
 
-    if (input.inputValue.length > 2 && !repository.fullName) {
+    if (input.inputValue.length > 2 && !repository) {
       return 'Please enter a valid GitHub repository name or URL.';
     } else if (input.error) {
       const payload = input.error.json.payload;
@@ -104,8 +104,8 @@ class RepositoryInput extends Component {
     event.preventDefault();
     const { repository } = this.props.repositoryInput;
 
-    if (repository.fullName) {
-      this.props.dispatch(createSnap(repository.fullName));
+    if (repository) {
+      this.props.dispatch(createSnap(repository.url));
     }
   }
 }

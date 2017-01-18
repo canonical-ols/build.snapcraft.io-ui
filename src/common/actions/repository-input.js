@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 
 import conf from '../helpers/config';
-import getGitHubRepoUrl from '../helpers/github-url';
+import { parseGitHubRepoUrl } from '../helpers/github-url';
 
 const BASE_URL = conf.get('BASE_URL');
 
@@ -34,17 +34,14 @@ function checkStatus(response) {
   }
 }
 
-// TODO: bartaz (accept repository object)?
-export function createSnap(repository, location) {
-  const fullName = repository;
-
+export function createSnap(repositoryUrl, location) { // location for tests
   return (dispatch) => {
-    if (fullName) {
+    if (repositoryUrl) {
+      const { fullName } = parseGitHubRepoUrl(repositoryUrl);
+
       dispatch({
-        type: CREATE_SNAP,
-        payload: fullName
+        type: CREATE_SNAP
       });
-      const repositoryUrl = getGitHubRepoUrl(fullName);
 
       return fetch(`${BASE_URL}/api/launchpad/snaps`, {
         method: 'POST',

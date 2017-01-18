@@ -7,9 +7,7 @@ describe('repositoryInput reducers', () => {
   const initialState = {
     isFetching: false,
     inputValue: '',
-    repository: {
-      fullName: null
-    },
+    repository: null,
     success: false,
     error: false
   };
@@ -23,7 +21,8 @@ describe('repositoryInput reducers', () => {
 
     beforeEach(() => {
       action = {
-        type: ActionTypes.SET_GITHUB_REPOSITORY
+        type: ActionTypes.SET_GITHUB_REPOSITORY,
+        payload: ''
       };
     });
 
@@ -51,17 +50,15 @@ describe('repositoryInput reducers', () => {
       });
     });
 
-    it('should clear repository name for invalid input', () => {
+    it('should clear repository for invalid input', () => {
       action.payload = 'foo bar';
 
       const state = {
         ...initialState,
-        repository: 'foo/bar'
+        repository: { fullName: 'foo/bar' }
       };
 
-      expect(repositoryInput(state, action).repository).toInclude({
-        fullName: null
-      });
+      expect(repositoryInput(state, action).repository).toBe(null);
     });
 
     it('should reset error status', () => {

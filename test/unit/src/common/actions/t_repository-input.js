@@ -58,6 +58,7 @@ describe('repository input actions', () => {
   });
 
   context('createSnap', () => {
+    const repositoryUrl = 'https://github.com/foo/bar';
     const BASE_URL = conf.get('BASE_URL');
     let scope;
 
@@ -80,7 +81,7 @@ describe('repository input actions', () => {
         });
 
       const location = {};
-      return store.dispatch(createSnap('foo/bar', location))
+      return store.dispatch(createSnap(repositoryUrl, location))
         .then(() => {
           expect(url.parse(location.href, true)).toMatch({
             path: '/login/authenticate',
@@ -103,7 +104,7 @@ describe('repository input actions', () => {
         });
 
       const location = {};
-      return store.dispatch(createSnap('foo/bar', location))
+      return store.dispatch(createSnap(repositoryUrl, location))
         .then(() => {
           expect(location).toExcludeKey('href');
           expect(store.getActions()).toHaveActionOfType(
