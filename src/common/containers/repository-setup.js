@@ -3,42 +3,47 @@ import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-import { getGitHubRepoUrl } from '../helpers/github-url';
 import { createWebhook } from '../actions/webhook';
 import { requestBuilds } from '../actions/snap-builds';
+import { setGitHubRepository } from '../actions/repository-input';
+
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
 
 import styles from './container.css';
 
 class RepositorySetup extends Component {
+  componentWillMount() {
+    if (!this.props.repository && this.props.fullName) {
+      this.props.dispatch(setGitHubRepository(this.props.fullName));
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const { repository, webhook, builds } = nextProps;
+
+    if (repository) {
+      if (!webhook.isFetching && !webhook.success) {
+        this.props.dispatch(createWebhook(repository.owner, repository.name));
+      }
+      if (!builds.isFetching && !builds.success) {
+        this.props.dispatch(requestBuilds(repository.url));
+      }
+    }
 
     if (webhook.success && builds.success) {
       this.props.router.replace(`/${repository.fullName}/builds`);
     }
   }
 
-  componentDidMount() {
-    const { repository, webhook, builds } = this.props;
-
-    if (!webhook.isFetching) {
-      this.props.dispatch(createWebhook(repository.owner, repository.name));
-    }
-    if (!builds.isFetching) {
-      this.props.dispatch(requestBuilds(repository.url));
-    }
-  }
-
   render() {
     const { repository, webhook, builds } = this.props;
-    const isFetching = webhook.isFetching || builds.isFetching;
+    const isFetching = !repository || webhook.isFetching || builds.isFetching;
 
     return (
       <div className={styles.container}>
         <Helmet
-          title={`Setting up ${repository.fullName}`}
+          title={`Setting up ${this.props.fullName}`}
         />
         { isFetching &&
           <div className={styles.spinner}><Spinner /></div>
@@ -56,6 +61,7 @@ class RepositorySetup extends Component {
 }
 
 RepositorySetup.propTypes = {
+  fullName: PropTypes.string.isRequired,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -80,15 +86,10 @@ const mapStateToProps = (state, ownProps) => {
   const owner = ownProps.params.owner.toLowerCase();
   const name = ownProps.params.name.toLowerCase();
   const fullName = `${owner}/${name}`;
-  const url = getGitHubRepoUrl(fullName);
 
   return {
-    repository: {
-      owner,
-      name,
-      fullName,
-      url
-    },
+    fullName,
+    repository: state.repository,
     webhook: state.webhook,
     builds: state.snapBuilds
   };

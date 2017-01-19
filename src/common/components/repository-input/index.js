@@ -112,7 +112,7 @@ class RepositoryInput extends Component {
 }
 
 RepositoryInput.propTypes = {
-  repository: PropTypes.object.isRequired,
+  repository: PropTypes.object,
   repositoryInput: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
