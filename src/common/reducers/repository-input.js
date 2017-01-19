@@ -1,10 +1,8 @@
 import * as ActionTypes from '../actions/repository-input';
-import { parseGitHubRepoUrl } from '../helpers/github-url';
 
 export function repositoryInput(state = {
   isFetching: false,
   inputValue: '',
-  repository: null,
   success: false,
   error: false
 }, action) {
@@ -13,7 +11,6 @@ export function repositoryInput(state = {
       return {
         ...state,
         inputValue: action.payload,
-        repository: parseGitHubRepoUrl(action.payload),
         success: false,
         error: false
       };

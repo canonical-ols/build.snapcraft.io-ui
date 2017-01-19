@@ -7,7 +7,6 @@ describe('repositoryInput reducers', () => {
   const initialState = {
     isFetching: false,
     inputValue: '',
-    repository: null,
     success: false,
     error: false
   };
@@ -32,33 +31,6 @@ describe('repositoryInput reducers', () => {
       expect(repositoryInput(initialState, action)).toInclude({
         inputValue: 'foo'
       });
-    });
-
-    it('should save repository name for valid user/repo pair', () => {
-      action.payload = 'foo/bar';
-
-      expect(repositoryInput(initialState, action).repository).toInclude({
-        fullName: 'foo/bar'
-      });
-    });
-
-    it('should save repository name for valid repo URL', () => {
-      action.payload = 'http://github.com/foo/bar';
-
-      expect(repositoryInput(initialState, action).repository).toInclude({
-        fullName: 'foo/bar'
-      });
-    });
-
-    it('should clear repository for invalid input', () => {
-      action.payload = 'foo bar';
-
-      const state = {
-        ...initialState,
-        repository: { fullName: 'foo/bar' }
-      };
-
-      expect(repositoryInput(state, action).repository).toBe(null);
     });
 
     it('should reset error status', () => {
@@ -98,10 +70,6 @@ describe('repositoryInput reducers', () => {
     it('handles snap creation failure', () => {
       const state = {
         ...initialState,
-        repository: {
-          ...initialState.repository,
-          fullName: 'dummy/repo'
-        },
         isFetching: true
       };
 

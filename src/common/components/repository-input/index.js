@@ -14,7 +14,7 @@ import { Form, InputField, Message } from '../forms';
 class RepositoryInput extends Component {
   getErrorMessage() {
     const input = this.props.repositoryInput;
-    const repository = input.repository;
+    const repository = this.props.repository;
 
     if (input.inputValue.length > 2 && !repository) {
       return 'Please enter a valid GitHub repository name or URL.';
@@ -67,8 +67,9 @@ class RepositoryInput extends Component {
   step2() {
     const { authenticated } = this.props.auth;
     const input = this.props.repositoryInput;
+    const repository = this.props.repository;
     const isTouched = input.inputValue.length > 2;
-    const isValid = !!input.repository && !input.error;
+    const isValid = !!repository && !input.error;
 
     return (
       <Step number="2" complete={ input.success }>
@@ -85,7 +86,7 @@ class RepositoryInput extends Component {
           />
           { input.success &&
             <Message status='info'>
-              Repository <a href={input.repository.url}>{input.repository.fullName}</a> contains snapcraft project and can be built.
+              Repository <a href={repository.url}>{repository.fullName}</a> contains snapcraft project and can be built.
             </Message>
           }
           <Button type='submit' disabled={!isValid || input.isFetching || !authenticated }>
@@ -102,7 +103,7 @@ class RepositoryInput extends Component {
 
   onSubmit(event) {
     event.preventDefault();
-    const { repository } = this.props.repositoryInput;
+    const repository = this.props.repository;
 
     if (repository) {
       this.props.dispatch(createSnap(repository.url));
@@ -111,6 +112,7 @@ class RepositoryInput extends Component {
 }
 
 RepositoryInput.propTypes = {
+  repository: PropTypes.object.isRequired,
   repositoryInput: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
@@ -118,12 +120,14 @@ RepositoryInput.propTypes = {
 
 function mapStateToProps(state) {
   const {
+    repository,
     repositoryInput,
     auth
   } = state;
 
   return {
     auth,
+    repository,
     repositoryInput
   };
 }
