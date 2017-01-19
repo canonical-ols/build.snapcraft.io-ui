@@ -11,6 +11,6 @@ export const parseGitHubRepoUrl = (url) => {
     owner: repo.owner,
     name: repo.name,
     fullName: repo.repo,
-    url: url
+    url: getGitHubRepoUrl(repo.owner, repo.name)
   } : null;
 };

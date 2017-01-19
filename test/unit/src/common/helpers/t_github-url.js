@@ -25,6 +25,15 @@ describe('parseGitHubRepoUrl helper', () => {
     });
   });
 
+  it('should return repo data for valid owner/repo pair', () => {
+    expect(parseGitHubRepoUrl('foo/bar')).toEqual({
+      owner: 'foo',
+      name: 'bar',
+      fullName: 'foo/bar',
+      url: 'https://github.com/foo/bar'
+    });
+  });
+
   it('should return null for null', () => {
     expect(parseGitHubRepoUrl(null)).toBe(null);
   });
