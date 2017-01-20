@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 
 import { createWebhook } from '../actions/webhook';
 import { requestBuilds } from '../actions/snap-builds';
-import { setGitHubRepository } from '../actions/repository-input';
+import withRepository from './with-repository';
 
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
@@ -13,11 +13,6 @@ import Spinner from '../components/spinner';
 import styles from './container.css';
 
 class RepositorySetup extends Component {
-  componentDidMount() {
-    if (!this.props.repository && this.props.fullName) {
-      this.props.dispatch(setGitHubRepository(this.props.fullName));
-    }
-  }
 
   componentWillReceiveProps(nextProps) {
     const { repository, webhook, builds } = nextProps;
@@ -43,7 +38,7 @@ class RepositorySetup extends Component {
     return (
       <div className={styles.container}>
         <Helmet
-          title={`Setting up ${this.props.fullName}`}
+          title={`Setting up ${repository.fullName}`}
         />
         { isFetching &&
           <div className={styles.spinner}><Spinner /></div>
@@ -61,13 +56,12 @@ class RepositorySetup extends Component {
 }
 
 RepositorySetup.propTypes = {
-  fullName: PropTypes.string.isRequired,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired
-  }),
+  }).isRequired,
   webhook: PropTypes.shape({
     isFetching: PropTypes.bool,
     success: PropTypes.bool,
@@ -95,4 +89,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(withRouter(RepositorySetup));
+export default connect(mapStateToProps)(withRepository(withRouter(RepositorySetup)));

@@ -6,7 +6,7 @@ import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
 
-import { setGitHubRepository } from '../actions/repository-input';
+import withRepository from './with-repository';
 import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -23,10 +23,6 @@ class Builds extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.repository && this.props.fullName) {
-      this.props.dispatch(setGitHubRepository(this.props.fullName));
-    }
-
     this.fetchData(this.props);
 
     this.fetchInterval = setInterval(() => {
@@ -41,34 +37,32 @@ class Builds extends Component {
   componentWillReceiveProps(nextProps) {
     const currentSnapLink = this.props.snapLink;
     const nextSnapLink = nextProps.snapLink;
-    const currentRepository = this.props.repository && this.props.repository.fullName;
-    const nextRepository = nextProps.repository && nextProps.repository.fullName;
+    const currentRepository = this.props.repository.fullName;
+    const nextRepository = nextProps.repository.fullName;
 
-    if (this.props.fullName !== nextProps.fullName) {
-      this.props.dispatch(setGitHubRepository(nextProps.fullName));
-    } else if ((currentSnapLink !== nextSnapLink) || (currentRepository !== nextRepository)) {
+    if ((currentSnapLink !== nextSnapLink) || (currentRepository !== nextRepository)) {
       // if snap link or repo changed, fetch new data
       this.fetchData(nextProps);
     }
   }
 
   render() {
-    const { fullName, repository } = this.props;
+    const { repository, error } = this.props;
     // only show spinner when data is loading for the first time
-    const isLoading = !repository || (this.props.isFetching && !this.props.success);
+    const isLoading = this.props.isFetching && !this.props.success;
 
     return (
       <div className={ styles.container }>
         <Helmet
-          title={`${fullName} builds`}
+          title={`${repository.fullName} builds`}
         />
-        <h1>{fullName} builds</h1>
-        <BuildHistory repository={this.props.repository} />
+        <h1>{repository.fullName} builds</h1>
+        <BuildHistory repository={repository} />
         { isLoading &&
           <div className={styles.spinner}><Spinner /></div>
         }
-        { this.props.error &&
-          <Message status='error'>{ this.props.error.message || this.props.error }</Message>
+        { error &&
+          <Message status='error'>{ error.message || error }</Message>
         }
       </div>
     );
@@ -77,13 +71,12 @@ class Builds extends Component {
 }
 
 Builds.propTypes = {
-  fullName: PropTypes.string.isRequired,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired
-  }),
+  }).isRequired,
   isFetching: PropTypes.bool,
   snapLink: PropTypes.string,
   success: PropTypes.bool,
@@ -104,4 +97,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(Builds);
+export default connect(mapStateToProps)(withRepository(Builds));

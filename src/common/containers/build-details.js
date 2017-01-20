@@ -6,7 +6,7 @@ import BuildRow from '../components/build-row';
 import BuildLog from '../components/build-log';
 import { Message } from '../components/forms';
 
-import { setGitHubRepository } from '../actions/repository-input';
+import withRepository from './with-repository';
 import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -22,41 +22,35 @@ class BuildDetails extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.repository && this.props.fullName) {
-      this.props.dispatch(setGitHubRepository(this.props.fullName));
-    }
-
     this.fetchData(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     const currentSnapLink = this.props.snapLink;
     const nextSnapLink = nextProps.snapLink;
-    const currentRepository = this.props.repository && this.props.repository.fullName;
-    const nextRepository = nextProps.repository && nextProps.repository.fullName;
+    const currentRepository = this.props.repository.fullName;
+    const nextRepository = nextProps.repository.fullName;
 
-    if (this.props.fullName !== nextProps.fullName) {
-      this.props.dispatch(setGitHubRepository(nextProps.fullName));
-    } else if ((currentSnapLink !== nextSnapLink) || (currentRepository !== nextRepository)) {
+    if ((currentSnapLink !== nextSnapLink) || (currentRepository !== nextRepository)) {
       // if snap link or repo changed, fetch new data
       this.fetchData(nextProps);
     }
   }
 
   render() {
-    const { fullName, repository, buildId, build } = this.props;
+    const { repository, buildId, build, error, isFetching } = this.props;
 
     return (
       <div className={ styles.container }>
         <Helmet
-          title={`${fullName} builds`}
+          title={`${repository.fullName} builds`}
         />
-        <h1>{fullName} build #{buildId}</h1>
-        { this.props.isFetching &&
+        <h1>{repository.fullName} build #{buildId}</h1>
+        { isFetching &&
           <span>Loading...</span>
         }
-        { this.props.error &&
-          <Message status='error'>{ this.props.error.message || this.props.error }</Message>
+        { error &&
+          <Message status='error'>{ error.message || error }</Message>
         }
         { build &&
           <div>
@@ -71,13 +65,12 @@ class BuildDetails extends Component {
 
 }
 BuildDetails.propTypes = {
-  fullName: PropTypes.string.isRequired,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     fullName: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired
-  }),
+  }).isRequired,
   buildId: PropTypes.string.isRequired,
   build: PropTypes.object,
   isFetching: PropTypes.bool,
@@ -110,4 +103,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps)(BuildDetails);
+export default connect(mapStateToProps)(withRepository(BuildDetails));
