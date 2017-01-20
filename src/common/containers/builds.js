@@ -6,7 +6,7 @@ import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
 
-import { getGitHubRepoUrl } from '../helpers/github-url';
+import { setGitHubRepository } from '../actions/repository-input';
 import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -17,12 +17,16 @@ class Builds extends Component {
   fetchData({ snapLink, repository }) {
     if (snapLink) {
       this.props.dispatch(fetchBuilds(snapLink));
-    } else {
+    } else if (repository){
       this.props.dispatch(fetchSnap(repository.url));
     }
   }
 
   componentWillMount() {
+    if (!this.props.repository && this.props.fullName) {
+      this.props.dispatch(setGitHubRepository(this.props.fullName));
+    }
+
     this.fetchData(this.props);
 
     this.fetchInterval = setInterval(() => {
@@ -35,17 +39,23 @@ class Builds extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // if snap link or repo name changed, fetch new data
-    if ((this.props.snapLink !== nextProps.snapLink) ||
-        (this.props.repository.fullName !== nextProps.repository.fullName)) {
+    const currentSnapLink = this.props.snapLink;
+    const nextSnapLink = nextProps.snapLink;
+    const currentRepository = this.props.repository && this.props.repository.fullName;
+    const nextRepository = nextProps.repository && nextProps.repository.fullName;
+
+    if (this.props.fullName !== nextProps.fullName) {
+      this.props.dispatch(setGitHubRepository(nextProps.fullName));
+    } else if ((currentSnapLink !== nextSnapLink) || (currentRepository !== nextRepository)) {
+      // if snap link or repo changed, fetch new data
       this.fetchData(nextProps);
     }
   }
 
   render() {
-    const { fullName } = this.props.repository;
+    const { fullName, repository } = this.props;
     // only show spinner when data is loading for the first time
-    const isLoading = this.props.isFetching && !this.props.success;
+    const isLoading = !repository || (this.props.isFetching && !this.props.success);
 
     return (
       <div className={ styles.container }>
@@ -67,6 +77,7 @@ class Builds extends Component {
 }
 
 Builds.propTypes = {
+  fullName: PropTypes.string.isRequired,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -84,24 +95,12 @@ const mapStateToProps = (state, ownProps) => {
   const owner = ownProps.params.owner.toLowerCase();
   const name = ownProps.params.name.toLowerCase();
   const fullName = `${owner}/${name}`;
-  const url = getGitHubRepoUrl(fullName);
-
-  const isFetching = state.snapBuilds.isFetching;
-  const snapLink = state.snapBuilds.snapLink;
-  const success = state.snapBuilds.success;
-  const error = state.snapBuilds.error;
+  const repository = state.repository;
 
   return {
-    isFetching,
-    snapLink,
-    success,
-    error,
-    repository: {
-      owner,
-      name,
-      fullName,
-      url
-    }
+    fullName,
+    repository,
+    ...state.snapBuilds
   };
 };
 
