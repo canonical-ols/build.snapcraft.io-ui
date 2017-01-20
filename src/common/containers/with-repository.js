@@ -18,10 +18,6 @@ function withRepository(WrappedComponent) {
       }
     }
 
-    componentWillUnmount() {
-
-    }
-
     render() {
       const { fullName, ...passThroughProps } = this.props;
       fullName; // just to 'use' this variable
