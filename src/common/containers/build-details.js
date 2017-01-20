@@ -6,7 +6,7 @@ import BuildRow from '../components/build-row';
 import BuildLog from '../components/build-log';
 import { Message } from '../components/forms';
 
-import { getGitHubRepoUrl } from '../helpers/github-url';
+import { setGitHubRepository } from '../actions/repository-input';
 import { fetchBuilds, fetchSnap } from '../actions/snap-builds';
 
 import styles from './container.css';
@@ -16,26 +16,35 @@ class BuildDetails extends Component {
   fetchData({ snapLink, repository }) {
     if (snapLink) {
       this.props.dispatch(fetchBuilds(snapLink));
-    } else {
+    } else if (repository) {
       this.props.dispatch(fetchSnap(repository.url));
     }
   }
 
   componentWillMount() {
+    if (!this.props.repository && this.props.fullName) {
+      this.props.dispatch(setGitHubRepository(this.props.fullName));
+    }
+
     this.fetchData(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    // if snap link or repo name changed, fetch new data
-    if ((this.props.snapLink !== nextProps.snapLink) ||
-        (this.props.repository.fullName !== nextProps.repository.fullName)) {
+    const currentSnapLink = this.props.snapLink;
+    const nextSnapLink = nextProps.snapLink;
+    const currentRepository = this.props.repository && this.props.repository.fullName;
+    const nextRepository = nextProps.repository && nextProps.repository.fullName;
+
+    if (this.props.fullName !== nextProps.fullName) {
+      this.props.dispatch(setGitHubRepository(nextProps.fullName));
+    } else if ((currentSnapLink !== nextSnapLink) || (currentRepository !== nextRepository)) {
+      // if snap link or repo changed, fetch new data
       this.fetchData(nextProps);
     }
   }
 
   render() {
-    const { repository, buildId, build } = this.props;
-    const { fullName } = repository;
+    const { fullName, repository, buildId, build } = this.props;
 
     return (
       <div className={ styles.container }>
@@ -62,6 +71,7 @@ class BuildDetails extends Component {
 
 }
 BuildDetails.propTypes = {
+  fullName: PropTypes.string.isRequired,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -80,7 +90,7 @@ const mapStateToProps = (state, ownProps) => {
   const owner = ownProps.params.owner.toLowerCase();
   const name = ownProps.params.name.toLowerCase();
   const fullName = `${owner}/${name}`;
-  const url = getGitHubRepoUrl(fullName);
+  const repository = state.repository;
 
   const buildId = ownProps.params.buildId.toLowerCase();
 
@@ -90,12 +100,8 @@ const mapStateToProps = (state, ownProps) => {
   const snapLink = state.snapBuilds.snapLink;
 
   return {
-    repository: {
-      owner,
-      name,
-      fullName,
-      url
-    },
+    fullName,
+    repository,
     buildId,
     build,
     isFetching,
