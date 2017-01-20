@@ -13,7 +13,7 @@ import Spinner from '../components/spinner';
 import styles from './container.css';
 
 class RepositorySetup extends Component {
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.repository && this.props.fullName) {
       this.props.dispatch(setGitHubRepository(this.props.fullName));
     }

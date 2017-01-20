@@ -17,12 +17,12 @@ class Builds extends Component {
   fetchData({ snapLink, repository }) {
     if (snapLink) {
       this.props.dispatch(fetchBuilds(snapLink));
-    } else if (repository){
+    } else if (repository) {
       this.props.dispatch(fetchSnap(repository.url));
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.repository && this.props.fullName) {
       this.props.dispatch(setGitHubRepository(this.props.fullName));
     }

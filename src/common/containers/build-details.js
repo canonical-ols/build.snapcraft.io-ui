@@ -21,7 +21,7 @@ class BuildDetails extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.repository && this.props.fullName) {
       this.props.dispatch(setGitHubRepository(this.props.fullName));
     }
