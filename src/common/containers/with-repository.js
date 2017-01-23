@@ -19,8 +19,7 @@ function withRepository(WrappedComponent) {
     }
 
     render() {
-      const { fullName, ...passThroughProps } = this.props;
-      fullName; // just to 'use' this variable
+      const { fullName, ...passThroughProps } = this.props; // eslint-disable-line no-unused-vars
 
       return (this.props.repository
         ? <WrappedComponent {...passThroughProps} />
