@@ -5,6 +5,10 @@ import {
   createSnap,
   setGitHubRepository
 } from '../../actions/repository-input';
+import {
+  fetchUserRepositories
+} from '../../actions/repositories';
+
 import conf from '../../helpers/config';
 import Button from '../button';
 import Step from '../step';
@@ -12,6 +16,14 @@ import { Anchor } from '../button';
 import { Form, InputField, Message } from '../forms';
 
 class RepositoryInput extends Component {
+  componentDidMount() {
+    const { authenticated } = this.props.auth;
+
+    if (authenticated) {
+      this.props.dispatch(fetchUserRepositories());
+    }
+  }
+
   getErrorMessage() {
     const input = this.props.repositoryInput;
     const repository = this.props.repository;
