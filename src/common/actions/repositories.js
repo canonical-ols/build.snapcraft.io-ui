@@ -5,7 +5,7 @@ import conf from '../helpers/config';
 const BASE_URL = conf.get('BASE_URL');
 
 export const FETCH_REPOSITORIES = 'FETCH_REPOSITORIES';
-export const FETCH_REPOSITORIES_ERROR = 'FETCH_REPOSITORIES';
+export const FETCH_REPOSITORIES_ERROR = 'FETCH_REPOSITORIES_ERROR';
 export const SET_REPOSITORIES = 'SET_REPOSITORIES';
 
 export function setRepositories(repos) {
