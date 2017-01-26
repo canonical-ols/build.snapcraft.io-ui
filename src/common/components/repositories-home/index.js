@@ -1,25 +1,30 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import {
-  createSnap,
-  setGitHubRepository
-} from '../../actions/repository-input';
+import { createSnap } from '../../actions/repository-input';
+import { fetchUserRepositories } from '../../actions/repositories';
 
 import conf from '../../helpers/config';
-import Button from '../button';
-import Step from '../step';
-import { Anchor } from '../button';
-import { Form, InputField, Message } from '../forms';
 
-class RepositoryInput extends Component {
+import Step from '../step';
+import { Message } from '../forms';
+import { Anchor } from '../button';
+
+import RepositoryRow from '../repository-row';
+
+class RepositoriesHome extends Component {
+  componentDidMount() {
+    const { authenticated } = this.props.auth;
+
+    if (authenticated) {
+      this.props.dispatch(fetchUserRepositories());
+    }
+  }
+
   getErrorMessage() {
     const input = this.props.repositoryInput;
-    const repository = this.props.repository;
 
-    if (input.inputValue.length > 2 && !repository) {
-      return 'Please enter a valid GitHub repository name or URL.';
-    } else if (input.error) {
+    if (input.error) {
       const payload = input.error.json.payload;
       if (payload.code === 'snap-name-not-registered') {
         const snapName = payload.snap_name;
@@ -65,55 +70,43 @@ class RepositoryInput extends Component {
     );
   }
 
-  step2() {
-    const { authenticated } = this.props.auth;
-    const input = this.props.repositoryInput;
-    const repository = this.props.repository;
-    const isTouched = input.inputValue.length > 2;
-    const isValid = !!repository && !input.error;
-
-    return (
-      <Step number="2" complete={ input.success }>
-        <Form onSubmit={this.onSubmit.bind(this)}>
-          <InputField
-            label='Repository URL'
-            placeholder='username/snap-example'
-            value={input.inputValue}
-            touched={isTouched}
-            valid={isValid}
-            onChange={this.onChange.bind(this)}
-            errorMsg={this.getErrorMessage()}
-            disabled={!authenticated}
-          />
-          { input.success &&
-            <Message status='info'>
-              Repository <a href={repository.url}>{repository.fullName}</a> contains snapcraft project and can be built.
-            </Message>
-          }
-          <Button type='submit' disabled={!isValid || input.isFetching || !authenticated }>
-            { input.isFetching ? 'Creating...' : 'Create' }
-          </Button>
-        </Form>
-      </Step>
-    );
+  renderRepository(repo) {
+    return <RepositoryRow key={`repo_${repo.fullName}`} repository={repo} onClick={this.onButtonClick.bind(this, repo)} />;
   }
 
-  onChange(event) {
-    this.props.dispatch(setGitHubRepository(event.target.value));
-  }
-
-  onSubmit(event) {
-    event.preventDefault();
-    const repository = this.props.repository;
-
+  onButtonClick(repository) {
     if (repository) {
       this.props.dispatch(createSnap(repository.url));
     }
   }
+
+  step2() {
+    const { authenticated } = this.props.auth;
+
+    // TODO: createSnap errors are currently kept in repositoryInput reducer
+    const input = this.props.repositoryInput;
+    const isValid = !authenticated || !input.error;
+
+    return (
+      <Step number="2">
+        Choose one of your repositories
+        { !isValid &&
+          <Message status='error'>
+            {this.getErrorMessage()}
+          </Message>
+        }
+        <div>
+          { this.props.repositories.success &&
+            this.props.repositories.repos.map(this.renderRepository.bind(this))
+          }
+        </div>
+      </Step>
+    );
+  }
 }
 
-RepositoryInput.propTypes = {
-  repository: PropTypes.object,
+RepositoriesHome.propTypes = {
+  repositories: PropTypes.object,
   repositoryInput: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
@@ -121,16 +114,16 @@ RepositoryInput.propTypes = {
 
 function mapStateToProps(state) {
   const {
-    repository,
+    repositories,
     repositoryInput,
     auth
   } = state;
 
   return {
     auth,
-    repository,
+    repositories,
     repositoryInput
   };
 }
 
-export default connect(mapStateToProps)(RepositoryInput);
+export default connect(mapStateToProps)(RepositoriesHome);

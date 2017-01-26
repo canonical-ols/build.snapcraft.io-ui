@@ -18,9 +18,6 @@ const baseProps = {
     success: false,
     inputValue: '',
   },
-  repositories: {
-    success: false,
-  },
   repository: null,
   webhook: {
     error: false
@@ -79,7 +76,7 @@ describe('The RepositoryInput component', () => {
       });
 
       it('should be shown', () => {
-        expect(component.find('InputField[label="Enter repository URL"]').length).toBe(1);
+        expect(component.find('InputField[label="Repository URL"]').length).toBe(1);
       });
 
       it('should be shown in an incomplete step', () => {
