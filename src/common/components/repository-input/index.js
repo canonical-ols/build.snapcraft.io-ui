@@ -5,7 +5,6 @@ import {
   createSnap,
   setGitHubRepository
 } from '../../actions/repository-input';
-
 import conf from '../../helpers/config';
 import Button from '../button';
 import Step from '../step';
