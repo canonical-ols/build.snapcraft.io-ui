@@ -78,7 +78,7 @@ class RepositoryInput extends Component {
   }
 
   renderRepository(repo) {
-    return <RepositoryRow key={repo.id} repository={repo} />;
+    return <RepositoryRow key={`repo_${repo.fullName}`} repository={repo} />;
   }
 
   step2() {

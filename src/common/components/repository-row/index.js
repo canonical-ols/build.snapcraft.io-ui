@@ -14,7 +14,7 @@ const RepositoryRow = (props) => {
   return (
     <div className={ styles.repositoryRow }>
       <div>
-        {repository.full_name}
+        {repository.fullName}
       </div>
       { onClick &&
         <Button onClick={onClick}>Create</Button>
@@ -24,7 +24,9 @@ const RepositoryRow = (props) => {
 };
 
 RepositoryRow.propTypes = {
-  repository: PropTypes.object,
+  repository: PropTypes.shape({
+    fullName: PropTypes.string
+  }),
   onClick: PropTypes.func
 };
 
