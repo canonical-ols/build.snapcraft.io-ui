@@ -1,0 +1,14 @@
+$border-color: $mid-grey;
+$hover-color: rgba(255,255,255,0.8);
+
+.repositoryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $border-color;
+  padding: 10px;
+}
+
+.repositoryRow:hover {
+  background-color: $hover-color;
+}

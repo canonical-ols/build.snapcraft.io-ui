@@ -14,6 +14,7 @@ import Button from '../button';
 import Step from '../step';
 import { Anchor } from '../button';
 import { Form, InputField, Message } from '../forms';
+import RepositoryRow from '../repository-row';
 
 class RepositoryInput extends Component {
   componentDidMount() {
@@ -76,6 +77,10 @@ class RepositoryInput extends Component {
     );
   }
 
+  renderRepository(repo) {
+    return <RepositoryRow key={repo.id} repository={repo} />;
+  }
+
   step2() {
     const { authenticated } = this.props.auth;
     const input = this.props.repositoryInput;
@@ -87,7 +92,7 @@ class RepositoryInput extends Component {
       <Step number="2" complete={ input.success }>
         <Form onSubmit={this.onSubmit.bind(this)}>
           <InputField
-            label='Repository URL'
+            label='Enter repository URL'
             placeholder='username/snap-example'
             value={input.inputValue}
             touched={isTouched}
@@ -105,6 +110,15 @@ class RepositoryInput extends Component {
             { input.isFetching ? 'Creating...' : 'Create' }
           </Button>
         </Form>
+        <div>
+          {/* TODO: bartaz - just a temporary thing, remove later */}
+          { this.props.repositories.success &&
+            <span>or choose one of your repositories below:</span>
+          }
+          { this.props.repositories.success &&
+            this.props.repositories.repos.map(this.renderRepository)
+          }
+        </div>
       </Step>
     );
   }
@@ -125,6 +139,7 @@ class RepositoryInput extends Component {
 
 RepositoryInput.propTypes = {
   repository: PropTypes.object,
+  repositories: PropTypes.object,
   repositoryInput: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
@@ -133,6 +148,7 @@ RepositoryInput.propTypes = {
 function mapStateToProps(state) {
   const {
     repository,
+    repositories,
     repositoryInput,
     auth
   } = state;
@@ -140,6 +156,7 @@ function mapStateToProps(state) {
   return {
     auth,
     repository,
+    repositories,
     repositoryInput
   };
 }
