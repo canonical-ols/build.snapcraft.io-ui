@@ -5,6 +5,10 @@ import conf from '../../helpers/config';
 import { createSnap } from '../../actions/repository-input';
 import { Message } from '../forms';
 import RepositoryRow from '../repository-row';
+import Spinner from '../spinner';
+
+// loading container styles not to duplicate .spinner class
+import styles from '../../containers/container.css';
 
 class RepositoriesList extends Component {
 
@@ -61,9 +65,13 @@ class RepositoriesList extends Component {
     // TODO: createSnap errors are currently kept in repositoryInput reducer
     const input = this.props.repositoryInput;
     const isValid = !authenticated || !input.error;
+    const isLoading = this.props.repositories.isFetching;
 
     return (
       <div>
+        { isLoading &&
+          <div className={styles.spinner}><Spinner /></div>
+        }
         { !isValid &&
           <Message status='error'>
             {this.getErrorMessage()}
