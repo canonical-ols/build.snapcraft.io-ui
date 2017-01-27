@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions/repository-input';
+import * as ActionTypes from '../actions/create-snap';
 
 export function repositoriesStatus(state = {}, action) {
   const { payload } = action;

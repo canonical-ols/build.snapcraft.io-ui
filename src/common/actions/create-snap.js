@@ -9,7 +9,6 @@ export const SET_GITHUB_REPOSITORY = 'SET_GITHUB_REPOSITORY';
 export const CREATE_SNAP = 'CREATE_SNAP';
 export const CREATE_SNAP_ERROR = 'CREATE_SNAP_ERROR';
 
-// TODO: move out to separate actions?
 export function setGitHubRepository(value) {
   return {
     type: SET_GITHUB_REPOSITORY,

@@ -9,8 +9,8 @@ import {
   createSnap,
   createSnapError,
   setGitHubRepository
-} from '../../../../../src/common/actions/repository-input';
-import * as ActionTypes from '../../../../../src/common/actions/repository-input';
+} from '../../../../../src/common/actions/create-snap';
+import * as ActionTypes from '../../../../../src/common/actions/create-snap';
 import conf from '../../../../../src/common/helpers/config';
 
 const middlewares = [ thunk ];
