@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { createSnap } from '../../actions/repository-input';
-
 import conf from '../../helpers/config';
-
+import { createSnap } from '../../actions/repository-input';
 import { Message } from '../forms';
 import RepositoryRow from '../repository-row';
 
@@ -38,10 +36,18 @@ class RepositoriesList extends Component {
   }
 
   renderRepository(repo) {
-    return <RepositoryRow key={`repo_${repo.fullName}`} repository={repo} onClick={this.onButtonClick.bind(this, repo)} />;
+    const isLoading = this.props.repositoryInput.isFetching;
+
+    return (
+      <RepositoryRow
+        key={`repo_${repo.fullName}`}
+        repository={repo}
+        buttonLabel={ isLoading ? 'Creating...' : 'Create' }
+        buttonDisabled={ isLoading }
+        onButtonClick={this.onButtonClick.bind(this, repo)}
+      />
+    );
   }
-
-
 
   onButtonClick(repository) {
     if (repository) {

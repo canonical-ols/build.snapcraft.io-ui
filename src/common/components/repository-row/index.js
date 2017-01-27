@@ -8,7 +8,9 @@ const RepositoryRow = (props) => {
 
   const {
     repository,
-    onClick
+    buttonLabel,
+    buttonDisabled,
+    onButtonClick
   } = props;
 
   return (
@@ -16,8 +18,10 @@ const RepositoryRow = (props) => {
       <div>
         {repository.fullName}
       </div>
-      { onClick &&
-        <Button onClick={onClick}>Create</Button>
+      { onButtonClick &&
+        <Button disabled={buttonDisabled} onClick={onButtonClick}>
+          { buttonLabel }
+        </Button>
       }
     </div>
   );
@@ -27,7 +31,9 @@ RepositoryRow.propTypes = {
   repository: PropTypes.shape({
     fullName: PropTypes.string
   }),
-  onClick: PropTypes.func
+  buttonLabel: PropTypes.string.isRequired,
+  buttonDisabled: PropTypes.bool,
+  onButtonClick: PropTypes.func
 };
 
 export default RepositoryRow;

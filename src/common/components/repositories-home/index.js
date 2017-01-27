@@ -2,10 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchUserRepositories } from '../../actions/repositories';
-
-import Step from '../step';
 import { Anchor } from '../button';
-
+import Step from '../step';
 import RepositoriesList from '../repositories-list';
 
 class RepositoriesHome extends Component {
