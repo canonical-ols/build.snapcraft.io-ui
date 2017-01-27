@@ -115,17 +115,18 @@ describe('repository input actions', () => {
   });
 
   context('createSnapError', () => {
-    let payload = 'Something went wrong!';
+    let error = 'Something went wrong!';
+    let id = 'foo/bar';
 
     beforeEach(() => {
-      action = createSnapError(payload);
+      action = createSnapError(id, error);
     });
 
     it('creates an action to store error on failure', () => {
       const expectedAction = {
         type: ActionTypes.CREATE_SNAP_ERROR,
         error: true,
-        payload
+        payload: { id, error }
       };
 
       store.dispatch(action);

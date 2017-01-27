@@ -9,6 +9,7 @@ export const SET_GITHUB_REPOSITORY = 'SET_GITHUB_REPOSITORY';
 export const CREATE_SNAP = 'CREATE_SNAP';
 export const CREATE_SNAP_ERROR = 'CREATE_SNAP_ERROR';
 
+// TODO: move out to separate actions?
 export function setGitHubRepository(value) {
   return {
     type: SET_GITHUB_REPOSITORY,
@@ -40,7 +41,10 @@ export function createSnap(repositoryUrl, location) { // location for tests
       const { fullName } = parseGitHubRepoUrl(repositoryUrl);
 
       dispatch({
-        type: CREATE_SNAP
+        type: CREATE_SNAP,
+        payload: {
+          id: fullName
+        }
       });
 
       return fetch(`${BASE_URL}/api/launchpad/snaps`, {
@@ -69,17 +73,20 @@ export function createSnap(repositoryUrl, location) { // location for tests
           if (error.message === 'There is already a snap package with the same name and owner.') {
             (location || window.location).href = `${BASE_URL}/${fullName}/builds`;
           } else {
-            dispatch(createSnapError(error));
+            dispatch(createSnapError(fullName, error));
           }
         });
     }
   };
 }
 
-export function createSnapError(error) {
+export function createSnapError(id, error) {
   return {
     type: CREATE_SNAP_ERROR,
-    payload: error,
+    payload: {
+      id,
+      error
+    },
     error: true
   };
 }

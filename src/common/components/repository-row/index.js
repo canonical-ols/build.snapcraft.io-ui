@@ -7,6 +7,7 @@ import styles from './repositoryRow.css';
 const RepositoryRow = (props) => {
 
   const {
+    errorMsg,
     repository,
     buttonLabel,
     buttonDisabled,
@@ -14,10 +15,15 @@ const RepositoryRow = (props) => {
   } = props;
 
   return (
-    <div className={ styles.repositoryRow }>
+    <div className={ `${styles.repositoryRow} ${errorMsg && styles.error}` }>
       <div>
         {repository.fullName}
       </div>
+      { errorMsg &&
+        <div className={ styles.errorMessage }>
+          { errorMsg }
+        </div>
+      }
       { onButtonClick &&
         <Button disabled={buttonDisabled} onClick={onButtonClick}>
           { buttonLabel }
@@ -28,6 +34,7 @@ const RepositoryRow = (props) => {
 };
 
 RepositoryRow.propTypes = {
+  errorMsg: PropTypes.string,
   repository: PropTypes.shape({
     fullName: PropTypes.string
   }),

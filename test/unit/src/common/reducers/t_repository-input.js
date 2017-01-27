@@ -75,7 +75,7 @@ describe('repositoryInput reducers', () => {
 
       const action = {
         type: ActionTypes.CREATE_SNAP_ERROR,
-        payload: new Error('Something went wrong!'),
+        payload: { error: new Error('Something went wrong!') },
         error: true
       };
 
@@ -83,7 +83,7 @@ describe('repositoryInput reducers', () => {
         ...state,
         isFetching: false,
         success: false,
-        error: action.payload
+        error: action.payload.error
       });
     });
   });

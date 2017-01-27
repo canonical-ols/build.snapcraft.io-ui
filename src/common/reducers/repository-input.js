@@ -24,7 +24,8 @@ export function repositoryInput(state = {
         ...state,
         isFetching: false,
         success: false,
-        error: action.payload
+        // error is nested in payload because we also send repo id there
+        error: action.payload.error
       };
     default:
       return state;
