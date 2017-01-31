@@ -1,4 +1,3 @@
-import React from 'react';
 import expect from 'expect';
 import { shallow } from 'enzyme';
 
@@ -31,14 +30,14 @@ describe('<BuildHistory />', function() {
   });
 
   it('should message if has no builds', function() {
-    const props = Object.assign({}, testProps, { builds: []});
+    const props = Object.assign({}, testProps, { builds: [] });
 
     expect(shallow(BuildHistory(props)).text())
       .toBe('This snap has not been built yet.');
   });
 
   it('should message if has falsey builds', function() {
-    const props = Object.assign({}, testProps, { builds: false});
+    const props = Object.assign({}, testProps, { builds: false });
 
     expect(shallow(BuildHistory(props)).text())
       .toBe('This snap has not been built yet.');
