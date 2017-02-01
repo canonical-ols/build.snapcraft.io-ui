@@ -32,7 +32,7 @@ BuildHistory.propTypes = {
     name: PropTypes.string
   }),
   success: PropTypes.bool,
-  builds: React.PropTypes.arrayOf(React.PropTypes.node)
+  builds: React.PropTypes.arrayOf(React.PropTypes.object)
 };
 
 function mapStateToProps(state) {
