@@ -18,7 +18,7 @@ export const BuildHistory = (props) => {
   }
 
   const buildRows = builds
-    .sort((a,b) => ((+a.buildId) - (+b.buildId))
+    .sort((a,b) => ((+b.buildId) - (+a.buildId)))
     .map((build) => (
       <BuildRow key={build.buildId} {...build} repository={repository} />
     ));
