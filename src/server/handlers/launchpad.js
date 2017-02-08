@@ -340,6 +340,50 @@ export const internalFindSnap = async (repositoryUrl) => {
   });
 };
 
+const internalFindSnapsByPrefix = (urlPrefix) => {
+  const username = conf.get('LP_API_USERNAME');
+
+  return getLaunchpad().named_get('/+snaps', 'findByURLPrefix', {
+    parameters: {
+      url_prefix: urlPrefix,
+      owner: `/~${username}`
+    }
+  })
+  .catch((error) => {
+    if (error.response.status === 404) {
+      return new PreparedError(404, RESPONSE_SNAP_NOT_FOUND);
+    }
+    // At least for the moment, we just wrap the error we get from
+    // Launchpad.
+    error.response.text().then((text) => {
+      return new PreparedError(error.response.status, {
+        status: 'error',
+        payload: {
+          code: 'lp-error',
+          message: text
+        }
+      });
+    });
+  })
+  .then(result => {
+    return result.entries;
+  });
+};
+
+export const findSnaps = (req, res) => {
+  internalFindSnapsByPrefix(`https://github.com/${req.query.owner}/`)
+    .then((snaps) => {
+      return res.status(200).send({
+        status: 'success',
+        payload: {
+          code: 'snaps-found',
+          snaps: snaps
+        }
+      });
+    })
+    .catch((error) => sendError(res, error));
+};
+
 export const findSnap = (req, res) => {
   internalFindSnap(req.query.repository_url)
     .then((snapUrl) => {
