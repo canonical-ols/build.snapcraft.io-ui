@@ -349,14 +349,14 @@ const internalFindSnapsByPrefix = (urlPrefix) => {
       owner: `/~${username}`
     }
   })
+  .then(result => {
+    return result.entries;
+  })
   .catch((error) => {
-    if (error.response.status === 404) {
-      return new PreparedError(404, RESPONSE_SNAP_NOT_FOUND);
-    }
     // At least for the moment, we just wrap the error we get from
     // Launchpad.
-    error.response.text().then((text) => {
-      return new PreparedError(error.response.status, {
+    return error.response.text().then((text) => {
+      throw new PreparedError(error.response.status, {
         status: 'error',
         payload: {
           code: 'lp-error',
@@ -364,9 +364,6 @@ const internalFindSnapsByPrefix = (urlPrefix) => {
         }
       });
     });
-  })
-  .then(result => {
-    return result.entries;
   });
 };
 
