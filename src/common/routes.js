@@ -11,7 +11,7 @@ import RepositorySetup from './containers/repository-setup.js';
 export default (
   <Route component={App}>
     <Route path="/" component={Landing}/>
-    <Route path="/repos" component={Dashboard}/>
+    <Route path="/dashboard" component={Dashboard}/>
     <Route path="/:owner/:name/setup" component={RepositorySetup}/>
     <Route path="/:owner/:name/builds" component={Builds}/>
     <Route path="/:owner/:name/builds/:buildId" component={BuildDetails}/>

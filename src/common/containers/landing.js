@@ -1,18 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
 
 import { Anchor } from '../components/button';
 
 import styles from './container.css';
 
 class Landing extends Component {
-  componentWillMount() {
-    if (this.props.auth.authenticated) {
-      this.props.router.replace('/repos');
-    }
-  }
-
   render() {
     return (
       <div className={ styles.container }>
@@ -40,4 +33,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(withRouter(Landing));
+export default connect(mapStateToProps)(Landing);
