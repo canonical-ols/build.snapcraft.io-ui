@@ -44,10 +44,7 @@ router.get('/devel/*snaps', (req, res) => {
 });
 
 router.post('/~:owner/+snap/:name', (req, res) => {
-  const base = `${req.protocol}://${req.hostname}${req.baseUrl}`;
-  if (req.query['ws.op'] == 'beginAuthorization') {
-    res.status(200).json(`${base}${req.url}/+authorize/+login`);
-  } else if (req.query['ws.op'] == 'completeAuthorization') {
+  if (req.query['ws.op'] == 'completeAuthorization') {
     res.status(200).json(null);
   } else {
     res.status(400).send(`No such operation: ${req.query['ws.op']}`);
