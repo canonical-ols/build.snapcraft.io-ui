@@ -99,6 +99,13 @@ class PreparedError extends Error {
   }
 }
 
+// helper function to get URL prefix for given repo owner
+const getRepoUrlPrefix = (owner) => `https://github.com/${owner}/`;
+
+// memcached cache id helpers
+export const getUrlPrefixCacheId = (urlPrefix) => `url_prefix:${urlPrefix}`;
+export const getRepositoryUrlCacheId = (repositoryUrl) => `url:${repositoryUrl}`;
+
 // Wrap errors in a promise chain so that they always end up as a
 // PreparedError.
 const prepareError = (error) => {
@@ -283,8 +290,8 @@ export const newSnap = (req, res) => {
     .then((name) => requestNewSnap(name, repositoryUrl))
     .then((result) => {
       // as new snap is created we need to clear list of snaps from cache
-      const urlPrefix = `https://github.com/${owner}/`;
-      const cacheId = `url_prefix:${urlPrefix}`;
+      const urlPrefix = getRepoUrlPrefix(owner);
+      const cacheId = getUrlPrefixCacheId(urlPrefix);
 
       getMemcached().del(cacheId, (err) => {
         if (err) {
@@ -310,7 +317,7 @@ export const newSnap = (req, res) => {
 };
 
 export const internalFindSnap = async (repositoryUrl) => {
-  const cacheId = `url:${repositoryUrl}`;
+  const cacheId = getRepositoryUrlCacheId(repositoryUrl);
 
   return new Promise((resolve, reject) => {
     getMemcached().get(cacheId, (err, result) => {
@@ -355,7 +362,7 @@ export const internalFindSnap = async (repositoryUrl) => {
 
 const internalFindSnapsByPrefix = (urlPrefix) => {
   const username = conf.get('LP_API_USERNAME');
-  const cacheId = `url_prefix:${urlPrefix}`;
+  const cacheId = getUrlPrefixCacheId(urlPrefix);
 
   return new Promise((resolve, reject) => {
     getMemcached().get(cacheId, (err, result) => {
@@ -395,7 +402,8 @@ const internalFindSnapsByPrefix = (urlPrefix) => {
 };
 
 export const findSnaps = (req, res) => {
-  internalFindSnapsByPrefix(`https://github.com/${req.query.owner}/`)
+  const urlPrefix = getRepoUrlPrefix(req.query.owner);
+  internalFindSnapsByPrefix(urlPrefix)
     .then((snaps) => {
       return res.status(200).send({
         status: 'success',

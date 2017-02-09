@@ -9,6 +9,10 @@ import {
   setupInMemoryMemcached
 } from '../../../../../src/server/helpers/memcached';
 import launchpad from '../../../../../src/server/routes/launchpad';
+import {
+  getUrlPrefixCacheId,
+  getRepositoryUrlCacheId
+} from '../../../../../src/server/handlers/launchpad';
 import { conf } from '../../../../../src/server/helpers/config.js';
 
 describe('The Launchpad API endpoint', () => {
@@ -448,7 +452,7 @@ describe('The Launchpad API endpoint', () => {
         it('should store snaps in memcached', (done) => {
 
           const urlPrefix = 'https://github.com/anowner/';
-          const cacheId = `url_prefix:${urlPrefix}`;
+          const cacheId = getUrlPrefixCacheId(urlPrefix);
 
           supertest(app)
           .get('/launchpad/snaps/list')
@@ -588,7 +592,7 @@ describe('The Launchpad API endpoint', () => {
         ];
 
         setupInMemoryMemcached();
-        getMemcached().set(`url_prefix:${urlPrefix}`, testSnaps);
+        getMemcached().set(getUrlPrefixCacheId(urlPrefix), testSnaps);
       });
 
       after(() => {
@@ -779,7 +783,7 @@ describe('The Launchpad API endpoint', () => {
 
       before(() => {
         setupInMemoryMemcached();
-        getMemcached().set(`url:${repositoryUrl}`, snapUrl);
+        getMemcached().set(getRepositoryUrlCacheId(repositoryUrl), snapUrl);
       });
 
       after(() => {
