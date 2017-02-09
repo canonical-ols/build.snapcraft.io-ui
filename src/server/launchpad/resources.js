@@ -40,7 +40,7 @@ export class Resource {
 
 /** The root of the Launchpad web service. */
 export class Root extends Resource {
-  constructor(client, representation, uri) {
+  constructor(client, uri, representation) {
     super();
     this.init(client, uri, representation);
   }
@@ -48,11 +48,11 @@ export class Root extends Resource {
 
 /** A grouped collection of objects from the Launchpad web service. */
 export class Collection extends Resource {
-  constructor(client, representation, uri) {
+  constructor(client, uri, representation) {
     super();
     this.init(client, uri, representation);
     this.entries.forEach((entry, i) => {
-      this.entries[i] = new Entry(client, entry, entry.self_link);
+      this.entries[i] = new Entry(client, entry.self_link, entry);
     });
   }
 
@@ -83,7 +83,7 @@ export class Collection extends Resource {
 
 /** A single object from the Launchpad web service. */
 export class Entry extends Resource {
-  constructor(client, representation, uri) {
+  constructor(client, uri, representation) {
     super();
     this.init(client, uri);
 
