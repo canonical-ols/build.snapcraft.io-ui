@@ -105,6 +105,21 @@ describe('Resources', () => {
       }
       expect(copied_entries).toEqual(entries);
     });
+
+    it('doesn\'t expose internal properties', () => {
+      const representation = {
+        total_size: 2,
+        start: 0,
+        entries: [{ name: 'one' }, { name: 'two' }]
+      };
+      const collection = new Collection(
+        getLaunchpad(), representation, `${LP_API_URL}/devel/~foo/ppas`);
+
+      const serialized = JSON.parse(JSON.stringify(collection));
+      expect(serialized).toNotIncludeKeys([
+        'lp_client', 'uri', 'lp_attributes', 'dirty_attributes'
+      ]);
+    });
   });
 
   describe('Entry', () => {
@@ -155,5 +170,20 @@ describe('Resources', () => {
       return entry.lp_save()
         .then(() => { expect(entry.dirty_attributes).toEqual([]); });
     });
+
+    it('doesn\'t expose internal properties', () => {
+      const representation = {
+        resource_type_link: `${LP_API_URL}/devel/#person`,
+        name: 'foo'
+      };
+      const entry = new Entry(
+        getLaunchpad(), representation, `${LP_API_URL}/devel/~foo`);
+
+      const serialized = JSON.parse(JSON.stringify(entry));
+      expect(serialized).toNotIncludeKeys([
+        'lp_client', 'uri', 'lp_attributes', 'dirty_attributes'
+      ]);
+    });
+
   });
 });
