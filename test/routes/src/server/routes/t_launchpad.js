@@ -435,6 +435,39 @@ describe('The Launchpad API endpoint', () => {
             done(err);
           });
       });
+
+      context('using memcached', () => {
+        beforeEach(() => {
+          setupInMemoryMemcached();
+        });
+
+        afterEach(() => {
+          resetMemcached();
+        });
+
+        it('should store snaps in memcached', (done) => {
+
+          const urlPrefix = 'https://github.com/anowner/';
+          const cacheId = `url_prefix:${urlPrefix}`;
+
+          supertest(app)
+          .get('/launchpad/snaps/list')
+          .query({ owner: 'anowner' })
+          .end((err) => {
+            if (err) {
+              done(err);
+            }
+            getMemcached().get(cacheId, (err, memcachedSnaps) => {
+              expect(memcachedSnaps.length).toEqual(testSnaps.length);
+              expect(memcachedSnaps[0]).toContain(testSnaps[0]);
+
+              done(err);
+            });
+          });
+        });
+
+      });
+
     });
 
     context('when snaps don\'t exist', () => {
@@ -529,6 +562,68 @@ describe('The Launchpad API endpoint', () => {
           .expect(hasMessage('lp-error', 'Something went quite wrong.'))
           .end(done);
       });
+    });
+
+
+    context('when snaps are memcached', () => {
+      const urlPrefix = 'https://github.com/anowner/';
+      let testSnaps;
+
+      before(() => {
+
+        const lp_api_url = conf.get('LP_API_URL');
+        const lp_api_base = `${lp_api_url}/devel`;
+
+        testSnaps = [
+          {
+            resource_type_link: `${lp_api_base}/#snap`,
+            self_link: `${lp_api_base}/~another-user/+snap/test-snap`,
+            owner_link: `${lp_api_base}/~another-user`
+          },
+          {
+            resource_type_link: `${lp_api_base}/#snap`,
+            self_link: `${lp_api_base}/~test-user/+snap/test-snap`,
+            owner_link: `${lp_api_base}/~test-user`
+          }
+        ];
+
+        setupInMemoryMemcached();
+        getMemcached().set(`url_prefix:${urlPrefix}`, testSnaps);
+      });
+
+      after(() => {
+        resetMemcached();
+      });
+
+      it('should return a 200 response', (done) => {
+        supertest(app)
+        .get('/launchpad/snaps/list')
+        .query({ owner: 'anowner' })
+          .expect(200, done);
+      });
+
+      it('should return a "success" status', (done) => {
+        supertest(app)
+        .get('/launchpad/snaps/list')
+        .query({ owner: 'anowner' })
+          .expect(hasStatus('success'))
+          .end(done);
+      });
+
+      it('should return "snaps-found" message with the correct snaps', (done) => {
+        supertest(app)
+          .get('/launchpad/snaps/list')
+          .query({ owner: 'anowner' })
+          .end((err, res) => {
+            const responseSnaps = res.body.payload.snaps;
+
+            expect(responseSnaps.length).toEqual(testSnaps.length);
+            expect(responseSnaps[0]).toContain(testSnaps[0]);
+
+            done(err);
+          });
+      });
+
     });
 
   });
