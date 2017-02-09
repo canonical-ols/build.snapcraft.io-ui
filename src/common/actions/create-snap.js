@@ -25,10 +25,11 @@ export function setGitHubRepository(value) {
 
 // Just enough to satisfy higher-level code that might receive errors from
 // our internal API or errors thrown directly from here.
-function throwAPICompatibleError(payload) {
-  const error = new Error(payload.message);
-  error.json = { status: 'error', payload };
-  throw error;
+class APICompatibleError extends Error {
+  constructor(payload) {
+    super(payload.message);
+    this.json = { status: 'error', payload };
+  }
 }
 
 function getSnapName(owner, name) {
@@ -44,7 +45,7 @@ function getSnapName(owner, name) {
       }
       const snapcraftYaml = json.payload.contents;
       if (!('name' in snapcraftYaml)) {
-        throwAPICompatibleError({
+        throw new APICompatibleError({
           code: 'snapcraft-yaml-no-name',
           message: 'snapcraft.yaml has no top-level "name" attribute'
         });
