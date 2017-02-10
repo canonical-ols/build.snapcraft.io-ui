@@ -70,7 +70,7 @@ export const getUser = (req, res) => {
         status: 'success',
         payload: {
           code: 'github-user',
-          repos: response.body
+          user: response.body
         }
       });
     });

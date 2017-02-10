@@ -131,7 +131,7 @@ describe('The GitHub API endpoint', () => {
           supertest(app)
             .get('/github/user')
             .end((err, res) => {
-              expect(res.body.payload.repos).toEqual(user);
+              expect(res.body.payload.user).toEqual(user);
               done(err);
             });
         });
