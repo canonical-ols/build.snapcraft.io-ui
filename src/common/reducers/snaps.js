@@ -1,5 +1,4 @@
 import * as ActionTypes from '../actions/snaps';
-import { parseGitHubRepoUrl } from '../helpers/github-url';
 
 export function snaps(state = {
   isFetching: false,
@@ -18,14 +17,9 @@ export function snaps(state = {
         ...state,
         isFetching: false,
         success: true,
-        snaps: action.payload.map((snap) => {
-          return {
-            // parse repository info to keep consistent data format
-            repo: parseGitHubRepoUrl(snap.git_repository_url),
-            // and keep full snap data from API in the store too
-            snap
-          };
-        }),
+        snaps: [
+          ...action.payload
+        ],
         error: null
       };
     case ActionTypes.FETCH_SNAPS_ERROR:

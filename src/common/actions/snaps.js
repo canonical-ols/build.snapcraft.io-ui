@@ -11,13 +11,14 @@ export const FETCH_SNAPS_ERROR = 'FETCH_SNAPS_ERROR';
 
 export function fetchUserSnaps(owner) {
   return (dispatch) => {
-    const url = `${BASE_URL}/api/launchpad/snaps/list?owner=${owner}`;
+    const url = `${BASE_URL}/api/launchpad/snaps/list`;
+    const query = `owner=${encodeURIComponent(owner)}`;
 
     dispatch({
       type: FETCH_SNAPS
     });
 
-    return fetch(url, {
+    return fetch(`${url}?${query}`, {
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin'
     })

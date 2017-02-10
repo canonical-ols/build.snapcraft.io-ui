@@ -2,7 +2,6 @@ import expect from 'expect';
 
 import { snaps } from '../../../../../src/common/reducers/snaps';
 import * as ActionTypes from '../../../../../src/common/actions/snaps';
-import { parseGitHubRepoUrl } from '../../../../../src/common/helpers/github-url';
 
 describe('snaps reducers', () => {
   const initialState = {
@@ -68,15 +67,9 @@ describe('snaps reducers', () => {
       expect(snaps(state, action).error).toBe(null);
     });
 
-    it('should store parsed repository data', () => {
-      snaps(state, action).snaps.forEach((snap, i) => {
-        expect(snap.repo).toEqual(parseGitHubRepoUrl(SNAPS[i].git_repository_url));
-      });
-    });
-
     it('should store full snap info', () => {
       snaps(state, action).snaps.forEach((snap, i) => {
-        expect(snap.snap).toEqual(SNAPS[i]);
+        expect(snap).toEqual(SNAPS[i]);
       });
     });
   });
