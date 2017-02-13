@@ -11,6 +11,7 @@ import { conf } from '../helpers/config';
 const BASE_URL = conf.get('BASE_URL');
 
 export const SIGN_INTO_STORE = 'SIGN_INTO_STORE';
+export const SIGN_INTO_STORE_SUCCESS = 'SIGN_INTO_STORE_SUCCESS';
 export const SIGN_INTO_STORE_ERROR = 'SIGN_INTO_STORE_ERROR';
 export const GET_SSO_DISCHARGE = 'GET_SSO_DISCHARGE';
 export const GET_SSO_DISCHARGE_SUCCESS = 'GET_SSO_DISCHARGE_SUCCESS';
