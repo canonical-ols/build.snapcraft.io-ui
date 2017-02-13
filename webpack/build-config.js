@@ -20,7 +20,14 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new ExtractTextPlugin('style.[hash].css', { allChunks: true }),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: function () {
+          return [ vars({ variables: () => sharedVars }), autoprefixer ];
+        },
+      }
+    }),
+    new ExtractTextPlugin({ filename: 'style.[hash].css',  allChunks: true }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
@@ -39,9 +46,6 @@ module.exports = {
     // https://github.com/localForage/localForage/issues/577
     noParse: /node_modules\/localforage\/dist\/localforage\.js$/,
     loaders: require('./loaders-config.js')
-  },
-  postcss: function () {
-    return [ vars({ variables: () => sharedVars }), autoprefixer ];
   },
   stats: {
     colors: true,

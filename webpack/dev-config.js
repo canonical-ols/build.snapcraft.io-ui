@@ -25,9 +25,17 @@ module.exports = {
     publicPath: `${WEBPACK_DEV_URL}/static/`
   },
   plugins: [
+    new webpack.LoaderOptionsPlugin({
+         // test: /\.xxx$/, // may apply this only for some modules
+      options: {
+        postcss: function () {
+          return [ vars({ variables: () => sharedVars }), autoprefixer ];
+        }
+      }
+    }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new ExtractTextPlugin('style.css', { allChunks: true }),
+    new ExtractTextPlugin({ filename: 'style.css', allChunks: true }),
     new AssetsPlugin()
   ],
   module: {
@@ -36,8 +44,8 @@ module.exports = {
     loaders: require('./loaders-config.js')
   },
   devtool: 'source-map',
-  postcss: function () {
-    return [ vars({ variables: () => sharedVars }), autoprefixer ];
-  },
-  debug: true
+  // postcss: function () {
+  //   return [ vars({ variables: () => sharedVars }), autoprefixer ];
+  // },
+  //debug: true
 };
