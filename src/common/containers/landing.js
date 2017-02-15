@@ -77,15 +77,20 @@ class Landing extends Component {
           </div>
         </section>
 
-        <div className={styles.container}>
+        <section className={styles.section}>
+          <div className={ `${styles.row} ${containerStyles.wrapper}` }>
 
-          <div>
-            <p>Snaps are secure, sandboxed, containerised applications, packaged with their dependencies for predictable behavior. With the Snap Store, people can safely install apps from any vendor on mission-critical devices and PCs.</p>
-            <Anchor href="http://snapcraft.io">More about snaps</Anchor>
+
+            <div className={styles.rowItemTwoThirds}>
+              <p className={styles.snaps}>Snaps are secure, sandboxed, containerised applications, packaged with their dependencies for predictable behavior. With the Snap Store, people can safely install apps from any vendor on mission-critical devices and PCs.</p>
+              <Anchor href="http://snapcraft.io">More about snaps</Anchor>
+            </div>
+
+            <img className={ styles.rowItem } src='http://placehold.it/200x200?text=SNAP' />
           </div>
+        </section>
 
-          {/* TODO testimonials */}
-        </div>
+        {/* TODO testimonials */}
       </div>
     );
   }

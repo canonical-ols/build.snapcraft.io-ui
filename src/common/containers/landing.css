@@ -55,8 +55,21 @@
   flex-grow: 1;
 }
 
+.rowItemTwoThirds {
+  composes: rowItem;
+  width: 66.66%;
+}
+
 .section {
   padding-top: 60px;
   padding-bottom: 60px;
   border-bottom: 1px dotted $dark-grey;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.snaps {
+  margin-bottom: 2em;
 }
