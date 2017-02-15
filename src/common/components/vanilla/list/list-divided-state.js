@@ -5,9 +5,9 @@ export default function ListDividedState(props) {
   const className = props.className || '';
 
   return (
-    <div className={`${styles.listDividedState} ${className}`}>
+    <ul className={`${styles.listDividedState} ${className}`}>
       { props.children }
-    </div>
+    </ul>
   );
 }
 

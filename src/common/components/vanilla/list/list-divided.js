@@ -5,9 +5,9 @@ export default function ListDivided(props) {
   const className = props.className || '';
 
   return (
-    <div className={`${styles.listDivided} ${className}`}>
+    <ul className={`${styles.listDivided} ${className}`}>
       { props.children }
-    </div>
+    </ul>
   );
 }
 
