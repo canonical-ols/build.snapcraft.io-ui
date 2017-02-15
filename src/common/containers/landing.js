@@ -43,13 +43,13 @@ class Landing extends Component {
 
         <section className={styles.section}>
           <div className={ `${styles.row} ${containerStyles.wrapper}` }>
-            <ListDividedState className={ styles.rowItem }>
+            <ListDividedState className={ styles.rowItemGrow }>
               <li>Scale to millions of installs</li>
               <li>Available on all clouds and Linux OSes</li>
               <li>No need for build infrastructure</li>
             </ListDividedState>
 
-            <ListDividedState className={ styles.rowItem }>
+            <ListDividedState className={ styles.rowItemGrow }>
               <li>Automatic updates for everyone</li>
               <li>Roll back versions effortlessly</li>
               <li>FREE for open source projects</li>
@@ -57,9 +57,27 @@ class Landing extends Component {
           </div>
         </section>
 
+        <section className={styles.section}>
+          <div className={ `${styles.row} ${containerStyles.wrapper}` }>
+            {/* TODO put in actual logos */}
+            <img className={ styles.rowItem } src='http://placehold.it/180x130?text=BRAND+LOGO' />
+            <img className={ styles.rowItem } src='http://placehold.it/180x130?text=BRAND+LOGO' />
+            <img className={ styles.rowItem } src='http://placehold.it/180x130?text=BRAND+LOGO' />
+            <img className={ styles.rowItem } src='http://placehold.it/180x130?text=BRAND+LOGO' />
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <div className={containerStyles.wrapper}>
+            {/* TODO put in actual workflow image */}
+            <img className={ styles.workflowImage} src='http://placehold.it/920x480?text=WORKFLOW' />
+            <div className={ styles.centeredButton }>
+              <Anchor  href="/auth/authenticate">Get Started Now</Anchor>
+            </div>
+          </div>
+        </section>
+
         <div className={styles.container}>
-          {/* TODO brand logos */}
-          {/* TODO workflow */}
 
           <div>
             <p>Snaps are secure, sandboxed, containerised applications, packaged with their dependencies for predictable behavior. With the Snap Store, people can safely install apps from any vendor on mission-critical devices and PCs.</p>
