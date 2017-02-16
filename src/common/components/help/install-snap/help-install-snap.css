@@ -1,0 +1,12 @@
+.strip {
+  background-color: $light-grey;
+  padding: 16px;
+}
+
+.cli {
+  font: normal 300/1.5 "Ubuntu-mono", monospace;
+  border:1px solid #ccc;
+  padding: 5px 10px;
+  display:inline-block;
+  margin-bottom: 1em;
+}
