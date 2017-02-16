@@ -7,7 +7,6 @@ describe('authStore reducers', () => {
   const initialState = {
     isFetching: false,
     hasDischarge: false,
-    signingOut: false,
     authenticated: null,
     error: null
   };
@@ -141,33 +140,15 @@ describe('authStore reducers', () => {
     });
   });
 
-  context('SIGN_OUT_OF_STORE', () => {
-    it('sets signing-out status', () => {
-      const action = { type: ActionTypes.SIGN_OUT_OF_STORE };
-      expect(authStore(initialState, action)).toEqual({
-        ...initialState,
-        signingOut: true
-      });
-    });
-  });
-
   context('SIGN_OUT_OF_STORE_ERROR', () => {
-    const state = {
-      ...initialState,
-      signingOut: true
-    };
     const action = {
       type: ActionTypes.SIGN_OUT_OF_STORE_ERROR,
       payload: 'Something went wrong!',
       error: true
     };
 
-    it('clears signing-out status', () => {
-      expect(authStore(state, action).signingOut).toBe(false);
-    });
-
     it('stores error', () => {
-      expect(authStore(state, action).error).toEqual(action.payload);
+      expect(authStore(initialState, action).error).toEqual(action.payload);
     });
   });
 });

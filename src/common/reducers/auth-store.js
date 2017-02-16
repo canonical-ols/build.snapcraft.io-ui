@@ -3,7 +3,6 @@ import * as ActionTypes from '../actions/auth-store';
 export function authStore(state = {
   isFetching: false,
   hasDischarge: false,
-  signingOut: false,
   authenticated: null,
   error: null
 }, action) {
@@ -65,15 +64,9 @@ export function authStore(state = {
         authenticated: false,
         error: action.payload
       };
-    case ActionTypes.SIGN_OUT_OF_STORE:
-      return {
-        ...state,
-        signingOut: true
-      };
     case ActionTypes.SIGN_OUT_OF_STORE_ERROR:
       return {
         ...state,
-        signingOut: false,
         error: action.payload
       };
     default:
