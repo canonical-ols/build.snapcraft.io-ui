@@ -234,7 +234,7 @@ function checkSignedIntoStoreError(error) {
   };
 }
 
-export function signOutOfStore(location) { // location for tests
+export function signOut(location) { // location for tests
   return (dispatch) => {
     dispatch({ type: SIGN_OUT_OF_STORE });
 
@@ -242,11 +242,11 @@ export function signOutOfStore(location) { // location for tests
       .then(() => {
         (location || window.location).href = `${BASE_URL}/auth/logout`;
       })
-      .catch((error) => dispatch(signOutOfStoreError(error)));
+      .catch((error) => dispatch(signOutError(error)));
   };
 }
 
-function signOutOfStoreError(error) {
+function signOutError(error) {
   return {
     type: SIGN_OUT_OF_STORE_ERROR,
     payload: error,

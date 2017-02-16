@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 
-import { signOutOfStore } from '../../actions/auth-store';
+import { signOut } from '../../actions/auth-store';
 import styles from './header.css';
 
 class Header extends Component {
@@ -38,7 +38,7 @@ class Header extends Component {
   }
 
   onLogoutClick() {
-    this.props.dispatch(signOutOfStore());
+    this.props.dispatch(signOut());
   }
 }
 

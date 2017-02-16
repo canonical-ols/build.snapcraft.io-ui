@@ -22,7 +22,7 @@ const {
   getCaveats,
   getSSODischarge,
   signIntoStore,
-  signOutOfStore
+  signOut
 } = authStoreModule;
 const ActionTypes = authStoreModule;
 
@@ -416,7 +416,7 @@ describe('store authentication actions', () => {
     });
   });
 
-  context('signOutOfStore', () => {
+  context('signOut', () => {
     afterEach(() => {
       localForageStub.clear();
     });
@@ -432,7 +432,7 @@ describe('store authentication actions', () => {
         const expectedMessage = 'Something went wrong!';
 
         const location = {};
-        return store.dispatch(signOutOfStore(location))
+        return store.dispatch(signOut(location))
           .then(() => {
             const action = store.getActions().filter(
               (a) => a.type === ActionTypes.SIGN_OUT_OF_STORE_ERROR)[0];
@@ -442,7 +442,7 @@ describe('store authentication actions', () => {
 
       it('does not redirect', () => {
         const location = {};
-        return store.dispatch(signOutOfStore(location))
+        return store.dispatch(signOut(location))
           .then(() => {
             expect(location).toExcludeKey('href');
           });
@@ -456,7 +456,7 @@ describe('store authentication actions', () => {
 
       it('removes the item', () => {
         const location = {};
-        return store.dispatch(signOutOfStore(location))
+        return store.dispatch(signOut(location))
           .then(() => {
             expect(localForageStub.store).toExcludeKey(
               'package_upload_request'
@@ -466,7 +466,7 @@ describe('store authentication actions', () => {
 
       it('redirects to /auth/logout', () => {
         const location = {};
-        return store.dispatch(signOutOfStore(location))
+        return store.dispatch(signOut(location))
           .then(() => {
             expect(url.parse(location.href, true)).toMatch({
               path: '/auth/logout'
