@@ -97,6 +97,7 @@ describe('create snap actions', () => {
           expect(store.getActions()).toHaveActionOfType(
             ActionTypes.CREATE_SNAPS_START
           );
+          scope.done();
         });
     });
 
@@ -120,6 +121,7 @@ describe('create snap actions', () => {
             code: 'snapcraft-yaml-no-name',
             message: 'snapcraft.yaml has no top-level "name" attribute'
           });
+          scope.done();
         });
     });
 
@@ -172,6 +174,7 @@ describe('create snap actions', () => {
               message: 'Snap name is not registered in the store',
               snap_name: 'test-snap'
             });
+            scope.done();
           });
       });
 
@@ -208,6 +211,7 @@ describe('create snap actions', () => {
                 code: 'not-logged-in',
                 message: 'Not logged in',
               });
+              scope.done();
             });
         });
 
@@ -253,6 +257,7 @@ describe('create snap actions', () => {
                   'code': 'not-logged-in',
                   'message': 'Not logged in'
                 });
+                scope.done();
               });
           });
 
@@ -271,6 +276,7 @@ describe('create snap actions', () => {
             return store.dispatch(createSnaps([ repository ]))
               .then(() => {
                 expect(store.getActions()).toInclude(expectedAction);
+                scope.done();
               });
           });
         });
