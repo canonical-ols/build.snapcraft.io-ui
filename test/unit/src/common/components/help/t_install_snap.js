@@ -9,9 +9,6 @@ describe('<HelpInstallSnap />', function() {
   const name = 'needleinhaystack';
   const revision = 14159265358979;
 
-  beforeEach(function() {
-  });
-
   it('should include snap name', function() {
     const wrapper = shallow(<HelpInstallSnap name={ name } revision={ revision } />);
     expect(/needleinhaystack/.test(wrapper.text())).toExist();
