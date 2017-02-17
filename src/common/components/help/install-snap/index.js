@@ -26,5 +26,8 @@ export default class HelpInstallSnap extends Component {
 
 HelpInstallSnap.propTypes = {
   name: PropTypes.string.isRequired,
-  revision: PropTypes.number.isRequired
+  revision: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ])
 };
