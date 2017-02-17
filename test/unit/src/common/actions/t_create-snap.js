@@ -25,7 +25,7 @@ const ActionTypes = createSnapModule;
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
 
-describe('repository input actions', () => {
+describe('create snap actions', () => {
   const initialState = {
     isFetching: false,
     inputValue: '',
@@ -89,6 +89,9 @@ describe('repository input actions', () => {
     });
 
     it('stores a CREATE_SNAPS_START action', () => {
+      scope.get('/api/github/snapcraft-yaml/foo/bar')
+        .reply(200);
+
       return store.dispatch(createSnaps([ repository ]))
         .then(() => {
           expect(store.getActions()).toHaveActionOfType(
