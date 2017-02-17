@@ -38,3 +38,7 @@
 .buildStatus.pending a {
   color: $warning;
 }
+
+.buildDate {
+  float: right;
+}

@@ -25,6 +25,7 @@ const RepositoryRow = (props) => {
             link={ `/${fullName}/builds/${latestBuild.buildId}`}
             status={ latestBuild.status }
             statusMessage={ latestBuild.statusMessage }
+            dateStarted={ latestBuild.dateStarted }
           />
         }
       </Data>
