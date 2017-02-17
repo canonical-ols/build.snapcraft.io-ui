@@ -61,7 +61,6 @@ class Landing extends Component {
 
         <section className={styles.section}>
           <div className={ `${styles.row} ${containerStyles.wrapper}` }>
-            {/* TODO put in actual logos */}
             <img className={ styles.brandLogo } src={images.ubuntu} />
             <img className={ styles.brandLogo } src={images.archlinux} />
             <img className={ styles.brandLogo } src={images.debian} />
