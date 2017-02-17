@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import { HeadingSix } from '../../vanilla/heading/';
 import styles from './help-install-snap.css';
 
-const HELP_INSTALL_URL = '';
+const HELP_INSTALL_URL = 'https://snapcraft.io/docs/core/install';
 
 export default class HelpInstallSnap extends Component {
   render() {
