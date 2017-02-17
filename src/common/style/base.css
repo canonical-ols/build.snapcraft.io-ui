@@ -49,8 +49,8 @@ q:before, q:after {
 }
 
 a {
-  color: #dd4814;
-  text-decoration: none;
+  color: $cool-grey;
+  text-decoration: underline;
 }
 
 a:hover {

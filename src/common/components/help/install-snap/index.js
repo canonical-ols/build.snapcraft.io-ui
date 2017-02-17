@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
-import HeadingThree from '../../vanilla/heading/';
+import { HeadingSix } from '../../vanilla/heading/';
 import styles from './help-install-snap.css';
 
 const HELP_INSTALL_URL = '';
@@ -11,13 +11,20 @@ export default class HelpInstallSnap extends Component {
 
     return (
       <div className={ styles.strip }>
+        <HeadingSix>To test this build on your PC, cloud instance, or device:</HeadingSix>
         <div>
           <div className={ styles.cli }>
             sudo snap install --edge {name} --revision={revision}
           </div>
         </div>
-        <div>Don’t have snapd installed? <a href={ HELP_INSTALL_URL }>Install it now</a>.</div>
+        <p>The installation will not be auto-updated.</p>
+        <p>Don’t have snapd installed? <a href={ HELP_INSTALL_URL }>Install it now</a>.</p>
       </div>
     );
   }
 }
+
+HelpInstallSnap.propTypes = {
+  name: PropTypes.string.isRequired,
+  revision: PropTypes.number.isRequired
+};
