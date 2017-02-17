@@ -9,5 +9,9 @@
   border:1px solid #ccc;
   padding: 5px 10px;
   display:inline-block;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
+}
+
+.p {
+  margin-bottom: 1rem;
 }
