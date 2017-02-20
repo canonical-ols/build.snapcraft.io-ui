@@ -5,21 +5,25 @@ import styles from './traffic-light.css';
 export class Signal extends Component {
 
   render() {
-    const { walkdontwalk, stage } = this.props;
+    const { done, stage, message } = this.props;
 
-    const signalStyle = walkdontwalk ? styles.go : styles.stop;
+    const signalStyle = done ? styles.go : styles.stop;
 
     return (
-      <div className={ `${styles.signal} ${signalStyle}` }>
-        { !walkdontwalk && stage }
+      <div className={ styles.box }>
+        <div className={ `${styles.signal} ${signalStyle}` }>
+          { !done && stage }
+        </div>
+        <p>{ message }</p>
       </div>
     );
   }
 }
 
 Signal.propTypes = {
-  walkdontwalk: PropTypes.bool,
-  stage: PropTypes.string
+  done: PropTypes.bool,
+  stage: PropTypes.string,
+  message: PropTypes.string
 };
 
 export default class TrafficLights extends Component {
@@ -28,24 +32,21 @@ export default class TrafficLights extends Component {
 
     return (
       <div className={ styles.trafficlight }>
-        <div className={ styles.box }>
-          <Signal walkdontwalk={ true } stage="1" />
-          <p>
-            Connect to Github
-          </p>
-        </div>
-        <div className={ styles.box }>
-          <Signal walkdontwalk={ false } stage="2" />
-          <p>
-            Choose a repo
-          </p>
-        </div>
-        <div className={ styles.box }>
-          <Signal walkdontwalk={ false } stage="3" />
-          <p>
-            Name and YAML
-          </p>
-        </div>
+        <Signal
+          done={ true }
+          stage="1"
+          message="Connect to Github"
+        />
+        <Signal
+          done={ false }
+          stage="2"
+          message="Choose a repo"
+        />
+        <Signal
+          done={ false }
+          stage="3"
+          message="Name and YAML"
+        />
       </div>
     );
   }
