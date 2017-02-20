@@ -66,8 +66,9 @@ class RepositoriesHome extends Component {
   }
 
   render() {
+    const { snaps } = this.props;
     // show spinner until we know if user has any enabled repos
-    return this.props.snaps.success
+    return (snaps.success || snaps.error)
         ? this.renderRepositoriesList()
         : this.renderSpinner();
   }
@@ -75,7 +76,7 @@ class RepositoriesHome extends Component {
 
 RepositoriesHome.propTypes = {
   auth: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object,
   snaps: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   router: PropTypes.object.isRequired
