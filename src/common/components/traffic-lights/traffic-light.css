@@ -34,8 +34,16 @@
   margin-top:-2px;
 }
 
-.go {
+.active {
+  background: $information;
+}
+
+.done {
   background: $success url(./white-tick.svg) 50% 50% no-repeat;
+}
+
+.done::after {
+  background: $success;
 }
 
 .box:last-child .signal::after {
