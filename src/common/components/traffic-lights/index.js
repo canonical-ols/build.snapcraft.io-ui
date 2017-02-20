@@ -50,8 +50,6 @@ export default class TrafficLights extends Component {
   constructor(props) {
     super(props);
 
-    const { signalState } = this.props;
-
     this.state = {
       signals: [{
         label: '1',
@@ -64,37 +62,19 @@ export default class TrafficLights extends Component {
         message: 'Name and YAML'
       }]
     };
-
-    this.mergeSignalState(this.state.signals, signalState);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { signalState } = nextProps;
-
-    this.mergeSignalState(this.state.signals, signalState);
-  }
-
-  mergeSignalState(signals, state) {
-    signals.forEach((signal, index, array) => {
-      array[index] = {
-        ...signal,
-        state: state[index]
-      };
-    });
   }
 
   render() {
+    const { signalState } = this.props;
 
     return (
       <div className={ styles.trafficlight }>
-        {this.state.signals.map((signal, key) => {
+        {this.state.signals.map((signal, idx) => {
+
+          signal.state = signalState[idx];
+
           return (
-            <Signal
-              key= { key }
-              state={ signal.state }
-              label={ signal.label }
-              message={ signal.message }
-            />
+            <Signal key = { idx } {...signal} />
           );
         })}
       </div>
