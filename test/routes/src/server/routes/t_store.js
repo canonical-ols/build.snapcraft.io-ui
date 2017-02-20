@@ -34,5 +34,29 @@ describe('The store API endpoint', () => {
         })
         .end(done);
     });
+
+    it('handles error responses reasonably', (done) => {
+      const error = {
+        code: 'user-not-ready',
+        message: 'Developer has not signed agreement.'
+      };
+      const scope = nock(conf.get('STORE_API_URL'))
+        .post('/register-name/', { snap_name: 'test-snap' })
+        .matchHeader('Authorization', 'Macaroon root="dummy-macaroon"')
+        .reply(403, { error_list: [error] });
+
+      supertest(app)
+        .post('/store/register-name')
+        .send({
+          snap_name: 'test-snap',
+          macaroon: 'dummy-macaroon'
+        })
+        .expect((res) => {
+          scope.done();
+          expect(res.status).toBe(403);
+          expect(res.body).toEqual({ error_list: [error] });
+        })
+        .end(done);
+    });
   });
 });
