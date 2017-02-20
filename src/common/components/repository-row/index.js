@@ -22,7 +22,7 @@ class RepositoryRow extends Component {
     });
   }
 
-  renderNotConfiguredDropdown() {
+  renderUnconfiguredDropdown() {
     return (
       <Dropdown>
         <Row>
@@ -39,10 +39,10 @@ class RepositoryRow extends Component {
     const { snap, latestBuild } = this.props;
     const { fullName } = parseGitHubRepoUrl(snap.git_repository_url);
 
-    const notConfigured = true;
-    const showNotConfiguredDropdown = notConfigured && this.state.unconfiguredDropdownExpanded;
+    const unconfigured = true;
+    const showUnconfiguredDropdown = unconfigured && this.state.unconfiguredDropdownExpanded;
 
-    const isActive = showNotConfiguredDropdown; // TODO (or any other dropdown)
+    const isActive = showUnconfiguredDropdown; // TODO (or any other dropdown)
     return (
       <Row isActive={isActive}>
         <Data col="30"><Link to={ `/${fullName}/builds` }>{ fullName }</Link></Data>
@@ -66,7 +66,7 @@ class RepositoryRow extends Component {
             />
           }
         </Data>
-        { showNotConfiguredDropdown && this.renderNotConfiguredDropdown() }
+        { showUnconfiguredDropdown && this.renderUnconfiguredDropdown() }
       </Row>
     );
   }
