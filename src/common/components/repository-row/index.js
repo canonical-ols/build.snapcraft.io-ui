@@ -12,13 +12,13 @@ class RepositoryRow extends Component {
     super(props);
 
     this.state = {
-      notConfiguredDropdownExpanded: false
+      unconfiguredDropdownExpanded: false
     };
   }
 
   onConfiguredClick() {
     this.setState({
-      notConfiguredDropdownExpanded: !this.state.notConfiguredDropdownExpanded
+      unconfiguredDropdownExpanded: !this.state.unconfiguredDropdownExpanded
     });
   }
 
@@ -40,7 +40,7 @@ class RepositoryRow extends Component {
     const { fullName } = parseGitHubRepoUrl(snap.git_repository_url);
 
     const notConfigured = true;
-    const showNotConfiguredDropdown = notConfigured && this.state.notConfiguredDropdownExpanded;
+    const showNotConfiguredDropdown = notConfigured && this.state.unconfiguredDropdownExpanded;
 
     const isActive = showNotConfiguredDropdown; // TODO (or any other dropdown)
     return (
