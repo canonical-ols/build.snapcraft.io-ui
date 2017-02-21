@@ -5,6 +5,7 @@ import { withRouter } from 'react-router';
 import { fetchUserSnaps } from '../../actions/snaps';
 import { fetchBuilds } from '../../actions/snap-builds';
 import { LinkButton } from '../vanilla/button';
+import { HeadingThree } from '../vanilla/heading';
 import FirstTimeHeading from '../first-time-heading';
 import RepositoriesList from '../repositories-list';
 import styles from './repositories-home.css';
@@ -53,6 +54,7 @@ class RepositoriesHome extends Component {
     return (
       <div>
         <FirstTimeHeading snaps={snaps} snapBuilds={snapBuilds} />
+        <HeadingThree>Repos to build and publish</HeadingThree>
         <div className={ styles['button-container'] }>
           <LinkButton appearance="neutral" to="/dashboard/select-repositories/">
             Add repos…
