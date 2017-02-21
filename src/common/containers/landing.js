@@ -7,6 +7,7 @@ import { ListDividedState } from '../components/vanilla/list';
 
 import containerStyles from './container.css';
 import styles from './landing.css';
+import octocat from '../images/octocat.svg';
 
 import * as images from '../images';
 
@@ -38,7 +39,9 @@ class Landing extends Component {
               </ul>
 
               <div className={ styles.bannerButton }>
-                <Anchor  href="/auth/authenticate">Set up in minutes</Anchor>
+                <Anchor href="/auth/authenticate" icon={ octocat }>
+                  Set up in minutes
+                </Anchor>
               </div>
             </div>
           </div>
@@ -111,8 +114,10 @@ class Landing extends Component {
 
           </div>
 
-          <div className={containerStyles.wrapper}>
-            <Anchor  href="/auth/authenticate">Get started now</Anchor>
+          <div className={ styles.centeredButton }>
+            <Anchor href="/auth/authenticate" icon={ octocat }>
+              Get started now
+            </Anchor>
           </div>
         </section>
 
@@ -120,7 +125,7 @@ class Landing extends Component {
           <div className={ `${styles.row} ${containerStyles.wrapper}` }>
 
             <div className={styles.rowItemTwoThirds}>
-              <p className={styles.snaps}>Snaps are secure, sandboxed, containerised applications, packaged with their dependencies for predictable behavior. With the Snap Store, people can safely install apps from any vendor on mission-critical devices and PCs.</p>
+              <p className={styles.snaps}>With Snapcraft, it&rsquo;s easy to get your software published in the <dfn>Snap Store</dfn>. This store lets people safely install apps from any vendor on mission-critical devices and PCs. Snaps are secure, sandboxed, containerised applications, packaged with their dependencies for predictable behaviour.</p>
               <Anchor href="https://snapcraft.io">More about snaps</Anchor>
             </div>
 
