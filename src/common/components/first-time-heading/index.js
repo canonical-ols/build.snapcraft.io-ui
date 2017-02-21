@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import { HeadingOne } from '../vanilla/heading';
+import TrafficLights, { SIGNALS } from '../traffic-lights';
 
 import styles from './firstTimeHeading.css';
 
@@ -34,15 +35,29 @@ class FirstTimeHeading extends Component {
 
     return message;
   }
+
+  // TODO: bartaz display state properly (not based on message)
+  renderProgress(message) {
+    return (message
+      ? <TrafficLights signalState={[ SIGNALS.DONE, SIGNALS.DONE, SIGNALS.ACTIVE ]} />
+      : null
+    );
+  }
+
+  renderMessage(message) {
+    return (message
+      ? <HeadingOne>{this.getHeadingText()}</HeadingOne>
+      : null);
+  }
+
   render() {
     const message = this.getHeadingText();
 
     return (
-      message
-        ? <div className={styles.firstTimeHeading}>
-          <HeadingOne>{this.getHeadingText()}</HeadingOne>
-        </div>
-        : null
+      <div className={styles.firstTimeHeading}>
+        { this.renderProgress(message) }
+        { this.renderMessage(message) }
+      </div>
     );
   }
 }
