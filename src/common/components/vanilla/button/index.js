@@ -10,6 +10,7 @@ const defaultProps = {
   onClick: PropTypes.func,
   type: PropTypes.string,
   appearance: React.PropTypes.oneOf(['primary', 'secondary', 'positive', 'neutral']),
+  flavour: React.PropTypes.oneOf(['normal','embiggened']),
   href: PropTypes.string
 };
 
@@ -24,9 +25,9 @@ export default function Button(props) {
 }
 
 export function Anchor(props) {
-  const { appearance='primary', icon, ...rest } = props;
+  const { appearance='primary', flavour='normal', icon, ...rest } = props;
   return (
-    <a {...rest} className={ style[appearance] }>
+    <a {...rest} className={ `${style[appearance]} ${style[flavour]}` }>
       { props.children }
       { icon && <img className= { style.icon } src={ icon } /> }
     </a>
