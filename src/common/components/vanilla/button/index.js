@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 
+import Spinner from '../../spinner';
 import style from './button.css';
 
 const defaultProps = {
@@ -12,8 +13,13 @@ const defaultProps = {
 };
 
 export default function Button(props) {
-  const { appearance='primary', ...rest } = props;
-  return <button {...rest} className={ style[appearance] } />;
+  const { appearance='primary', spinner=false, ...rest } = props;
+  return (
+    <button {...rest} className={ style[appearance] }>
+      { spinner && <span className={ style.spinner }><Spinner /></span> }
+      { props.children }
+    </button>
+  );
 }
 
 export function Anchor(props) {
