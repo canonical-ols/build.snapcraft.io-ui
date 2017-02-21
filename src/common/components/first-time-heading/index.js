@@ -17,7 +17,7 @@ class FirstTimeHeading extends Component {
     const repoBuilds = this.props.snapBuilds[fullName];
 
     if (repoBuilds && repoBuilds.success) {
-      // if builds for given repo were fetched by there aren't any
+      // if builds for given repo were fetched but there aren't any builds yet
       return repoBuilds.builds.length === 0;
     }
     return false;
