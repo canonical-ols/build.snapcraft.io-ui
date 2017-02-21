@@ -13,10 +13,10 @@ const defaultProps = {
 };
 
 export default function Button(props) {
-  const { appearance='primary', spinner=false, ...rest } = props;
+  const { appearance='primary', isSpinner=false, ...rest } = props;
   return (
     <button {...rest} className={ style[appearance] }>
-      { spinner && <span className={ style.spinner }><Spinner /></span> }
+      { isSpinner && <span className={ style.spinner }><Spinner /></span> }
       { props.children }
     </button>
   );

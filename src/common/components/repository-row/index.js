@@ -133,7 +133,7 @@ class RepositoryRow extends Component {
           <Button onClick={this.onUnregisteredClick.bind(this)} appearance='neutral'>
             Cancel
           </Button>
-          <Button disabled={actionDisabled} onClick={actionOnClick} spinner={actionSpinner}>
+          <Button disabled={actionDisabled} onClick={actionOnClick} isSpinner={actionSpinner}>
             { actionText }
           </Button>
         </Row>
