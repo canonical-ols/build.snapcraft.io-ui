@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
+import { parseGitHubRepoUrl } from '../../helpers/github-url';
 import { HeadingOne } from '../vanilla/heading';
 import TrafficLights, { SIGNALS } from '../traffic-lights';
 
@@ -10,6 +11,17 @@ const hasStoreNameAndSnapcraftData = (snap) => snap.store_name && snap.snapcraft
 const hasStoreNameButNotSnapcraftData = (snap) => snap.store_name && !snap.snapcraft_data;
 
 class FirstTimeHeading extends Component {
+
+  hasNoBuilds(snap) {
+    const { fullName } = parseGitHubRepoUrl(snap.git_repository_url);
+    const repoBuilds = this.props.snapBuilds[fullName];
+
+    if (repoBuilds && repoBuilds.success) {
+      // if builds for given repo were fetched by there aren't any
+      return repoBuilds.builds.length === 0;
+    }
+    return false;
+  }
 
   getCurrentState() {
     const snapsStore = this.props.snaps;
@@ -32,8 +44,11 @@ class FirstTimeHeading extends Component {
                  snaps.filter(hasStoreNameAndSnapcraftData).length === 0) {
         message = 'Okay, your repo is registered. Now push a snapcraft.yaml file, and building will start.';
         progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.ACTIVE];
+        // only one repo has both a name and snapcraft.yaml, and it hasn’t had a build yet
+      } else if (snaps.filter(hasStoreNameAndSnapcraftData).filter(this.hasNoBuilds.bind(this)).length === 1) {
+        message = 'All set up! Your first build is on the way.';
+        progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.DONE];
       }
-      // TODO: bartaz add last check for build in one repository
     }
 
     return {
