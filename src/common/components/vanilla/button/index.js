@@ -15,7 +15,7 @@ const defaultProps = {
 };
 
 export default function Button(props) {
-  const { appearance='primary', isSpinner=false, ...rest } = props;
+  const { appearance='primary', flavour='normal', isSpinner=false, ...rest } = props;
   return (
     <button {...rest} className={ `${style[appearance]} ${style[flavour]}` }>
       { isSpinner && <span className={ style.spinner }><Spinner /></span> }
