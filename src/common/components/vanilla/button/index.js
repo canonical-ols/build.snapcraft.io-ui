@@ -20,7 +20,7 @@ export function Anchor(props) {
   const { appearance='primary', icon, ...rest } = props;
   return (
     <a {...rest} className={ style[appearance] }>
-      { this.props.children } <img src={ icon } />
+      { props.children } <img className= { style.icon } src={ icon } />
     </a>
   );
 }
