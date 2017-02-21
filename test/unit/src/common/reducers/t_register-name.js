@@ -7,26 +7,30 @@ describe('registerName reducers', () => {
   const initialState = {};
 
   const initialStatus = {
+    snapName: null,
     isFetching: false,
     success: false,
     error: null
   };
 
   const id = 'dummy/repo';
+  const snapName = 'test-snap';
 
   it('should return the initial state', () => {
     expect(registerName(undefined, {})).toEqual(initialState);
   });
 
   context('REGISTER_NAME', () => {
-    it('stores fetching status when name is being registered', () => {
+    it('stores fetching status and snap name when name is being ' +
+       'registered', () => {
       const action = {
         type: ActionTypes.REGISTER_NAME,
-        payload: { id }
+        payload: { id, snapName }
       };
 
       expect(registerName(initialState, action)[id]).toEqual({
         ...initialStatus,
+        snapName,
         isFetching: true
       });
     });
@@ -38,6 +42,7 @@ describe('registerName reducers', () => {
         ...initialState,
         [id]: {
           ...initialStatus,
+          snapName,
           isFetching: true
         }
       };
@@ -63,6 +68,7 @@ describe('registerName reducers', () => {
         ...initialState,
         [id]: {
           ...initialStatus,
+          snapName,
           isFetching: true
         }
       };

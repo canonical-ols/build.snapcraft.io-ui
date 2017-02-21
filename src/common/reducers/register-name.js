@@ -4,6 +4,7 @@ export function registerName(state = {}, action) {
   const { payload } = action;
 
   const initialStatus = {
+    snapName: null,
     isFetching: false,
     success: false,
     error: null
@@ -15,6 +16,7 @@ export function registerName(state = {}, action) {
         ...state,
         [payload.id]: {
           ...initialStatus,
+          snapName: payload.snapName,
           isFetching: true
         }
       };

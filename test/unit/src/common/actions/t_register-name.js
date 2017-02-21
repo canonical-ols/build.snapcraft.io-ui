@@ -101,11 +101,13 @@ describe('register name actions', () => {
       });
 
       it('stores a REGISTER_NAME action', () => {
+        const expectedAction = {
+          type: ActionTypes.REGISTER_NAME,
+          payload: { id: 'foo/bar', snapName: 'test-snap' }
+        };
         return store.dispatch(registerName('foo/bar', 'test-snap'))
           .then(() => {
-            expect(store.getActions()).toHaveActionOfType(
-              ActionTypes.REGISTER_NAME
-            );
+            expect(store.getActions()).toInclude(expectedAction);
             scope.done();
           });
       });

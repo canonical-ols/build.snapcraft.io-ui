@@ -15,7 +15,7 @@ export function registerName(fullName, snapName) {
   return (dispatch) => {
     dispatch({
       type: REGISTER_NAME,
-      payload: { id: fullName }
+      payload: { id: fullName, snapName }
     });
 
     return localforage.getItem('package_upload_request')
