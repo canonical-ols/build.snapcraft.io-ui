@@ -10,7 +10,7 @@ export const SIGNALS = {
 };
 
 const stateStyles = [
-  false,
+  false, // there is no style modifier for the default state
   styles.active,
   styles.done
 ];
