@@ -17,8 +17,12 @@ export default function Button(props) {
 }
 
 export function Anchor(props) {
-  const { appearance='primary', ...rest } = props;
-  return <a {...rest} className={ style[appearance] } />;
+  const { appearance='primary', icon, ...rest } = props;
+  return (
+    <a {...rest} className={ style[appearance] }>
+      { this.props.children } <img src={ icon } />
+    </a>
+  );
 }
 
 Button.propTypes = {
