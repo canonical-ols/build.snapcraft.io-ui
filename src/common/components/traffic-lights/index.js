@@ -24,7 +24,7 @@ export class Signal extends Component {
     return (
       <div className={ styles.box }>
         <div className={ classNames(styles.signal, signalStyle) }>
-          { (state === SIGNALS.DONE) ? '\u00a0' : label }
+          { (state === SIGNALS.DONE) ? '' : label }
         </div>
         <p>{ message }</p>
       </div>
