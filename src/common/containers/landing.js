@@ -124,7 +124,7 @@ class Landing extends Component {
               <Anchor href="https://snapcraft.io">More about snaps</Anchor>
             </div>
 
-            <div className={styles.workflowItemOneThrid}>
+            <div className={styles.rowItemOneThird}>
               <img src='https://assets.ubuntu.com/v1/cbd43363-snap-icon-default.svg' width='150' height='150'/></div>
           </div>
         </section>

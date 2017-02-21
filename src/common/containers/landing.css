@@ -76,6 +76,8 @@
 .rowItemOneThird {
   composes: rowItem;
   width: 33.33%;
+  justify-content: center;
+  text-align: center;
 }
 
 .rowItemTwoThirds {
