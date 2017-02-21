@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import classNames from 'classnames';
 
 import styles from './traffic-light.css';
 
@@ -9,7 +10,7 @@ export const SIGNALS = {
 };
 
 const stateStyles = [
-  '', // use default style of element
+  false,
   styles.active,
   styles.done
 ];
@@ -22,7 +23,7 @@ export class Signal extends Component {
 
     return (
       <div className={ styles.box }>
-        <div className={ `${styles.signal} ${signalStyle}` }>
+        <div className={ classNames(styles.signal, signalStyle) }>
           { (state === SIGNALS.DONE) ? '\u00a0' : label }
         </div>
         <p>{ message }</p>
