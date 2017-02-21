@@ -40,14 +40,14 @@
   margin-bottom: 20px;
 }
 
-.workflowItemOneThrid {
+.workflowItemOneThird {
   width: 33.33%;
   text-align: center;
   justify-content: center;
   margin-bottom: 40px;
 }
 
-.workflowItemOneThrid > p {
+.workflowItemOneThird > p {
   margin: 0 5em;
 }
 
