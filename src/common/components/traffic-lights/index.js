@@ -20,18 +20,10 @@ export class Signal extends Component {
     const { state, label, message } = this.props;
     const signalStyle = stateStyles[state];
 
-    let labelOut;
-
-    if (state === SIGNALS.DONE) {
-      labelOut = '\u00a0';
-    } else {
-      labelOut = label;
-    }
-
     return (
       <div className={ styles.box }>
         <div className={ `${styles.signal} ${signalStyle}` }>
-          { labelOut }
+          { (state === SIGNALS.DONE) ? '\u00a0' : label }
         </div>
         <p>{ message }</p>
       </div>
@@ -40,8 +32,8 @@ export class Signal extends Component {
 }
 
 Signal.propTypes = {
-  state: PropTypes.number.required,
-  label: PropTypes.string.required,
+  state: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
   message: PropTypes.string
 };
 
@@ -83,5 +75,11 @@ export default class TrafficLights extends Component {
 }
 
 TrafficLights.propTypes = {
-  signalState: PropTypes.array
+  signalState: PropTypes.arrayOf(
+    React.PropTypes.oneOf([
+      SIGNALS.DEFAULT,
+      SIGNALS.ACTIVE,
+      SIGNALS.DONE
+    ])
+  ).isRequired
 };
