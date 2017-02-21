@@ -66,7 +66,7 @@ class Landing extends Component {
 
         <section className={styles.section}>
         <HeadingSix>
-          Deliver your software on the following operating systems
+          Publish your software for
         </HeadingSix>
           <div className={ `${styles.row} ${containerStyles.wrapper}` }>
             <img className={ styles.brandLogo } src={images.ubuntu} />
