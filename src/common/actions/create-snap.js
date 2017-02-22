@@ -31,7 +31,7 @@ export function createWebhook(repository) {
         return response;
       } else {
         return response.json().then((json) => {
-          if (json.payload && json.payload.code == 'github-already-created') {
+          if (json.payload && json.payload.code === 'github-already-created') {
             return response;
           }
           throw getError(response, json);
