@@ -8,6 +8,7 @@ import BuildStatus from '../build-status';
 
 import { signIntoStore } from '../../actions/auth-store';
 import { registerName } from '../../actions/register-name';
+import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
 
@@ -53,8 +54,9 @@ class RepositoryRow extends Component {
     this.setState({ snapName });
   }
 
-  onRegisterClick(fullName) {
-    this.props.dispatch(registerName(fullName, this.state.snapName));
+  onRegisterClick(repositoryUrl) {
+    const repository = parseGitHubRepoUrl(repositoryUrl);
+    this.props.dispatch(registerName(repository, this.state.snapName));
   }
 
   renderUnconfiguredDropdown() {
@@ -71,7 +73,7 @@ class RepositoryRow extends Component {
   }
 
   renderUnregisteredDropdown() {
-    const { authStore, fullName, registerNameStatus } = this.props;
+    const { snap, authStore, registerNameStatus } = this.props;
 
     // If the user has signed into the store but we haven't fetched the
     // resulting discharge macaroon, we need to wait for that before
@@ -82,7 +84,7 @@ class RepositoryRow extends Component {
 
     let caption;
     if (registerNameStatus.error) {
-      caption = <div>{ registerNameStatus.error.json.detail }</div>;
+      caption = <div>{ registerNameStatus.error.message }</div>;
     } else {
       caption = (
         <div>
@@ -109,7 +111,7 @@ class RepositoryRow extends Component {
         registerNameStatus.isFetching ||
         authStoreFetchingDischarge
       );
-      actionOnClick = this.onRegisterClick.bind(this, fullName);
+      actionOnClick = this.onRegisterClick.bind(this, snap.git_repository_url);
       if (registerNameStatus.isFetching) {
         actionSpinner = true;
         actionText = 'Checking...';
