@@ -2,14 +2,11 @@ import { PropTypes, Component } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
-import { routeRedirectUrl } from '../../actions/route-urls.js';
-
 class EnsureLoggedIn extends Component {
   componentDidMount() {
-    const { dispatch, currentUrl, isLoggedIn } = this.props;
+    const { isLoggedIn } = this.props;
 
     if (!isLoggedIn) {
-      dispatch(routeRedirectUrl(currentUrl));
       browserHistory.replace('/');
     }
   }
@@ -26,17 +23,13 @@ class EnsureLoggedIn extends Component {
 }
 
 EnsureLoggedIn.propTypes = {
-  auth: PropTypes.object,
   children: PropTypes.node,
-  currentUrl: PropTypes.string,
-  dispatch: PropTypes.func,
   isLoggedIn: PropTypes.bool
 };
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
-    isLoggedIn: state.auth.authenticated,
-    currentURL: ownProps.location.pathname
+    isLoggedIn: state.auth.authenticated
   };
 }
 
