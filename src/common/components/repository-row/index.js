@@ -13,6 +13,13 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
 
+const tickIcon = (
+  <img
+    src='http://assets.ubuntu.com/v1/6c395e6d-green-tick.svg'
+    width={ 22 } height={ 16 }
+  />
+);
+
 class RepositoryRow extends Component {
 
   constructor(props) {
@@ -46,6 +53,11 @@ class RepositoryRow extends Component {
     });
   }
 
+  closeUnregisteredDropdown() {
+    this.setState({ unregisteredDropdownExpanded: false });
+    delete this.closeUnregisteredTimerID;
+  }
+
   onSignInClick() {
     this.props.dispatch(signIntoStore());
   }
@@ -58,6 +70,22 @@ class RepositoryRow extends Component {
   onRegisterClick(repositoryUrl) {
     const repository = parseGitHubRepoUrl(repositoryUrl);
     this.props.dispatch(registerName(repository, this.state.snapName));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.registerNameStatus.success &&
+        !this.props.registerNameStatus.success) {
+      this.closeUnregisteredTimerID = window.setTimeout(
+        this.closeUnregisteredDropdown.bind(this), 2000
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.closeUnregisteredTimerID) {
+      window.clearTimeout(this.closeUnregisteredTimerID);
+      delete this.closeUnregisteredTimerID;
+    }
   }
 
   renderUnconfiguredDropdown() {
@@ -84,7 +112,9 @@ class RepositoryRow extends Component {
     );
 
     let caption;
-    if (registerNameStatus.error) {
+    if (registerNameStatus.success) {
+      caption = <div>{ tickIcon } Registered successfully</div>;
+    } else if (registerNameStatus.error) {
       caption = (
         <Message status='error'>
           { registerNameStatus.error.message }
@@ -149,14 +179,23 @@ class RepositoryRow extends Component {
   }
 
   render() {
-    const { snap, latestBuild, fullName, authStore } = this.props;
+    const {
+      snap,
+      latestBuild,
+      fullName,
+      authStore,
+      registerNameStatus
+    } = this.props;
 
     const unconfigured = true;
     const showUnconfiguredDropdown = unconfigured && this.state.unconfiguredDropdownExpanded;
-    const unregistered = true;
-    const showUnregisteredDropdown = unregistered && this.state.unregisteredDropdownExpanded;
+    const showUnregisteredDropdown = this.state.unregisteredDropdownExpanded;
     const showRegisterNameInput = (
       showUnregisteredDropdown && authStore.authenticated
+    );
+    const registeredName = (
+      registerNameStatus.success ?
+      registerNameStatus.snapName : snap.store_name
     );
 
     const isActive = showUnconfiguredDropdown; // TODO (or any other dropdown)
@@ -167,7 +206,7 @@ class RepositoryRow extends Component {
           { this.renderConfiguredStatus.call(this, snap.snapcraft_data) }
         </Data>
         <Data col="20">
-          { this.renderSnapName.call(this, showRegisterNameInput) }
+          { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
         </Data>
         <Data col="30">
           {/*
@@ -201,8 +240,10 @@ class RepositoryRow extends Component {
     );
   }
 
-  renderSnapName(showRegisterNameInput) {
-    if (showRegisterNameInput) {
+  renderSnapName(registeredName, showRegisterNameInput) {
+    if (registeredName !== null) {
+      return <span>{ tickIcon } { registeredName }</span>;
+    } else if (showRegisterNameInput) {
       return (
         <input
           type='text'
@@ -226,6 +267,7 @@ RepositoryRow.propTypes = {
     resource_type_link: PropTypes.string,
     git_repository_url: PropTypes.string,
     self_link: PropTypes.string,
+    store_name: PropTypes.string,
     snapcraft_data: PropTypes.object
   }),
   latestBuild: PropTypes.shape({
