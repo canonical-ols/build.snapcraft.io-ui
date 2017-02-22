@@ -16,7 +16,7 @@ import styles from './repositoryRow.css';
 const tickIcon = (
   <img
     src='http://assets.ubuntu.com/v1/6c395e6d-green-tick.svg'
-    width={ 22 } height={ 16 }
+    className={ styles.tickIcon }
   />
 );
 
