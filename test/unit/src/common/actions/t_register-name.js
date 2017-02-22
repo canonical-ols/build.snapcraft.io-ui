@@ -116,7 +116,7 @@ describe('register name actions', () => {
         type: ActionTypes.REGISTER_NAME,
         payload: { id: 'foo/bar', snapName: 'test-snap' }
       };
-      return store.dispatch(registerName(repository, 'test-snap', false))
+      return store.dispatch(registerName(repository, 'test-snap'))
         .then(() => {
           expect(store.getActions()).toInclude(expectedAction);
           scope.done();
@@ -125,7 +125,7 @@ describe('register name actions', () => {
 
     it('stores an error if there is no package upload request ' +
        'macaroon', () => {
-      return store.dispatch(registerName(repository, 'test-snap', false))
+      return store.dispatch(registerName(repository, 'test-snap'))
         .then(() => {
           const errorAction = store.getActions().filter((action) => {
             return action.type === ActionTypes.REGISTER_NAME_ERROR;
@@ -153,7 +153,7 @@ describe('register name actions', () => {
             code: 'already_registered',
             detail: '\'test-snap\' is already registered.'
           });
-        return store.dispatch(registerName(repository, 'test-snap', false))
+        return store.dispatch(registerName(repository, 'test-snap'))
           .then(() => {
             const errorAction = store.getActions().filter((action) => {
               return action.type === ActionTypes.REGISTER_NAME_ERROR;
@@ -192,7 +192,7 @@ describe('register name actions', () => {
               error_code: 'resource-not-found'
             });
 
-          return store.dispatch(registerName(repository, 'test-snap', false))
+          return store.dispatch(registerName(repository, 'test-snap'))
             .then(() => {
               const errorAction = store.getActions().filter((action) => {
                 return action.type === ActionTypes.REGISTER_NAME_ERROR;
@@ -231,7 +231,7 @@ describe('register name actions', () => {
                 }
               });
 
-            return store.dispatch(registerName(repository, 'test-snap', false))
+            return store.dispatch(registerName(repository, 'test-snap'))
               .then(() => {
                 const errorAction = store.getActions().filter((action) => {
                   return action.type === ActionTypes.REGISTER_NAME_ERROR;
@@ -264,9 +264,7 @@ describe('register name actions', () => {
             });
 
             it('creates success action if not triggering builds', () => {
-              return store.dispatch(
-                registerName(repository, 'test-snap', false)
-              )
+              return store.dispatch(registerName(repository, 'test-snap'))
                 .then(() => {
                   expect(store.getActions()).toInclude(expectedAction);
                   scope.done();
