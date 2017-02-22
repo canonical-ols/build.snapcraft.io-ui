@@ -26,8 +26,8 @@ describe('The GitHub API endpoint', () => {
 
       beforeEach(() => {
         scope = nock(conf.get('GITHUB_API_ENDPOINT'))
-        .get(`/repos/${fullName}/contents/snap/snapcraft.yaml`)
-        .reply(200, 'name: snap-name');
+          .get(`/repos/${fullName}/contents/snap/snapcraft.yaml`)
+          .reply(200, 'name: snap-name');
       });
 
       afterEach(() => {
@@ -36,22 +36,22 @@ describe('The GitHub API endpoint', () => {
 
       it('should successfully return', (done) => {
         supertest(app)
-        .get('/github/snapcraft-yaml/anowner/aname')
-        .expect(200, done);
+          .get('/github/snapcraft-yaml/anowner/aname')
+          .expect(200, done);
       });
 
       it('should return a "success" status', (done) => {
         supertest(app)
-        .get('/github/snapcraft-yaml/anowner/aname')
-        .expect(hasStatus('success'))
-        .end(done);
+          .get('/github/snapcraft-yaml/anowner/aname')
+          .expect(hasStatus('success'))
+          .end(done);
       });
 
       it('should return a body with a "snapcraft-yaml-found" message', (done) => {
         supertest(app)
-        .get('/github/snapcraft-yaml/anowner/aname')
-        .expect(hasMessage('snapcraft-yaml-found'))
-        .end(done);
+          .get('/github/snapcraft-yaml/anowner/aname')
+          .expect(hasMessage('snapcraft-yaml-found'))
+          .end(done);
       });
 
     });
