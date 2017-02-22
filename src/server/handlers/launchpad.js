@@ -194,6 +194,7 @@ const makeSnapName = (url) => {
 // really belong in src/server/handlers/github.js instead, but moving them
 // around is a bit cumbersome at the moment.
 
+// helper function that fetches snapcraft.yaml with a given path in given repo
 const fetchSnapcraftYaml = (path, owner, name, token) => {
   const uri = `/repos/${owner}/${name}/contents/${path}`;
   const options = {
@@ -205,6 +206,7 @@ const fetchSnapcraftYaml = (path, owner, name, token) => {
   return requestGitHub.get(uri, options).then(checkGitHubStatus);
 };
 
+// helper function that fetches given snapcraft.yaml if error from previous promise is 404
 const fetchSnapcraftYamlOn404 = (error, path, owner, name, token) => {
   if (error.status === 404 && error.body &&
       error.body.payload.code === RESPONSE_GITHUB_NOT_FOUND.payload.code) {
@@ -216,9 +218,11 @@ const fetchSnapcraftYamlOn404 = (error, path, owner, name, token) => {
 export const internalGetSnapcraftYaml = (owner, name, token) => {
   return fetchSnapcraftYaml('snap/snapcraft.yaml', owner, name, token)
     .catch((error) => {
+      // if /snap/snapcraft.yaml not found try to fetch /snapcraft.yaml
       return fetchSnapcraftYamlOn404(error, 'snapcraft.yaml', owner, name, token);
     })
     .catch((error) => {
+      // if /snapcraft.yaml not found try to fetch /.snapcraft.yaml
       return fetchSnapcraftYamlOn404(error, '.snapcraft.yaml', owner, name, token);
     })
     .then((response) => {
