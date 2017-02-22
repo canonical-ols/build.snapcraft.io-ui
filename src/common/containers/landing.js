@@ -40,7 +40,7 @@ class Landing extends Component {
               </ul>
 
               <div className={ styles.bannerButton }>
-                <Anchor href="/auth/authenticate" icon={ octocat } flavour='embiggened'>
+                <Anchor href="/auth/authenticate" icon={ octocat } flavour='embiggened' appearance='positive' >
                   Set up in minutes
                 </Anchor>
               </div>
@@ -119,7 +119,7 @@ class Landing extends Component {
           </div>
 
           <div className={ styles.centeredButton }>
-            <Anchor href="/auth/authenticate" icon={ octocat } flavour='embiggened'>
+            <Anchor href="/auth/authenticate" icon={ octocat } flavour='embiggened'  appearance='positive'>
               Get started now
             </Anchor>
           </div>
