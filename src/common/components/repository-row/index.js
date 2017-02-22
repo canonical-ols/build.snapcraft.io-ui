@@ -198,7 +198,8 @@ class RepositoryRow extends Component {
       registerNameStatus.snapName : snap.store_name
     );
 
-    const isActive = showUnconfiguredDropdown; // TODO (or any other dropdown)
+    // TODO (or any other dropdown)
+    const isActive = showUnconfiguredDropdown || showUnregisteredDropdown;
     return (
       <Row isActive={isActive}>
         <Data col="30"><Link to={ `/${fullName}/builds` }>{ fullName }</Link></Data>
