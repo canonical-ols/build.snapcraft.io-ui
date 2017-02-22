@@ -141,7 +141,7 @@ export function registerName(repository, snapName, triggerBuilds) {
       .then(() => dispatch(registerNameSuccess(fullName)))
       .catch((error) => dispatch(registerNameError(fullName, error)));
     if (triggerBuilds) {
-      promise = promise.then(() => requestBuilds(repository.url)(dispatch));
+      promise = promise.then(() => dispatch(requestBuilds(repository.url)));
     }
     return promise;
   };
