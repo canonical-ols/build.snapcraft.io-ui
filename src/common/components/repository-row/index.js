@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import Button from '../vanilla/button';
 import { Row, Data, Dropdown } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
+import { Message } from '../forms';
 
 import { signIntoStore } from '../../actions/auth-store';
 import { registerName } from '../../actions/register-name';
@@ -84,7 +85,11 @@ class RepositoryRow extends Component {
 
     let caption;
     if (registerNameStatus.error) {
-      caption = <div>{ registerNameStatus.error.message }</div>;
+      caption = (
+        <Message status='error'>
+          { registerNameStatus.error.message }
+        </Message>
+      );
     } else {
       caption = (
         <div>
