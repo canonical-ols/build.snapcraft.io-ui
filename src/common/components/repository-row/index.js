@@ -82,7 +82,7 @@ class RepositoryRow extends Component {
 
     if (/^-|-$/.test(snapName)) {
       clientValidationError = {
-        message: 'Sorry the name can\'t start or end with a hypen.'
+        message: 'Sorry the name can\'t start or end with a hyphen.'
       };
     } else if (!/[a-z0-9-]/.test(snapName)) {
       clientValidationError = {
