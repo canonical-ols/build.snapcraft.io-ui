@@ -15,7 +15,7 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
 
-const MINIMUM_SNAP_NAME_LENGTH = 2;
+const MINIMUM_SNAP_NAME_LENGTH = 1;
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
