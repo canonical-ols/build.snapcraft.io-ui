@@ -131,6 +131,7 @@ class Landing extends Component {
                   Getting Rocket.Chat snapped was as easy as defining a simple yaml file and adding into our CI. This is definitely one of the easiest distribution methods we have ever used.
                 </Testimonial>
               </div>
+
             </div>
           </div>
         </section>
