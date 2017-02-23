@@ -4,9 +4,9 @@ import styles from './heading.css';
 
 const Heading = (props) => {
   const H = props.heading || 'h1';
-  const A = props.align || 'left';
+  const align = props.align || 'left';
   return (
-    <H className={ `${styles[H]} ${styles[A]} `}>
+    <H className={ `${styles[H]} ${styles[align]} `}>
       { props.children }
     </H>
   );

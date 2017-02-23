@@ -67,7 +67,7 @@ class Landing extends Component {
         </section>
 
         <section className={ styles.section }>
-          <HeadingSix align='centered'>
+          <HeadingSix align='center'>
             Publish your software for
           </HeadingSix>
           <div className={ `${styles.row} ${containerStyles.wrapper}` }>
@@ -105,9 +105,6 @@ class Landing extends Component {
               <img src='https://assets.ubuntu.com/v1/7af63a6d-workflow-icon04.svg' width='150' height='150'/></div>
           </div>
         </section>
-
-
-        {/* TODO testimonials */}
 
         <section className={ styles.section }>
           <div className={ `${containerStyles.wrapper}` }>
