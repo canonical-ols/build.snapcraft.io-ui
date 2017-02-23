@@ -10,7 +10,7 @@ import { Message } from '../forms';
 import templateYaml from './template-yaml.js';
 
 import { signIntoStore } from '../../actions/auth-store';
-import { registerName } from '../../actions/register-name';
+import { registerName, registerNameError } from '../../actions/register-name';
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
@@ -74,11 +74,27 @@ class RepositoryRow extends Component {
   }
 
   onRegisterClick(repositoryUrl) {
-    const { snap } = this.props;
+    const { snap, dispatch, fullName } = this.props;
     const repository = parseGitHubRepoUrl(repositoryUrl);
     const { snapName } = this.state;
     const triggerBuilds = (!!snap.snapcraft_data);
-    this.props.dispatch(registerName(repository, snapName, triggerBuilds));
+    let clientValidationError = false;
+
+    if (/^-|-$/.test(snapName)) {
+      clientValidationError = {
+        message: 'Sorry the name can\'t start or end with a hypen.'
+      };
+    } else if (!/[a-z0-9-]/.test(snapName)) {
+      clientValidationError = {
+        message: 'Sorry the name may only contain lower-case letters, numbers and hyphens.'
+      };
+    }
+
+    if (clientValidationError) {
+      dispatch(registerNameError(fullName, clientValidationError));
+    } else {
+      dispatch(registerName(repository, snapName, triggerBuilds));
+    }
   }
 
   componentWillReceiveProps(nextProps) {
