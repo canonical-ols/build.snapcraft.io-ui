@@ -7,7 +7,7 @@ import { HeadingThree } from '../components/vanilla/heading';
 import { HeadingSix } from '../components/vanilla/heading';
 import { ListDividedState } from '../components/vanilla/list';
 
-import Testimonial from '../components/vanilla/testimonial';
+import Testimonial from '../components/testimonial';
 import containerStyles from './container.css';
 import styles from './landing.css';
 import octocat from '../images/octocat.svg';
