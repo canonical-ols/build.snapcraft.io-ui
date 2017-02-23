@@ -16,6 +16,7 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 import styles from './repositoryRow.css';
 
 const MINIMUM_SNAP_NAME_LENGTH = 1;
+const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/register-name/';
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
@@ -85,6 +86,7 @@ class RepositoryRow extends Component {
         message: 'Sorry the name can\'t start or end with a hyphen.'
       };
     } else if (!/[a-z0-9-]/.test(snapName)) {
+      // XXX we can't get here on any browser that supports pattern validation
       clientValidationError = {
         message: 'Sorry the name may only contain lower-case letters, numbers and hyphens.'
       };
@@ -152,6 +154,17 @@ class RepositoryRow extends Component {
     let caption;
     if (registerNameStatus.success) {
       caption = <div>{ tickIcon } Registered successfully</div>;
+    } else if ( registerNameStatus.error
+      && registerNameStatus.error.json.payload.code === 'already_registered') {
+      caption = (
+        <Message status='error'>
+          <p>Sorry, that name is already taken. Try a different name.</p>
+          <p className={ styles.helpText }>
+            If you think you should have sole rights to the name,
+            you can <a href={ FILE_NAME_CLAIM_URL } target='_blank'>file a claim</a>.
+          </p>
+        </Message>
+      );
     } else if (registerNameStatus.error) {
       caption = (
         <Message status='error'>
@@ -248,10 +261,10 @@ class RepositoryRow extends Component {
     return (
       <Row isActive={isActive}>
         <Data col="30"><Link to={ `/${fullName}/builds` }>{ fullName }</Link></Data>
-        <Data col="20">
+        <Data col="15">
           { this.renderConfiguredStatus.call(this, snap.snapcraft_data) }
         </Data>
-        <Data col="20">
+        <Data col="25">
           { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
         </Data>
         <Data col="30">
