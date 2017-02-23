@@ -15,6 +15,7 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
 
+const MINIMUM_SNAP_NAME_LENGTH = 2;
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
@@ -163,7 +164,7 @@ class RepositoryRow extends Component {
     let actionText;
     if (authStoreFetchingDischarge || authStore.authenticated) {
       actionDisabled = (
-        this.state.snapName === '' ||
+        !(this.state.snapName && this.state.snapName.length > MINIMUM_SNAP_NAME_LENGTH) ||
         registerNameStatus.isFetching ||
         authStoreFetchingDischarge
       );
@@ -188,12 +189,19 @@ class RepositoryRow extends Component {
           </Data>
         </Row>
         <Row>
-          <Button onClick={this.onUnregisteredClick.bind(this)} appearance='neutral'>
-            Cancel
-          </Button>
-          <Button disabled={actionDisabled} onClick={actionOnClick} isSpinner={actionSpinner}>
-            { actionText }
-          </Button>
+          <div className={ styles.buttonRow }>
+            <a onClick={this.onUnregisteredClick.bind(this)} className={ styles.cancel }>
+              Cancel
+            </a>
+            <Button
+              appearance="positive"
+              disabled={actionDisabled}
+              onClick={actionOnClick}
+              isSpinner={actionSpinner}
+            >
+              { actionText }
+            </Button>
+          </div>
         </Row>
       </Dropdown>
     );
