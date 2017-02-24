@@ -155,6 +155,8 @@ class RepositoryRow extends Component {
     if (registerNameStatus.success) {
       caption = <div>{ tickIcon } Registered successfully</div>;
     } else if ( registerNameStatus.error
+      && registerNameStatus.error.json
+      && registerNameStatus.error.json.payload
       && registerNameStatus.error.json.payload.code === 'already_registered') {
       caption = (
         <Message status='error'>
