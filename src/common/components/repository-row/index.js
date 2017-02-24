@@ -11,11 +11,13 @@ import { Message } from '../forms';
 import templateYaml from './template-yaml.js';
 
 import { signIntoStore } from '../../actions/auth-store';
-import { registerName } from '../../actions/register-name';
+import { registerName, registerNameError } from '../../actions/register-name';
+import { conf } from '../../helpers/config';
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
 
+const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/register-name/';
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
@@ -41,7 +43,8 @@ class RepositoryRow extends Component {
     this.state = {
       snapName,
       unconfiguredDropdownExpanded: false,
-      unregisteredDropdownExpanded: false
+      unregisteredDropdownExpanded: false,
+      signAgreement: false
     };
   }
 
@@ -94,17 +97,35 @@ class RepositoryRow extends Component {
     this.props.dispatch(signIntoStore());
   }
 
+  onSignAgreementChange(event) {
+    this.setState({ signAgreement: event.target.checked });
+  }
+
   onSnapNameChange(event) {
+    const { dispatch, fullName } = this.props;
     const snapName = event.target.value.replace(/[^a-z0-9-]/g, '');
+    let clientValidationError = null;
     this.setState({ snapName });
+
+    if (/^-|-$/.test(snapName)) {
+      clientValidationError = {
+        message: 'Sorry the name can\'t start or end with a hyphen.'
+      };
+    }
+
+    dispatch(registerNameError(fullName, clientValidationError));
   }
 
   onRegisterClick(repositoryUrl) {
-    const { snap } = this.props;
+    const { authStore, snap, dispatch } = this.props;
     const repository = parseGitHubRepoUrl(repositoryUrl);
-    const { snapName } = this.state;
-    const triggerBuilds = (!!snap.snapcraft_data);
-    this.props.dispatch(registerName(repository, snapName, triggerBuilds));
+    const { snapName, signAgreement } = this.state;
+    const requestBuilds = (!!snap.snapcraft_data);
+
+    dispatch(registerName(repository, snapName, {
+      signAgreement: signAgreement ? authStore.userName : null,
+      requestBuilds
+    }));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -162,6 +183,29 @@ class RepositoryRow extends Component {
     );
   }
 
+  renderAgreement() {
+    const checkbox = (
+      <input
+        type="checkbox"
+        onChange={ this.onSignAgreementChange.bind(this) }
+      />
+    );
+    const link = (
+      <a
+        className={ styles.external }
+        href={ `${conf.get('STORE_DEVPORTAL_URL')}/tos/` }
+        target="_blank"
+      >
+        Developer Programme Agreement
+      </a>
+    );
+    return (
+      <div>
+        { checkbox } I accept the terms of the { link }
+      </div>
+    );
+  }
+
   renderUnregisteredDropdown() {
     const { snap, authStore, registerNameStatus } = this.props;
 
@@ -171,10 +215,26 @@ class RepositoryRow extends Component {
     const authStoreFetchingDischarge = (
       authStore.hasDischarge && !authStore.authenticated
     );
+    const userMustSignAgreement = (
+      authStore.authenticated && authStore.signedAgreement === false
+    );
 
     let caption;
     if (registerNameStatus.success) {
       caption = <div>{ tickIcon } Registered successfully</div>;
+    } else if ( registerNameStatus.error
+      && registerNameStatus.error.json
+      && registerNameStatus.error.json.payload
+      && registerNameStatus.error.json.payload.code === 'already_registered') {
+      caption = (
+        <Message status='error'>
+          <p>Sorry, that name is already taken. Try a different name.</p>
+          <p className={ styles.helpText }>
+            If you think you should have sole rights to the name,
+            you can <a href={ FILE_NAME_CLAIM_URL } target='_blank'>file a claim</a>.
+          </p>
+        </Message>
+      );
     } else if (registerNameStatus.error) {
       caption = (
         <Message status='error'>
@@ -193,6 +253,7 @@ class RepositoryRow extends Component {
               Lower-case letters, numbers, and hyphens only.
             </div>
           }
+          { userMustSignAgreement && this.renderAgreement() }
         </div>
       );
     }
@@ -201,11 +262,16 @@ class RepositoryRow extends Component {
     let actionOnClick;
     let actionSpinner = false;
     let actionText;
-    if (authStoreFetchingDischarge || authStore.authenticated) {
+    if (authStore.isFetching) {
+      actionDisabled = true;
+      actionOnClick = () => {};
+      actionSpinner = true;
+      actionText = 'Checking...';
+    } else if (authStore.authenticated) {
       actionDisabled = (
         this.state.snapName === '' ||
         registerNameStatus.isFetching ||
-        authStoreFetchingDischarge
+        !!registerNameStatus.error
       );
       actionOnClick = this.onRegisterClick.bind(this, snap.git_repository_url);
       if (registerNameStatus.isFetching) {
@@ -215,7 +281,7 @@ class RepositoryRow extends Component {
         actionText = 'Register';
       }
     } else {
-      actionDisabled = authStore.isFetching;
+      actionDisabled = !!registerNameStatus.error;
       actionOnClick = this.onSignInClick.bind(this);
       actionText = 'Sign in...';
     }
@@ -228,12 +294,19 @@ class RepositoryRow extends Component {
           </Data>
         </Row>
         <Row>
-          <Button onClick={this.onUnregisteredClick.bind(this)} appearance='neutral'>
-            Cancel
-          </Button>
-          <Button disabled={actionDisabled} onClick={actionOnClick} isSpinner={actionSpinner}>
-            { actionText }
-          </Button>
+          <div className={ styles.buttonRow }>
+            <a onClick={this.onUnregisteredClick.bind(this)} className={ styles.cancel }>
+              Cancel
+            </a>
+            <Button
+              appearance="positive"
+              disabled={actionDisabled}
+              onClick={actionOnClick}
+              isSpinner={actionSpinner}
+            >
+              { actionText }
+            </Button>
+          </div>
         </Row>
       </Dropdown>
     );
@@ -264,10 +337,10 @@ class RepositoryRow extends Component {
     return (
       <Row isActive={isActive}>
         <Data col="30"><Link to={ `/${fullName}/builds` }>{ fullName }</Link></Data>
-        <Data col="20">
+        <Data col="15">
           { this.renderConfiguredStatus.call(this, snap.snapcraft_data) }
         </Data>
-        <Data col="20">
+        <Data col="25">
           { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
         </Data>
         <Data col="30">
@@ -353,7 +426,11 @@ RepositoryRow.propTypes = {
   }),
   fullName: PropTypes.string,
   authStore: PropTypes.shape({
-    authenticated: PropTypes.bool
+    authenticated: PropTypes.bool,
+    hasDischarge: PropTypes.bool,
+    isFetching: PropTypes.bool,
+    signedAgreement: PropTypes.bool,
+    userName: PropTypes.string
   }),
   registerNameStatus: PropTypes.shape({
     isFetching: PropTypes.bool,
