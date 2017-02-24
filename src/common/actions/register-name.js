@@ -138,7 +138,7 @@ export function registerName(repository, snapName, triggerBuilds) {
         });
       })
       .then(checkStatus)
-      .then(() => dispatch(registerNameSuccess(fullName)))
+      .then(() => dispatch(registerNameSuccess(fullName, snapName)))
       .catch((error) => dispatch(registerNameError(fullName, error)));
     if (triggerBuilds) {
       promise = promise.then(() => dispatch(requestBuilds(repository.url)));
@@ -147,10 +147,10 @@ export function registerName(repository, snapName, triggerBuilds) {
   };
 }
 
-export function registerNameSuccess(id) {
+export function registerNameSuccess(id, snapName) {
   return {
     type: REGISTER_NAME_SUCCESS,
-    payload: { id }
+    payload: { id, snapName }
   };
 }
 

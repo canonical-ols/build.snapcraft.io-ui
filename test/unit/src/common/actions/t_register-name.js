@@ -248,7 +248,7 @@ describe('register name actions', () => {
           context('if authorizing snap succeeds', () => {
             const expectedAction = {
               type: ActionTypes.REGISTER_NAME_SUCCESS,
-              payload: { id: 'foo/bar' }
+              payload: { id: 'foo/bar', snapName: 'test-snap' }
             };
 
             beforeEach(() => {
@@ -330,15 +330,16 @@ describe('register name actions', () => {
 
   context('registerNameSuccess', () => {
     let id = 'foo/bar';
+    let snapName = 'foo-bar';
 
     beforeEach(() => {
-      action = registerNameSuccess(id);
+      action = registerNameSuccess(id, snapName);
     });
 
     it('creates an action to store success', () => {
       const expectedAction = {
         type: ActionTypes.REGISTER_NAME_SUCCESS,
-        payload: { id }
+        payload: { id, snapName }
       };
 
       store.dispatch(action);
