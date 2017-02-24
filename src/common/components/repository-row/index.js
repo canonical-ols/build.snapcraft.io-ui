@@ -15,7 +15,6 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
 
-const MINIMUM_SNAP_NAME_LENGTH = 1;
 const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/register-name/';
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
@@ -70,33 +69,27 @@ class RepositoryRow extends Component {
   }
 
   onSnapNameChange(event) {
+    const { dispatch, fullName } = this.props;
     const snapName = event.target.value.replace(/[^a-z0-9-]/g, '');
+    let clientValidationError = null;
     this.setState({ snapName });
-  }
-
-  onRegisterClick(repositoryUrl) {
-    const { snap, dispatch, fullName } = this.props;
-    const repository = parseGitHubRepoUrl(repositoryUrl);
-    const { snapName } = this.state;
-    const triggerBuilds = (!!snap.snapcraft_data);
-    let clientValidationError = false;
 
     if (/^-|-$/.test(snapName)) {
       clientValidationError = {
         message: 'Sorry the name can\'t start or end with a hyphen.'
       };
-    } else if (!/[a-z0-9-]/.test(snapName)) {
-      // XXX we can't get here on any browser that supports pattern validation
-      clientValidationError = {
-        message: 'Sorry the name may only contain lower-case letters, numbers and hyphens.'
-      };
     }
 
-    if (clientValidationError) {
-      dispatch(registerNameError(fullName, clientValidationError));
-    } else {
-      dispatch(registerName(repository, snapName, triggerBuilds));
-    }
+    dispatch(registerNameError(fullName, clientValidationError));
+  }
+
+  onRegisterClick(repositoryUrl) {
+    const { snap, dispatch } = this.props;
+    const repository = parseGitHubRepoUrl(repositoryUrl);
+    const { snapName } = this.state;
+    const triggerBuilds = (!!snap.snapcraft_data);
+
+    dispatch(registerName(repository, snapName, triggerBuilds));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -195,8 +188,9 @@ class RepositoryRow extends Component {
     let actionText;
     if (authStoreFetchingDischarge || authStore.authenticated) {
       actionDisabled = (
-        !(this.state.snapName && this.state.snapName.length > MINIMUM_SNAP_NAME_LENGTH) ||
+        this.state.snapName === '' ||
         registerNameStatus.isFetching ||
+        !!registerNameStatus.error ||
         authStoreFetchingDischarge
       );
       actionOnClick = this.onRegisterClick.bind(this, snap.git_repository_url);
@@ -207,7 +201,7 @@ class RepositoryRow extends Component {
         actionText = 'Register';
       }
     } else {
-      actionDisabled = authStore.isFetching;
+      actionDisabled = registerNameStatus.error || authStore.isFetching;
       actionOnClick = this.onSignInClick.bind(this);
       actionText = 'Sign in...';
     }
