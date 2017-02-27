@@ -427,7 +427,6 @@ export const findSnap = (req, res) => {
         status: 'success',
         payload: {
           code: 'snap-found',
-          message: snap.self_link, // TODO: bartaz it's just for backwards compatibility for now
           snap
         }
       });
