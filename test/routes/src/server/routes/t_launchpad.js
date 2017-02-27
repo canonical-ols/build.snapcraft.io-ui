@@ -733,11 +733,14 @@ describe('The Launchpad API endpoint', () => {
 
     context('when repository is memcached', () => {
       const repositoryUrl = 'https://github.com/anowner/aname';
-      const snapUrl = `${conf.get('LP_API_URL')}/devel/~test-user/+snap/test-snap`;
+      const snap = {
+        self_link: `${conf.get('LP_API_URL')}/devel/~test-user/+snap/test-snap`
+      };
+
 
       before(() => {
         setupInMemoryMemcached();
-        getMemcached().set(getRepositoryUrlCacheId(repositoryUrl), snapUrl);
+        getMemcached().set(getRepositoryUrlCacheId(repositoryUrl), snap);
       });
 
       after(() => {
@@ -763,7 +766,7 @@ describe('The Launchpad API endpoint', () => {
         supertest(app)
           .get('/launchpad/snaps')
           .query({ repository_url: 'https://github.com/anowner/aname' })
-          .expect(hasMessage('snap-found', snapUrl))
+          .expect(hasMessage('snap-found', snap.self_link))
           .end(done);
       });
 
