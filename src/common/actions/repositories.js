@@ -21,6 +21,10 @@ export function fetchUserRepositories(pageNumber) {
   return (dispatch) => {
     let urlParts = [BASE_URL, 'api/github/repos'];
 
+    dispatch({
+      type: FETCH_REPOSITORIES
+    });
+
     if (pageNumber) {
       urlParts.push('page/' + pageNumber);
     }
