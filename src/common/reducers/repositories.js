@@ -20,6 +20,7 @@ export function repositories(state = {
         ...state,
         isFetching: false,
         success: true,
+        error: null,
         repos: action.payload.repos.map((repo) => {
           return {
             // parse repository info to keep consistent data format
