@@ -94,7 +94,6 @@ class SelectRepositoryList extends Component {
 
     return (
       <div>
-        { pageLinks }
         { isLoading &&
           <div className={ spinnerStyles }><Spinner /></div>
         }
