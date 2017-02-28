@@ -12,7 +12,7 @@
   width: 16px;
   height: 16px;
   padding: 0;
-  border-bottom: 0 !important;
+  border-bottom: 0;
   display: inline-block;
   vertical-align: middle;
   text-indent: 999em;
