@@ -93,7 +93,7 @@ export class SelectRepositoryListComponent extends Component {
     if (success && snaps.length) {
       for (let i = repositories.length; i--;) {
         for (let j = snaps.length; j--;) {
-          let enabledRepo = snaps[j].git_repository_url;
+          const enabledRepo = snaps[j].git_repository_url;
 
           if (enabledRepo === repositories[i].url) {
             repositories[i].enabled = true;
