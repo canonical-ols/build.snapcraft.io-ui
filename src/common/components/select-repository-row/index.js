@@ -26,7 +26,7 @@ class SelectRepositoryRow extends Component {
             id={ repository.fullName }
             type="checkbox"
             onChange={ this.onChange.bind(this) }
-            checked={ checked }
+            checked={ checked || isEnabled }
             disabled={ isEnabled }
           />
         }
