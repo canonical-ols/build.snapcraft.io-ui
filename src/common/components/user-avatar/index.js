@@ -17,10 +17,12 @@ class UserAvatar extends Component {
           <img src={ user.avatar_url } />
         </div>
         <div className={ styles.headings }>
-          <HeadingOne>{ user.name }</HeadingOne>
-          <div className={ styles.login }>
-            <HeadingThree>{ user.login }</HeadingThree>
-          </div>
+          <HeadingOne>{ user.name || user.login }</HeadingOne>
+          { user.name &&
+            <div className={ styles.login }>
+              <HeadingThree>{ user.login }</HeadingThree>
+            </div>
+          }
         </div>
       </div>
     );

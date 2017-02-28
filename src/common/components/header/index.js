@@ -7,7 +7,7 @@ import styles from './header.css';
 
 const wordmark = 'https://assets.ubuntu.com/v1/d45097a4-snapcraft.io-logotype.svg';
 
-class Header extends Component {
+export class Header extends Component {
   render() {
     const { authenticated, user } = this.props;
 
@@ -20,7 +20,11 @@ class Header extends Component {
           { authenticated
             ?
               <div className={ styles.sideNav }>
-                { user && <span className={ styles.navItem } >Hi, {user.name}</span> }
+                { user &&
+                  <span className={ styles.username } >
+                    Hi, {user.name || user.login}
+                  </span>
+                }
                 <Link to="/dashboard" className={ styles.link }>Dashboard</Link>
                 <a
                   className={ styles.link }
