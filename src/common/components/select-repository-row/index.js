@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import classNames from 'classnames';
 
 import styles from './selectRepositoryRow.css';
 
@@ -8,20 +9,29 @@ class SelectRepositoryRow extends Component {
       errorMsg,
       repository,
       onChange,
-      checked
+      checked,
+      isEnabled
     } = this.props;
 
+    const rowClass = classNames({
+      [styles.repositoryRow]: true,
+      [styles.error]: errorMsg,
+      [styles.repositoryEnabled]: isEnabled
+    });
+
     return (
-      <div className={ `${styles.repositoryRow} ${errorMsg && styles.error}` }>
+      <div className={ rowClass }>
         { onChange &&
           <input
+            id={ repository.fullName }
             type="checkbox"
             onChange={ this.onChange.bind(this) }
             checked={ checked }
+            disabled={ isEnabled }
           />
         }
         <div>
-          {repository.fullName}
+          <label htmlFor={ repository.fullName }>{repository.fullName}</label>
         </div>
         { errorMsg &&
           <div className={ styles.errorMessage }>
@@ -43,6 +53,7 @@ SelectRepositoryRow.propTypes = {
     fullName: PropTypes.string.isRequired
   }).isRequired,
   checked: PropTypes.bool,
+  isEnabled: PropTypes.bool,
   onChange: PropTypes.func
 };
 
