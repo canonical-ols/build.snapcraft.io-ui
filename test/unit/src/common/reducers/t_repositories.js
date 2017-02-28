@@ -6,7 +6,7 @@ import * as ActionTypes from '../../../../../src/common/actions/repositories';
 
 describe('repositories reducers', () => {
   const initialState = {
-    isFetching: true,
+    isFetching: false,
     success: false,
     pageLinks: {},
     error: null,

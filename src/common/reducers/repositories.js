@@ -3,7 +3,7 @@ import { parseGitHubRepoUrl } from '../helpers/github-url';
 
 export function repositories(state = {
   // has no server side content, so initial state is always 'fetching'
-  isFetching: true,
+  isFetching: false,
   success: false,
   error: null,
   repos: [],
