@@ -22,7 +22,7 @@ class Landing extends Component {
           <div>
             <div className={ `${containerStyles.wrapper} ${styles.centeredText}` }>
               <HeadingTwo align='center'>
-                Auto-build and publish software for any Linux system or device
+                Auto-build and publish software<br />for any Linux system or device
               </HeadingTwo>
 
               <ul className={ styles.banner }>
