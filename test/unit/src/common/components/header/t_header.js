@@ -2,7 +2,7 @@ import React from 'react';
 import expect from 'expect';
 import { shallow } from 'enzyme';
 
-import { Header } from '../../../../../../src/common/components/header';
+import Header from '../../../../../../src/common/components/header';
 import { Link } from 'react-router';
 
 describe('<Header />', function() {

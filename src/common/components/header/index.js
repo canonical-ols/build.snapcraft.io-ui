@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router';
 
 import { signOut } from '../../actions/auth-store';
@@ -7,7 +6,7 @@ import styles from './header.css';
 
 const wordmark = 'https://assets.ubuntu.com/v1/d45097a4-snapcraft.io-logotype.svg';
 
-export class Header extends Component {
+export default class Header extends Component {
   render() {
     const { authenticated, user } = this.props;
 
@@ -56,5 +55,3 @@ Header.propTypes = {
   }),
   dispatch: PropTypes.func.isRequired
 };
-
-export default connect()(Header);
