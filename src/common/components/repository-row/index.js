@@ -413,14 +413,14 @@ class RepositoryRow extends Component {
     // icon playing hide-and-seek.
     return (
       <Row isActive={isActive}>
-        <Data col="30"><Link to={ `/${fullName}/builds` }>{ fullName }</Link></Data>
+        <Data col="27"><Link to={ `/${fullName}/builds` }>{ fullName }</Link></Data>
         <Data col="15">
           { this.renderConfiguredStatus.call(this, snap.snapcraft_data) }
         </Data>
         <Data col="25">
           { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
         </Data>
-        <Data col="27">
+        <Data col="30">
           {/*
             TODO: show 'Loading' when waiting for status?
               and also show 'Never built' when no builds available
