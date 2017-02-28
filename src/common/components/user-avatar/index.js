@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { HeadingOne, HeadingThree } from '../vanilla/heading';
 import styles from './user-avatar.css';
 
-export class UserAvatar extends Component {
+class UserAvatar extends Component {
 
   render() {
     const { auth, user } = this.props;

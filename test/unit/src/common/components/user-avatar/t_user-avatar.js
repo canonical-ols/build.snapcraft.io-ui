@@ -1,22 +1,41 @@
 import React from 'react';
 import expect from 'expect';
 import { shallow } from 'enzyme';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
-import { UserAvatar } from '../../../../../../src/common/components/user-avatar';
+import UserAvatar from '../../../../../../src/common/components/user-avatar';
 import { HeadingOne, HeadingThree } from '../../../../../../src/common/components/vanilla/heading';
+
+const middlewares = [ thunk ];
+const mockStore = configureMockStore(middlewares);
 
 describe('<UserAvatar />', function() {
   let element;
+  let store;
+  let auth;
+  let user;
+
+  beforeEach(() => {
+    store = mockStore({
+      auth,
+      user
+    });
+
+    // shallow render container component with the store
+    element = shallow(<UserAvatar store={store} />)
+    // find react component by class name and shallow render it
+      .find('UserAvatar').shallow();
+  });
 
   context('when user is not authenticated', () => {
-    const auth = {
-      authenticated: false
-    };
 
-    const user = null;
+    before(() => {
+      auth = {
+        authenticated: false
+      };
 
-    beforeEach(() => {
-      element = shallow(<UserAvatar auth={auth} user={user} />);
+      user = null;
     });
 
     it('should not render', () => {
@@ -25,18 +44,17 @@ describe('<UserAvatar />', function() {
   });
 
   context('when user is authenticated', () => {
-    const auth = {
-      authenticated: true
-    };
+    before(() => {
+      auth = {
+        authenticated: true
+      };
 
-    const user = {
-      name: 'Joe Doe',
-      login: 'jdoe',
-      avatar_url: 'http://example.com/nyancat.gif'
-    };
+      user = {
+        name: 'Joe Doe',
+        login: 'jdoe',
+        avatar_url: 'http://example.com/nyancat.gif'
+      };
 
-    beforeEach(() => {
-      element = shallow(<UserAvatar auth={auth} user={user} />);
     });
 
     it('should render avatar image', () => {
@@ -52,12 +70,11 @@ describe('<UserAvatar />', function() {
     });
 
     context('when user has no name', () => {
-      const user = {
-        login: 'jdoe'
-      };
 
-      beforeEach(() => {
-        element = shallow(<UserAvatar auth={auth} user={user} />);
+      before(() => {
+        user = {
+          login: 'jdoe'
+        };
       });
 
       it('should render big user login', () => {
