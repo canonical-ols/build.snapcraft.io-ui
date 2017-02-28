@@ -47,6 +47,11 @@ class SelectRepositoryRow extends Component {
   }
 }
 
+SelectRepositoryRow.defaultProps = {
+  checked: false,
+  isEnabled: false
+};
+
 SelectRepositoryRow.propTypes = {
   errorMsg: PropTypes.node,
   repository: PropTypes.shape({
