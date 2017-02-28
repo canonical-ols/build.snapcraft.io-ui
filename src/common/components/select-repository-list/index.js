@@ -19,7 +19,7 @@ import { spinner as spinnerStyles } from '../../containers/container.css';
 
 const SNAP_NAME_NOT_REGISTERED_ERROR_CODE = 'snap-name-not-registered';
 
-class SelectRepositoryList extends Component {
+export class SelectRepositoryListComponent extends Component {
 
   componentWillReceiveProps(nextProps) {
     const repositoriesStatus = nextProps.repositoriesStatus;
@@ -111,19 +111,22 @@ class SelectRepositoryList extends Component {
   render() {
     const isLoading = this.props.repositories.isFetching;
     const { selectedRepos } = this.props.selectRepositoriesForm;
-    const { repos } = this.props.repositories;
+    const { repos, success } = this.props.repositories;
     const pageLinks = this.renderPageLinks.call(this);
 
     this.filterEnabledRepos(repos);
+    let renderedRepos = null;
+
+    if (success) {
+      renderedRepos = this.props.repositories.repos.map(this.renderRepository.bind(this));
+    }
 
     return (
       <div>
         { isLoading &&
           <div className={ spinnerStyles }><Spinner /></div>
         }
-        { this.props.repositories.success &&
-          this.props.repositories.repos.map(this.renderRepository.bind(this))
-        }
+        { renderedRepos }
         { pageLinks }
         <div className={ styles.footer }>
           <HeadingThree>
@@ -160,7 +163,7 @@ class SelectRepositoryList extends Component {
   }
 }
 
-SelectRepositoryList.propTypes = {
+SelectRepositoryListComponent.propTypes = {
   snaps: PropTypes.object,
   repositories: PropTypes.object,
   repositoriesStatus: PropTypes.object,
@@ -186,4 +189,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(withRouter(SelectRepositoryList));
+export default connect(mapStateToProps)(withRouter(SelectRepositoryListComponent));
