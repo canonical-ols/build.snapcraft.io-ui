@@ -403,7 +403,7 @@ class RepositoryRow extends Component {
       host: 'github.com',
       pathname: parseGitHubRepoUrl(this.props.snap.git_repository_url).fullName + '/new/master',
       query: {
-        'filename': 'snapcraft.yaml',
+        'filename': 'snap/snapcraft.yaml',
         'value': templateYaml
       }
     });
