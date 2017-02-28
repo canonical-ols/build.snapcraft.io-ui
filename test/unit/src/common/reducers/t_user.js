@@ -1,6 +1,6 @@
 import expect from 'expect';
 
-import { user, DEBUG_SET_USER } from '../../../../../src/common/reducers/user';
+import { user, UPDATE_USER } from '../../../../../src/common/reducers/user';
 
 describe('user reducers', () => {
   const initialState = null;
@@ -9,7 +9,7 @@ describe('user reducers', () => {
     expect(user(undefined, {})).toEqual(initialState);
   });
 
-  context('DEBUG_SET_USER', () => {
+  context('UPDATE_USER', () => {
     const state = {
       id: 1234,
       name: 'Joe Doe',
@@ -17,7 +17,7 @@ describe('user reducers', () => {
     };
 
     const action = {
-      type: DEBUG_SET_USER,
+      type: UPDATE_USER,
       payload: {
         name: 'John Doeh',
         test: 'Test'

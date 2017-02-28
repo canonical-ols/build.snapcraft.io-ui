@@ -1,11 +1,11 @@
 // initialised with server side rendered state
 
-export const DEBUG_SET_USER = 'DEBUG_SET_USER';
+export const UPDATE_USER = 'UPDATE_USER';
 
 export function user(state = null, action) {
   switch(action.type) {
-    // set individual user properties for debugging
-    case DEBUG_SET_USER:
+    // set individual user properties, useful for debugging
+    case UPDATE_USER:
       return {
         ...state,
         ...action.payload
