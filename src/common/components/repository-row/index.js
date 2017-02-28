@@ -21,6 +21,7 @@ const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
+const tickIcon = <span className={ `${styles.icon} ${styles.tickIcon}` } />;
 
 class RepositoryRow extends Component {
 
@@ -217,9 +218,7 @@ class RepositoryRow extends Component {
     if (registerNameStatus.success) {
       caption = (
         <div>
-          <span
-            className={ `${styles.icon} ${styles.tickIcon}` }
-          /> Registered successfully
+          { tickIcon } Registered successfully
         </div>
       );
     } else if ( registerNameStatus.error
@@ -370,18 +369,14 @@ class RepositoryRow extends Component {
       );
     }
 
-    return (
-      <span className={ `${styles.icon} ${styles.tickIcon}` } />
-    );
+    return tickIcon;
   }
 
   renderSnapName(registeredName, showRegisterNameInput) {
     if (registeredName !== null) {
       return (
         <span>
-          <span
-            className={ `${styles.icon} ${styles.tickIcon}` }
-          /> { registeredName }
+          { tickIcon } { registeredName }
         </span>
       );
     } else if (showRegisterNameInput) {
