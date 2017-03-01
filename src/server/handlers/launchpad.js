@@ -439,6 +439,18 @@ export const findSnap = (req, res) => {
     .catch((error) => sendError(res, error));
 };
 
+const memcachedDel = (cachedId) => {
+  return new Promise((resolve, reject) => {
+    getMemcached().del(cachedId, (err) => {
+      if (err) {
+        logger.error(`Error deleting ${cachedId} from memcached:`, err);
+        reject(err);
+      }
+      resolve();
+    });
+  });
+};
+
 const clearSnapCache = (repositoryUrl) => {
   const repository = parseGitHubUrl(repositoryUrl);
   const enabledReposCacheId = getUrlPrefixCacheId(getRepoUrlPrefix(repository.owner));
@@ -446,21 +458,12 @@ const clearSnapCache = (repositoryUrl) => {
   const snapNameCacheId = getSnapNameCacheId(repositoryUrl);
 
   logger.info(`Clearing caches for ${repositoryUrl}: ${enabledReposCacheId}, ${snapCacheId}, ${snapNameCacheId}`);
-  getMemcached().del(enabledReposCacheId, (err) => {
-    if (err) {
-      logger.error(`Error deleting ${enabledReposCacheId} from memcached:`, err);
-    }
-  });
-  getMemcached().del(snapCacheId, (err) => {
-    if (err) {
-      logger.error(`Error deleting ${snapCacheId} from memcached:`, err);
-    }
-  });
-  getMemcached().del(snapNameCacheId, (err) => {
-    if (err) {
-      logger.error(`Error deleting ${snapNameCacheId} from memcached:`, err);
-    }
-  });
+
+  return Promise.all([
+    memcachedDel(enabledReposCacheId),
+    memcachedDel(snapCacheId),
+    memcachedDel(snapNameCacheId)
+  ]);
 };
 
 export const authorizeSnap = (req, res) => {
@@ -491,14 +494,14 @@ export const authorizeSnap = (req, res) => {
       logger.info(`Completed authorization of ${snapUrl}`);
 
       // authorized snaps have snap_name updated, so we need to invalidate snaps caches
-      clearSnapCache(repositoryUrl);
-
-      return res.status(200).send({
-        status: 'success',
-        payload: {
-          code: 'snap-authorized',
-          message: 'Snap uploads authorized'
-        }
+      return clearSnapCache(repositoryUrl).then(() => {
+        return res.status(200).send({
+          status: 'success',
+          payload: {
+            code: 'snap-authorized',
+            message: 'Snap uploads authorized'
+          }
+        });
       });
     })
     .catch((error) => sendError(res, error));

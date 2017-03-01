@@ -984,25 +984,15 @@ describe('The Launchpad API endpoint', () => {
                   macaroon: 'dummy-macaroon'
                 })
                 .end((err) => {
-                  if (err) {
-                    done(err);
-                  }
-
                   lpScope.done();
-                  // all the snap related caches should be cleared
-                  Promise.all([
-                    getMemcached().get(getUrlPrefixCacheId(urlPrefix), (err, result) => {
-                      expect(result).toNotExist();
-                    }),
-                    getMemcached().get(getRepositoryUrlCacheId(repositoryUrl), (err, result) => {
-                      expect(result).toNotExist();
-                    }),
-                    getMemcached().get(getSnapNameCacheId(repositoryUrl), (err, result) => {
-                      expect(result).toNotExist();
-                    })
-                  ])
-                  .then(() => done())
-                  .catch((err) => done(err));
+                  // it's our own in memory memcached stub,
+                  // so we can rely on internal .cache
+                  expect(getMemcached().cache).toExcludeKeys([
+                    getUrlPrefixCacheId(urlPrefix),
+                    getRepositoryUrlCacheId(repositoryUrl),
+                    getSnapNameCacheId(repositoryUrl)
+                  ]);
+                  done(err);
                 });
             });
           });
