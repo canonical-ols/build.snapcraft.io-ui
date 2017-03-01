@@ -944,6 +944,68 @@ describe('The Launchpad API endpoint', () => {
                 done(err);
               });
           });
+
+          context('when snaps are memcached', () => {
+            const urlPrefix = 'https://github.com/anowner/';
+            const repositoryUrl = 'https://github.com/anowner/aname';
+            let snap;
+
+            before(() => {
+              snap = {
+                resource_type_link: `${lpApiBase}/#snap`,
+                self_link: `${lpApiBase}/~test-user/+snap/test-snap`,
+                owner_link: `${lpApiBase}/~test-user`,
+                git_repository_url: repositoryUrl
+              };
+
+              setupInMemoryMemcached();
+              // find snap by url cache will be filled by API call
+
+              // fill snap listing and snapcraft.yaml data caches
+              getMemcached().set(getUrlPrefixCacheId(urlPrefix), [snap]);
+              getMemcached().set(
+                getSnapNameCacheId(repositoryUrl),
+                { name: 'test-snap-name' }
+              );
+            });
+
+            after(() => {
+              resetMemcached();
+            });
+
+            it('clears memcached snaps data', (done) => {
+              supertest(app)
+                .post('/launchpad/snaps/authorize')
+                .send({
+                  repository_url: 'https://github.com/anowner/aname',
+                  snap_name: snapName,
+                  series: '16',
+                  channels: ['edge'],
+                  macaroon: 'dummy-macaroon'
+                })
+                .end((err) => {
+                  if (err) {
+                    done(err);
+                  }
+
+                  lpScope.done();
+                  // all the snap related caches should be cleared
+                  Promise.all([
+                    getMemcached().get(getUrlPrefixCacheId(urlPrefix), (err, result) => {
+                      expect(result).toNotExist();
+                    }),
+                    getMemcached().get(getRepositoryUrlCacheId(repositoryUrl), (err, result) => {
+                      expect(result).toNotExist();
+                    }),
+                    getMemcached().get(getSnapNameCacheId(repositoryUrl), (err, result) => {
+                      expect(result).toNotExist();
+                    })
+                  ])
+                  .then(() => done())
+                  .catch((err) => done(err));
+                });
+            });
+          });
         });
       });
     });

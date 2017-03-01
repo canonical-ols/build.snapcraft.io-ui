@@ -12,6 +12,8 @@ import logging from '../logging';
 
 const logger = logging.getLogger('express');
 
+import { getSnapNameCacheId } from './github';
+
 // XXX cjwatson 2016-12-08: Hardcoded for now, but should eventually be
 // configurable.
 const DISTRIBUTION = 'ubuntu';
@@ -437,6 +439,30 @@ export const findSnap = (req, res) => {
     .catch((error) => sendError(res, error));
 };
 
+const clearSnapCache = (repositoryUrl) => {
+  const repository = parseGitHubUrl(repositoryUrl);
+  const enabledReposCacheId = getUrlPrefixCacheId(getRepoUrlPrefix(repository.owner));
+  const snapCacheId = getRepositoryUrlCacheId(repositoryUrl);
+  const snapNameCacheId = getSnapNameCacheId(repositoryUrl);
+
+  logger.info(`Clearing caches for ${repositoryUrl}: ${enabledReposCacheId}, ${snapCacheId}, ${snapNameCacheId}`);
+  getMemcached().del(enabledReposCacheId, (err) => {
+    if (err) {
+      logger.error(`Error deleting ${enabledReposCacheId} from memcached:`, err);
+    }
+  });
+  getMemcached().del(snapCacheId, (err) => {
+    if (err) {
+      logger.error(`Error deleting ${snapCacheId} from memcached:`, err);
+    }
+  });
+  getMemcached().del(snapNameCacheId, (err) => {
+    if (err) {
+      logger.error(`Error deleting ${snapNameCacheId} from memcached:`, err);
+    }
+  });
+};
+
 export const authorizeSnap = (req, res) => {
   const repositoryUrl = req.body.repository_url;
   const snapName = req.body.snap_name;
@@ -463,6 +489,10 @@ export const authorizeSnap = (req, res) => {
     })
     .then(() => {
       logger.info(`Completed authorization of ${snapUrl}`);
+
+      // authorized snaps have snap_name updated, so we need to invalidate snaps caches
+      clearSnapCache(repositoryUrl);
+
       return res.status(200).send({
         status: 'success',
         payload: {
