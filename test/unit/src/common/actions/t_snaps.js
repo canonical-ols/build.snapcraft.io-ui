@@ -3,11 +3,13 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
 import { isFSA } from 'flux-standard-action';
+import { FETCH_SNAPS } from '../../../../../src/common/actions/snaps.js';
 
 import { conf } from '../../../../../src/server/helpers/config';
 
 import {
   fetchUserSnaps,
+  fetchUserSnapsIfNeeded,
   fetchSnapsSuccess,
   fetchSnapsError,
   removeSnap,
@@ -21,10 +23,12 @@ const mockStore = configureMockStore(middlewares);
 
 describe('repositories actions', () => {
   const initialState = {
-    isFetching: false,
-    success: false,
-    error: null,
-    snaps: null
+    snaps: {
+      isFetching: false,
+      success: false,
+      error: null,
+      snaps: null
+    }
   };
 
   let store;
@@ -76,6 +80,25 @@ describe('repositories actions', () => {
 
     it('should create a valid flux standard action', () => {
       expect(isFSA(action)).toBe(true);
+    });
+  });
+
+  context('fetchUserSnapsIfNeeded', function() {
+    const expectedAction = {
+      type: ActionTypes.FETCH_SNAPS
+    };
+
+    it('should fetch if not already fetching', function() {
+      store.dispatch(fetchUserSnapsIfNeeded('foo'));
+      expect(store.getActions()).toInclude(expectedAction);
+    });
+
+    it('should not fetch if already fetching', function() {
+      initialState.snaps.isFetching = true;
+      store.dispatch(fetchUserSnapsIfNeeded('foo'));
+
+      expect(store.getState().snaps.isFetching).toBe(true);
+      expect(store.getActions()).toExclude(expectedAction);
     });
   });
 
