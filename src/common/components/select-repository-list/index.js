@@ -14,6 +14,7 @@ import PageLinks from '../page-links';
 import Button, { LinkButton } from '../vanilla/button';
 import { HeadingThree } from '../vanilla/heading';
 import { fetchUserRepositories } from '../../actions/repositories';
+import { fetchUserSnapsIfNeeded } from '../../actions/snaps';
 import { hasRepository } from '../../helpers/repositories';
 import styles from './styles.css';
 
@@ -32,8 +33,10 @@ export class SelectRepositoryListComponent extends Component {
   componentWillReceiveProps(nextProps) {
     const repositoriesStatus = nextProps.repositoriesStatus;
     const ids = Object.keys(repositoriesStatus);
+    const owner = nextProps.user.login;
     if (ids.length && ids.every((id) => repositoriesStatus[id].success)) {
-      this.props.router.push('/dashboard');
+      this.props.dispatch(fetchUserSnapsIfNeeded(owner));
+      this.props.router.push('/dashboard/');
     }
   }
 
@@ -86,6 +89,7 @@ export class SelectRepositoryListComponent extends Component {
 
   onSubmit() {
     const { selectedRepos } = this.props.selectRepositoriesForm;
+
     if (selectedRepos.length) {
       this.props.dispatch(createSnaps(selectedRepos));
     }
@@ -172,17 +176,19 @@ export class SelectRepositoryListComponent extends Component {
 }
 
 SelectRepositoryListComponent.propTypes = {
-  snaps: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
+  onSelectRepository: PropTypes.func,
   repositories: PropTypes.object,
   repositoriesStatus: PropTypes.object,
-  selectRepositoriesForm: PropTypes.object,
-  onSelectRepository: PropTypes.func,
   router: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired
+  selectRepositoriesForm: PropTypes.object,
+  snaps: PropTypes.object,
+  user: PropTypes.object
 };
 
 function mapStateToProps(state) {
   const {
+    user,
     snaps,
     repositories,
     repositoriesStatus,
@@ -190,6 +196,7 @@ function mapStateToProps(state) {
   } = state;
 
   return {
+    user,
     snaps,
     repositories,
     repositoriesStatus,
@@ -197,4 +204,6 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(withRouter(SelectRepositoryListComponent));
+export default connect(mapStateToProps)(
+  withRouter(SelectRepositoryListComponent)
+);

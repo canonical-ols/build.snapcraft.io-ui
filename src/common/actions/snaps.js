@@ -42,6 +42,20 @@ export function fetchUserSnaps(owner) {
   };
 }
 
+function shouldFetchUserSnaps(state) {
+  const snaps = state.snaps;
+
+  return !snaps.isFetching;
+}
+
+export function fetchUserSnapsIfNeeded(owner) {
+  return function(dispatch, getState) {
+    if (shouldFetchUserSnaps(getState())) {
+      return dispatch(fetchUserSnaps(owner));
+    }
+  };
+}
+
 export function fetchSnapsSuccess(snaps) {
   return {
     type: FETCH_SNAPS_SUCCESS,
