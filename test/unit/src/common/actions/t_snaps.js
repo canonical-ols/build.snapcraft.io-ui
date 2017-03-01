@@ -3,7 +3,6 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
 import { isFSA } from 'flux-standard-action';
-import { FETCH_SNAPS } from '../../../../../src/common/actions/snaps.js';
 
 import { conf } from '../../../../../src/server/helpers/config';
 
@@ -84,13 +83,34 @@ describe('repositories actions', () => {
   });
 
   context('fetchUserSnapsIfNeeded', function() {
+    let api;
     const expectedAction = {
       type: ActionTypes.FETCH_SNAPS
     };
 
+    beforeEach(() => {
+      api = nock(conf.get('BASE_URL'));
+      api.get('/api/launchpad/snaps/list')
+        .query({ owner: 'anowner' })
+        .reply(200, {
+          status: 'success',
+          payload: {
+            code: 'snaps-found',
+            repos: []
+          }
+        });
+    });
+
+    afterEach(() => {
+      nock.cleanAll();
+    });
+
     it('should fetch if not already fetching', function() {
-      store.dispatch(fetchUserSnapsIfNeeded('foo'));
-      expect(store.getActions()).toInclude(expectedAction);
+      store.dispatch(fetchUserSnapsIfNeeded('anowner'))
+      .then(() => {
+        api.isDone();
+        expect(store.getActions()).toInclude(expectedAction);
+      });
     });
 
     it('should not fetch if already fetching', function() {
