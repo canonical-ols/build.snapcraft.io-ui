@@ -435,7 +435,7 @@ class RepositoryRow extends Component {
           }
         </Data>
         <Data col="3">
-          <span
+          <a
             className={ `${styles.icon} ${styles.deleteIcon}` }
             onClick={ this.onToggleRemoveClick.bind(this) }
           />
