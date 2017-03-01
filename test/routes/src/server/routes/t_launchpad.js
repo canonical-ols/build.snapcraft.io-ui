@@ -8,8 +8,8 @@ import {
   resetMemcached,
   setupInMemoryMemcached
 } from '../../../../../src/server/helpers/memcached';
-import getSnapNameCacheId from '../../../../../src/server/helpers/github';
 import launchpad from '../../../../../src/server/routes/launchpad';
+import { getSnapNameCacheId } from '../../../../../src/server/handlers/github';
 import {
   getUrlPrefixCacheId,
   getRepositoryUrlCacheId
@@ -509,8 +509,7 @@ describe('The Launchpad API endpoint', () => {
       const urlPrefix = 'https://github.com/anowner/';
       let testSnaps;
 
-      before(() => {
-
+      beforeEach(() => {
         const lp_api_url = conf.get('LP_API_URL');
         const lp_api_base = `${lp_api_url}/devel`;
 
@@ -542,7 +541,7 @@ describe('The Launchpad API endpoint', () => {
         });
       });
 
-      after(() => {
+      afterEach(() => {
         resetMemcached();
       });
 

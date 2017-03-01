@@ -91,11 +91,11 @@ export const getSnapcraftData = (repositoryUrl, token) => {
   const { owner, name } = parseGitHubRepoUrl(repositoryUrl);
   const cacheId = getSnapNameCacheId(repositoryUrl);
 
-  return new Promise((resolve) => {
-    getMemcached().get(cacheId, (err, result) => {
-
-      if (!err && result !== undefined) {
-        return resolve(result);
+  return getMemcached().get(cacheId)
+    .catch(() => undefined)
+    .then((result) => {
+      if (result !== undefined) {
+        return result;
       }
 
       return internalGetSnapcraftYaml(owner, name, token)
@@ -107,13 +107,11 @@ export const getSnapcraftData = (repositoryUrl, token) => {
             }
           }
 
-          return getMemcached().set(cacheId, snapcraftData, 3600, () => {
-            return resolve(snapcraftData);
-          });
+          return getMemcached().set(cacheId, snapcraftData, 3600)
+            .then(() => snapcraftData);
         })
-        .catch(() => resolve(null));
+        .catch(() => null);
     });
-  });
 };
 
 export const listRepositories = (req, res) => {
