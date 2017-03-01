@@ -399,15 +399,10 @@ describe('The Launchpad API endpoint', () => {
           .get('/launchpad/snaps/list')
           .query({ owner: 'anowner' })
           .end((err) => {
-            if (err) {
-              done(err);
-            }
-            getMemcached().get(cacheId, (err, memcachedSnaps) => {
-              expect(memcachedSnaps.length).toEqual(testSnaps.length);
-              expect(memcachedSnaps[0]).toContain(testSnaps[0]);
-
-              done(err);
-            });
+            const memcachedSnaps = getMemcached().cache[cacheId];
+            expect(memcachedSnaps.length).toEqual(testSnaps.length);
+            expect(memcachedSnaps[0]).toContain(testSnaps[0]);
+            done(err);
           });
         });
 
@@ -540,12 +535,10 @@ describe('The Launchpad API endpoint', () => {
         };
 
         setupInMemoryMemcached();
-        getMemcached().set(getUrlPrefixCacheId(urlPrefix), testSnaps);
+        getMemcached().cache[getUrlPrefixCacheId(urlPrefix)] = testSnaps;
         testSnaps.map((snap) => {
-          getMemcached().set(
-            getSnapNameCacheId(snap.git_repository_url),
-            contents[snap.git_repository_url]
-          );
+          const cacheId = getSnapNameCacheId(snap.git_repository_url);
+          getMemcached().cache[cacheId] = contents[snap.git_repository_url];
         });
       });
 
@@ -745,7 +738,7 @@ describe('The Launchpad API endpoint', () => {
 
       before(() => {
         setupInMemoryMemcached();
-        getMemcached().set(getRepositoryUrlCacheId(repositoryUrl), snap);
+        getMemcached().cache[getRepositoryUrlCacheId(repositoryUrl)] = snap;
       });
 
       after(() => {
@@ -1474,7 +1467,7 @@ describe('The Launchpad API endpoint', () => {
           .delete(`/devel${lp_snap_path}`)
           .reply(200, 'null', { 'Content-Type': 'application/json' });
         setupInMemoryMemcached();
-        getMemcached().set(getUrlPrefixCacheId(urlPrefix), [testSnap]);
+        getMemcached().cache[getUrlPrefixCacheId(urlPrefix)] = [testSnap];
       });
 
       afterEach(() => {
@@ -1541,8 +1534,10 @@ describe('The Launchpad API endpoint', () => {
           .delete(`/devel${lp_snap_path}`)
           .reply(200, 'null', { 'Content-Type': 'application/json' });
         setupInMemoryMemcached();
-        getMemcached().set(getUrlPrefixCacheId(urlPrefix), [testSnap]);
-        getMemcached().set(getRepositoryUrlCacheId(repositoryUrl), testSnap);
+        const urlPrefixCacheId = getUrlPrefixCacheId(urlPrefix);
+        const urlCacheId = getRepositoryUrlCacheId(repositoryUrl);
+        getMemcached().cache[urlPrefixCacheId] = [testSnap];
+        getMemcached().cache[urlCacheId] = testSnap;
       });
 
       afterEach(() => {
