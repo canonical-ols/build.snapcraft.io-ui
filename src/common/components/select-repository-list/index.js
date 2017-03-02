@@ -36,7 +36,7 @@ export class SelectRepositoryListComponent extends Component {
     const owner = nextProps.user.login;
     if (ids.length && ids.every((id) => repositoriesStatus[id].success)) {
       this.props.dispatch(fetchUserSnapsIfNeeded(owner));
-      this.props.router.push('/dashboard/');
+      this.props.router.push('/dashboard');
     }
   }
 
