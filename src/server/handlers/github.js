@@ -92,7 +92,9 @@ export const getSnapcraftData = (repositoryUrl, token) => {
   const cacheId = getSnapNameCacheId(repositoryUrl);
 
   return getMemcached().get(cacheId)
-    .catch(() => undefined)
+    .catch((err) => {
+      logger.error(`Error getting ${cacheId} from memcached:`, err);
+    })
     .then((result) => {
       if (result !== undefined) {
         return result;

@@ -313,7 +313,9 @@ export const internalFindSnap = async (repositoryUrl) => {
   const lpClient = getLaunchpad();
 
   return getMemcached().get(cacheId)
-    .catch(() => undefined)
+    .catch((err) => {
+      logger.error(`Error getting ${cacheId} from memcached:`, err);
+    })
     .then((result) => {
       if (result !== undefined) {
         return lpClient.wrap_resource(result.self_link, result);
@@ -358,7 +360,9 @@ const internalFindSnapsByPrefix = (urlPrefix) => {
   const lpClient = getLaunchpad();
 
   return getMemcached().get(cacheId)
-    .catch(() => undefined)
+    .catch((err) => {
+      logger.error(`Error getting ${cacheId} from memcached:`, err);
+    })
     .then((result) => {
       if (result !== undefined) {
         return result.map((entry) => {
