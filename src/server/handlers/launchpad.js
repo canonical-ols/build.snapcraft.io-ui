@@ -12,7 +12,7 @@ import logging from '../logging';
 
 const logger = logging.getLogger('express');
 
-import { getSnapNameCacheId } from './github';
+import { getSnapcraftYamlCacheId } from './github';
 
 // XXX cjwatson 2016-12-08: Hardcoded for now, but should eventually be
 // configurable.
@@ -443,7 +443,7 @@ const clearSnapCache = (repositoryUrl) => {
   const repository = parseGitHubUrl(repositoryUrl);
   const enabledReposCacheId = getUrlPrefixCacheId(getRepoUrlPrefix(repository.owner));
   const snapCacheId = getRepositoryUrlCacheId(repositoryUrl);
-  const snapNameCacheId = getSnapNameCacheId(repositoryUrl);
+  const snapNameCacheId = getSnapcraftYamlCacheId(repositoryUrl);
 
   logger.info(`Clearing caches for ${repositoryUrl}: ${enabledReposCacheId}, ${snapCacheId}, ${snapNameCacheId}`);
 

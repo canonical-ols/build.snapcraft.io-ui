@@ -9,7 +9,7 @@ import {
   setupInMemoryMemcached
 } from '../../../../../src/server/helpers/memcached';
 import launchpad from '../../../../../src/server/routes/launchpad';
-import { getSnapNameCacheId } from '../../../../../src/server/handlers/github';
+import { getSnapcraftYamlCacheId } from '../../../../../src/server/handlers/github';
 import {
   getUrlPrefixCacheId,
   getRepositoryUrlCacheId
@@ -536,7 +536,7 @@ describe('The Launchpad API endpoint', () => {
         setupInMemoryMemcached();
         getMemcached().cache[getUrlPrefixCacheId(urlPrefix)] = testSnaps;
         testSnaps.map((snap) => {
-          const cacheId = getSnapNameCacheId(snap.git_repository_url);
+          const cacheId = getSnapcraftYamlCacheId(snap.git_repository_url);
           getMemcached().cache[cacheId] = contents[snap.git_repository_url];
         });
       });
@@ -964,7 +964,7 @@ describe('The Launchpad API endpoint', () => {
               // fill snap listing and snapcraft.yaml data caches
               getMemcached().set(getUrlPrefixCacheId(urlPrefix), [snap]);
               getMemcached().set(
-                getSnapNameCacheId(repositoryUrl),
+                getSnapcraftYamlCacheId(repositoryUrl),
                 { name: 'test-snap-name' }
               );
             });
@@ -990,7 +990,7 @@ describe('The Launchpad API endpoint', () => {
                   expect(getMemcached().cache).toExcludeKeys([
                     getUrlPrefixCacheId(urlPrefix),
                     getRepositoryUrlCacheId(repositoryUrl),
-                    getSnapNameCacheId(repositoryUrl)
+                    getSnapcraftYamlCacheId(repositoryUrl)
                   ]);
                   done(err);
                 });
