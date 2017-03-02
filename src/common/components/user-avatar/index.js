@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { HeadingOne, HeadingThree } from '../vanilla/heading';
 import styles from './user-avatar.css';
 
-class UserAvatar extends Component {
+export class UserAvatarView extends Component {
 
   render() {
     const { auth, user } = this.props;
@@ -29,7 +29,7 @@ class UserAvatar extends Component {
   }
 }
 
-UserAvatar.propTypes = {
+UserAvatarView.propTypes = {
   auth: PropTypes.object,
   user: PropTypes.object
 };
@@ -46,4 +46,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(UserAvatar);
+export default connect(mapStateToProps)(UserAvatarView);

@@ -4,17 +4,22 @@ import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import UserAvatar from '../../../../../../src/common/components/user-avatar';
+import UserAvatar, { UserAvatarView } from '../../../../../../src/common/components/user-avatar';
 import { HeadingOne, HeadingThree } from '../../../../../../src/common/components/vanilla/heading';
 
 const middlewares = [ thunk ];
 const mockStore = configureMockStore(middlewares);
 
-describe('<UserAvatar />', function() {
-  let element;
+describe('<UserAvatar />', () => {
+  const auth = {
+    authorized: true
+  };
+  const user = {
+    login: 'jdoe',
+    name: 'John Doe'
+  };
   let store;
-  let auth;
-  let user;
+  let view;
 
   beforeEach(() => {
     store = mockStore({
@@ -22,10 +27,29 @@ describe('<UserAvatar />', function() {
       user
     });
 
-    // shallow render container component with the store
-    element = shallow(<UserAvatar store={store} />)
-    // find react component by class name and shallow render it
-      .find('UserAvatar').shallow();
+    // shallow render container component and get view from it
+    view = shallow(<UserAvatar store={store} />)
+      .find('UserAvatarView');
+  });
+
+  it('should pass auth from store to view', () => {
+    expect(view.prop('auth')).toEqual(auth);
+  });
+
+  it('should pass user from store to view', () => {
+    expect(view.prop('user')).toEqual(user);
+  });
+
+});
+
+describe('<UserAvatarView />', function() {
+  let element;
+  let auth;
+  let user;
+
+  beforeEach(() => {
+    // shallow render pure view component
+    element = shallow(<UserAvatarView auth={auth} user={user} />);
   });
 
   context('when user is not authenticated', () => {
