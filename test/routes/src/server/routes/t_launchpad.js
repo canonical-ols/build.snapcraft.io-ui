@@ -533,8 +533,10 @@ describe('The Launchpad API endpoint', () => {
           'https://github.com/test-user/test-snap': {}
         };
 
-        setupInMemoryMemcached();
-        getMemcached().cache[getUrlPrefixCacheId(urlPrefix)] = testSnaps;
+        setupInMemoryMemcached({
+          [getUrlPrefixCacheId(urlPrefix)]: testSnaps
+        });
+
         testSnaps.map((snap) => {
           const cacheId = getSnapcraftYamlCacheId(snap.git_repository_url);
           getMemcached().cache[cacheId] = contents[snap.git_repository_url];
@@ -950,7 +952,7 @@ describe('The Launchpad API endpoint', () => {
             const repositoryUrl = 'https://github.com/anowner/aname';
             let snap;
 
-            before(() => {
+            beforeEach(() => {
               snap = {
                 resource_type_link: `${lpApiBase}/#snap`,
                 self_link: `${lpApiBase}/~test-user/+snap/test-snap`,
@@ -958,18 +960,20 @@ describe('The Launchpad API endpoint', () => {
                 git_repository_url: repositoryUrl
               };
 
-              setupInMemoryMemcached();
+              // fill snap listing and snapcraft.yaml data caches
+              setupInMemoryMemcached({
+                [getUrlPrefixCacheId(urlPrefix)]: [ snap ],
+                [getSnapcraftYamlCacheId(repositoryUrl)]: {
+                  name: 'test-snap-name'
+                }
+              });
               // find snap by url cache will be filled by API call
 
-              // fill snap listing and snapcraft.yaml data caches
-              getMemcached().set(getUrlPrefixCacheId(urlPrefix), [snap]);
-              getMemcached().set(
-                getSnapcraftYamlCacheId(repositoryUrl),
-                { name: 'test-snap-name' }
-              );
+              // getMemcached().cache[getUrlPrefixCacheId(urlPrefix)] = [ snap ];
+              // getMemcached().cache
             });
 
-            after(() => {
+            afterEach(() => {
               resetMemcached();
             });
 
