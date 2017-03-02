@@ -439,18 +439,6 @@ export const findSnap = (req, res) => {
     .catch((error) => sendError(res, error));
 };
 
-const memcachedDel = (cachedId) => {
-  return new Promise((resolve, reject) => {
-    getMemcached().del(cachedId, (err) => {
-      if (err) {
-        logger.error(`Error deleting ${cachedId} from memcached:`, err);
-        reject(err);
-      }
-      resolve();
-    });
-  });
-};
-
 const clearSnapCache = (repositoryUrl) => {
   const repository = parseGitHubUrl(repositoryUrl);
   const enabledReposCacheId = getUrlPrefixCacheId(getRepoUrlPrefix(repository.owner));
@@ -460,9 +448,9 @@ const clearSnapCache = (repositoryUrl) => {
   logger.info(`Clearing caches for ${repositoryUrl}: ${enabledReposCacheId}, ${snapCacheId}, ${snapNameCacheId}`);
 
   return Promise.all([
-    memcachedDel(enabledReposCacheId),
-    memcachedDel(snapCacheId),
-    memcachedDel(snapNameCacheId)
+    getMemcached().del(enabledReposCacheId),
+    getMemcached().del(snapCacheId),
+    getMemcached().del(snapNameCacheId)
   ]);
 };
 
