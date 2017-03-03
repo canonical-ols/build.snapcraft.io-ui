@@ -9,6 +9,7 @@ import { Row, Data, Dropdown } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
 import { Message } from '../forms';
 import templateYaml from './template-yaml.js';
+import NameMismatchDropdown from './dropdowns/name-mismatch-dropdown';
 
 import { signIntoStore } from '../../actions/auth-store';
 import { registerName, registerNameError } from '../../actions/register-name';
@@ -200,23 +201,6 @@ class RepositoryRow extends Component {
               Don’t have snapcraft?
               <a href={ INSTALL_IT_LINK } target="_blank"> Install it on your own PC </a>
               for testing.
-            </p>
-          </Data>
-        </Row>
-      </Dropdown>
-    );
-  }
-
-  renderNameMismatchDropdown() {
-    const { snapcraft_data, store_name } = this.props.snap;
-
-    return (
-      <Dropdown>
-        <Row>
-          <Data col="100">
-            <p>
-              The snapcraft.yaml uses the snap name “{snapcraft_data.name}”,
-              but you’ve registered the name “{store_name}”.
             </p>
           </Data>
         </Row>
@@ -488,7 +472,7 @@ class RepositoryRow extends Component {
             onClick={ this.onToggleRemoveClick.bind(this) }
           />
         </Data>
-        { showNameMismatchDropdown && this.renderNameMismatchDropdown() }
+        { showNameMismatchDropdown && <NameMismatchDropdown snap={snap} /> }
         { showUnconfiguredDropdown && this.renderUnconfiguredDropdown() }
         { showUnregisteredDropdown && this.renderUnregisteredDropdown() }
         { showRemoveDropdown && this.renderRemoveDropdown(registeredName) }
