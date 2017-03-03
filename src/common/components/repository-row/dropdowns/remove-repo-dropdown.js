@@ -4,8 +4,7 @@ import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
 import Button from '../../vanilla/button';
 import { WarningIcon } from '../icons';
 
-// TODO: separate styles for dropdowns only? (buttonRow, cancel)
-import styles from '../repositoryRow.css';
+import styles from './dropdowns.css';
 
 const RemoveRepoDropdown = (props) => {
   const { latestBuild, registeredName } = props;

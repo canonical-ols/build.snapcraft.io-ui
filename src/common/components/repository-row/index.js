@@ -313,7 +313,7 @@ class RepositoryRow extends Component {
       return (
         <input
           type='text'
-          className={ styles.snapName }
+          className={ styles.snapNameInput }
           value={ this.state.snapName }
           onChange={ this.onSnapNameChange.bind(this) }
         />

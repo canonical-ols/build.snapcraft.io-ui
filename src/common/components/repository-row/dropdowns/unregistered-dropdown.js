@@ -7,8 +7,7 @@ import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
 import { Message } from '../../forms';
 import { TickIcon } from '../icons';
 
-// TODO: .external, .helpText, .buttonRow, .cancel
-import styles from '../repositoryRow.css';
+import styles from './dropdowns.css';
 
 const FILE_NAME_CLAIM_URL = `${conf.get('STORE_DEVPORTAL_URL')}/click-apps/register-name/`;
 const AGREEMENT_URL = `${conf.get('STORE_DEVPORTAL_URL')}/tos/`;

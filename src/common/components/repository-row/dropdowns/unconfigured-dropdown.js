@@ -7,8 +7,7 @@ import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
 
 import templateYaml from './template-yaml.js';
 
-// TODO: move dropdown styles? (.helpText)
-import styles from '../repositoryRow.css';
+import styles from './dropdowns.css';
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
