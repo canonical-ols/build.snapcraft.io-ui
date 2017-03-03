@@ -22,10 +22,10 @@ const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/
 
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
-const tickIcon = <span className={ `${styles.icon} ${styles.tickIcon}` } />;
-const warningIcon = (
-  <span className={ `${styles.icon} ${styles.warningIcon}` } />
-);
+
+const tickIcon = <span className={styles.tickIcon} />;
+const warningIcon = <span className={styles.warningIcon} />;
+const errorIcon = <span className={styles.errorIcon} />;
 
 class RepositoryRow extends Component {
 
@@ -41,6 +41,7 @@ class RepositoryRow extends Component {
 
     this.state = {
       snapName,
+      nameMismatchDropdownExpanded: false,
       unconfiguredDropdownExpanded: false,
       unregisteredDropdownExpanded: false,
       removeDropdownExpanded: false,
@@ -77,6 +78,15 @@ class RepositoryRow extends Component {
   onConfiguredClick() {
     this.setState({
       unconfiguredDropdownExpanded: !this.state.unconfiguredDropdownExpanded,
+      unregisteredDropdownExpanded: false,
+      removeDropdownExpanded: false
+    });
+  }
+
+  onNameMismatchClick() {
+    this.setState({
+      nameMismatchDropdownExpanded: !this.state.nameMismatchDropdownExpanded,
+      unconfiguredDropdownExpanded: false,
       unregisteredDropdownExpanded: false,
       removeDropdownExpanded: false
     });
@@ -190,6 +200,23 @@ class RepositoryRow extends Component {
               Don’t have snapcraft?
               <a href={ INSTALL_IT_LINK } target="_blank"> Install it on your own PC </a>
               for testing.
+            </p>
+          </Data>
+        </Row>
+      </Dropdown>
+    );
+  }
+
+  renderNameMismatchDropdown() {
+    const { snapcraft_data, store_name } = this.props.snap;
+
+    return (
+      <Dropdown>
+        <Row>
+          <Data col="100">
+            <p>
+              The snapcraft.yaml uses the snap name “{snapcraft_data.name}”,
+              but you’ve registered the name “{store_name}”.
             </p>
           </Data>
         </Row>
@@ -394,6 +421,7 @@ class RepositoryRow extends Component {
     const showUnconfiguredDropdown = unconfigured && this.state.unconfiguredDropdownExpanded;
     const showUnregisteredDropdown = this.state.unregisteredDropdownExpanded;
     const showRemoveDropdown = this.state.removeDropdownExpanded;
+    const showNameMismatchDropdown = this.state.nameMismatchDropdownExpanded;
     const showRegisterNameInput = (
       showUnregisteredDropdown && authStore.authenticated
     );
@@ -404,6 +432,7 @@ class RepositoryRow extends Component {
 
     const hasBuilt = latestBuild && snap.snapcraft_data;
     const isActive = (
+      showNameMismatchDropdown ||
       showUnconfiguredDropdown ||
       showUnregisteredDropdown ||
       showRemoveDropdown
@@ -426,7 +455,7 @@ class RepositoryRow extends Component {
           }
         </Data>
         <Data col="15">
-          { this.renderConfiguredStatus.call(this, snap.snapcraft_data) }
+          { this.renderConfiguredStatus.call(this, snap) }
         </Data>
         <Data col="25">
           { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
@@ -459,6 +488,7 @@ class RepositoryRow extends Component {
             onClick={ this.onToggleRemoveClick.bind(this) }
           />
         </Data>
+        { showNameMismatchDropdown && this.renderNameMismatchDropdown() }
         { showUnconfiguredDropdown && this.renderUnconfiguredDropdown() }
         { showUnregisteredDropdown && this.renderUnregisteredDropdown() }
         { showRemoveDropdown && this.renderRemoveDropdown(registeredName) }
@@ -466,10 +496,22 @@ class RepositoryRow extends Component {
     );
   }
 
-  renderConfiguredStatus(data) {
-    if (!data) {
+  renderConfiguredStatus(snap) {
+    const { snapcraft_data, store_name } = snap;
+
+    if (!snapcraft_data) {
       return (
         <a onClick={this.onConfiguredClick.bind(this)}>Not configured</a>
+      );
+    } else if (snapcraft_data && store_name && snapcraft_data.name !== store_name){
+      return (
+        <span>
+          { errorIcon }
+          {' ' /* space between inline elements */}
+          <a onClick={this.onNameMismatchClick.bind(this)}>
+            Doesn’t match
+          </a>
+        </span>
       );
     }
 
