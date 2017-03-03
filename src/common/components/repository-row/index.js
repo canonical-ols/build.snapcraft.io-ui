@@ -3,25 +3,23 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import localforage from 'localforage';
 
-import Button from '../vanilla/button';
-import { Row, Data, Dropdown } from '../vanilla/table-interactive';
+import { Row, Data } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
-import { Message } from '../forms';
+
 import {
   NameMismatchDropdown,
   RemoveRepoDropdown,
-  UnconfiguredDropdown
+  UnconfiguredDropdown,
+  UnregisteredDropdown
 } from './dropdowns';
 
 import { signIntoStore } from '../../actions/auth-store';
 import { registerName, registerNameError } from '../../actions/register-name';
 import { removeSnap } from '../../actions/snaps';
-import { conf } from '../../helpers/config';
+
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
-
-const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/register-name/';
 
 const tickIcon = <span className={styles.tickIcon} />;
 const errorIcon = <span className={styles.errorIcon} />;
@@ -73,6 +71,8 @@ class RepositoryRow extends Component {
     // save the component state in browser storage whenever it changes
     this.saveState();
   }
+
+  // TODO: bartaz - add nameMismatchDropdownExpanded being closed when other opens
 
   onConfiguredClick() {
     this.setState({
@@ -180,139 +180,6 @@ class RepositoryRow extends Component {
     }
   }
 
-  renderAgreement() {
-    const checkbox = (
-      <input
-        type="checkbox"
-        onChange={ this.onSignAgreementChange.bind(this) }
-      />
-    );
-    const link = (
-      <a
-        className={ styles.external }
-        href={ `${conf.get('STORE_DEVPORTAL_URL')}/tos/` }
-        target="_blank"
-      >
-        Developer Programme Agreement
-      </a>
-    );
-    return (
-      <div>
-        { checkbox } I accept the terms of the { link }
-      </div>
-    );
-  }
-
-  renderUnregisteredDropdown() {
-    const { snap, authStore, registerNameStatus } = this.props;
-
-    // If the user has signed into the store but we haven't fetched the
-    // resulting discharge macaroon, we need to wait for that before
-    // allowing them to proceed.
-    const authStoreFetchingDischarge = (
-      authStore.hasDischarge && !authStore.authenticated
-    );
-    const userMustSignAgreement = (
-      authStore.authenticated && authStore.signedAgreement === false
-    );
-
-    let caption;
-    if (registerNameStatus.success) {
-      caption = (
-        <div>
-          { tickIcon } Registered successfully
-        </div>
-      );
-    } else if ( registerNameStatus.error
-      && registerNameStatus.error.json
-      && registerNameStatus.error.json.payload
-      && registerNameStatus.error.json.payload.code === 'already_registered') {
-      caption = (
-        <Message status='error'>
-          <p>Sorry, that name is already taken. Try a different name.</p>
-          <p className={ styles.helpText }>
-            If you think you should have sole rights to the name,
-            you can <a href={ FILE_NAME_CLAIM_URL } target='_blank'>file a claim</a>.
-          </p>
-        </Message>
-      );
-    } else if (registerNameStatus.error) {
-      caption = (
-        <Message status='error'>
-          { registerNameStatus.error.message }
-        </Message>
-      );
-    } else {
-      caption = (
-        <div>
-          To publish to the snap store, this repo needs a registered name.
-          { !authStore.authenticated &&
-            ' You need to sign in to Ubuntu One to register a name.'
-          }
-          { (authStoreFetchingDischarge || authStore.authenticated) &&
-            <div className={ styles.helpText }>
-              Lower-case letters, numbers, and hyphens only.
-            </div>
-          }
-          { userMustSignAgreement && this.renderAgreement() }
-        </div>
-      );
-    }
-
-    let actionDisabled;
-    let actionOnClick;
-    let actionSpinner = false;
-    let actionText;
-    if (authStore.isFetching) {
-      actionDisabled = true;
-      actionOnClick = () => {};
-      actionSpinner = true;
-      actionText = 'Checking...';
-    } else if (authStore.authenticated) {
-      actionDisabled = (
-        this.state.snapName === '' ||
-        registerNameStatus.isFetching ||
-        !!registerNameStatus.error
-      );
-      actionOnClick = this.onRegisterClick.bind(this, snap.git_repository_url);
-      if (registerNameStatus.isFetching) {
-        actionSpinner = true;
-        actionText = 'Checking...';
-      } else {
-        actionText = 'Register name';
-      }
-    } else {
-      actionDisabled = !!registerNameStatus.error;
-      actionOnClick = this.onSignInClick.bind(this);
-      actionText = 'Sign in...';
-    }
-
-    return (
-      <Dropdown>
-        <Row>
-          <Data col="100">
-            { caption }
-          </Data>
-        </Row>
-        <Row>
-          <div className={ styles.buttonRow }>
-            <a onClick={this.onUnregisteredClick.bind(this)} className={ styles.cancel }>
-              Cancel
-            </a>
-            <Button
-              appearance="positive"
-              disabled={actionDisabled}
-              onClick={actionOnClick}
-              isSpinner={actionSpinner}
-            >
-              { actionText }
-            </Button>
-          </div>
-        </Row>
-      </Dropdown>
-    );
-  }
-
   render() {
     const {
       snap,
@@ -395,7 +262,17 @@ class RepositoryRow extends Component {
         </Data>
         { showNameMismatchDropdown && <NameMismatchDropdown snap={snap} /> }
         { showUnconfiguredDropdown && <UnconfiguredDropdown snap={snap} /> }
-        { showUnregisteredDropdown && this.renderUnregisteredDropdown() }
+        { showUnregisteredDropdown &&
+          <UnregisteredDropdown
+            snapName={this.state.snapName}
+            authStore={authStore}
+            registerNameStatus={registerNameStatus}
+            onSignAgreementChange={this.onSignAgreementChange.bind(this)}
+            onRegisterClick={this.onRegisterClick.bind(this, snap.git_repository_url)}
+            onSignInClick={this.onSignInClick.bind(this)}
+            onCancelClick={this.onUnregisteredClick.bind(this)}
+          />
+        }
         { showRemoveDropdown &&
           <RemoveRepoDropdown
             latestBuild={latestBuild}
