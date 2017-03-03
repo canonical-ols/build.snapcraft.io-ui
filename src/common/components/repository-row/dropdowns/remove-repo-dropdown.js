@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
 import Button from '../../vanilla/button';
 
-// TODO: separate styles for dropdowns only?
+// TODO: separate styles for dropdowns only? (buttonRow, cancel, warningIcon)
 import styles from '../repositoryRow.css';
 
 // TODO: icons as separate component?

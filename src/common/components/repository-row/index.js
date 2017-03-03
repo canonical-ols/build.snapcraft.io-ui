@@ -1,17 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import url from 'url';
 import localforage from 'localforage';
 
 import Button from '../vanilla/button';
 import { Row, Data, Dropdown } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
 import { Message } from '../forms';
-import templateYaml from './template-yaml.js';
 import {
   NameMismatchDropdown,
-  RemoveRepoDropdown
+  RemoveRepoDropdown,
+  UnconfiguredDropdown
 } from './dropdowns';
 
 import { signIntoStore } from '../../actions/auth-store';
@@ -23,9 +22,6 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 import styles from './repositoryRow.css';
 
 const FILE_NAME_CLAIM_URL = 'https://myapps.developer.ubuntu.com/dev/click-apps/register-name/';
-
-const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
-const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
 
 const tickIcon = <span className={styles.tickIcon} />;
 const errorIcon = <span className={styles.errorIcon} />;
@@ -182,32 +178,6 @@ class RepositoryRow extends Component {
       window.clearTimeout(this.closeUnregisteredTimerID);
       delete this.closeUnregisteredTimerID;
     }
-  }
-
-  renderUnconfiguredDropdown() {
-    return (
-      <Dropdown>
-        <Row>
-          <Data col="100">
-            <p>
-              This repo needs a snapcraft.yaml file,
-              so that Snapcraft can make it buildable,
-              installable, and runnable.
-            </p>
-            <p>
-              <a href={ LEARN_THE_BASICS_LINK } target="_blank">Learn the basics</a>,
-              or
-              <a href={ this.getTemplateUrl.call(this) } target="_blank"> get started with a template</a>.
-            </p>
-            <p>
-              Don’t have snapcraft?
-              <a href={ INSTALL_IT_LINK } target="_blank"> Install it on your own PC </a>
-              for testing.
-            </p>
-          </Data>
-        </Row>
-      </Dropdown>
-    );
   }
 
   renderAgreement() {
@@ -424,7 +394,7 @@ class RepositoryRow extends Component {
           />
         </Data>
         { showNameMismatchDropdown && <NameMismatchDropdown snap={snap} /> }
-        { showUnconfiguredDropdown && this.renderUnconfiguredDropdown() }
+        { showUnconfiguredDropdown && <UnconfiguredDropdown snap={snap} /> }
         { showUnregisteredDropdown && this.renderUnregisteredDropdown() }
         { showRemoveDropdown &&
           <RemoveRepoDropdown
@@ -485,19 +455,7 @@ class RepositoryRow extends Component {
     }
   }
 
-  getTemplateUrl() {
-    const templateUrl = url.format({
-      protocol: 'https:',
-      host: 'github.com',
-      pathname: parseGitHubRepoUrl(this.props.snap.git_repository_url).fullName + '/new/master',
-      query: {
-        'filename': 'snap/snapcraft.yaml',
-        'value': templateYaml
-      }
-    });
 
-    return templateUrl;
-  }
 }
 
 RepositoryRow.propTypes = {
