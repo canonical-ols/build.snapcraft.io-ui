@@ -9,7 +9,10 @@ import { Row, Data, Dropdown } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
 import { Message } from '../forms';
 import templateYaml from './template-yaml.js';
-import NameMismatchDropdown from './dropdowns/name-mismatch-dropdown';
+import {
+  NameMismatchDropdown,
+  RemoveRepoDropdown
+} from './dropdowns';
 
 import { signIntoStore } from '../../actions/auth-store';
 import { registerName, registerNameError } from '../../actions/register-name';
@@ -25,7 +28,6 @@ const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
 
 const tickIcon = <span className={styles.tickIcon} />;
-const warningIcon = <span className={styles.warningIcon} />;
 const errorIcon = <span className={styles.errorIcon} />;
 
 class RepositoryRow extends Component {
@@ -341,57 +343,6 @@ class RepositoryRow extends Component {
     );
   }
 
-  renderRemoveDropdown(registeredName) {
-    const { snap, latestBuild } = this.props;
-
-    let warningText;
-    if (latestBuild) {
-      warningText = (
-        'Removing this repo will delete all its builds and build logs.'
-      );
-    } else {
-      warningText = (
-        'Are you sure you want to remove this repo from the list?'
-      );
-    }
-    if (registeredName !== null) {
-      warningText += ' The name will remain registered.';
-    }
-    // XXX cjwatson 2017-02-28: Once we can get hold of published states for
-    // builds, we should also implement this design requirement:
-    //   Separately, if any build has been published, the text should end
-    //   with:
-    //     Published builds will remain published.
-
-    return (
-      <Dropdown>
-        <Row>
-          <Data col="100">
-            { warningIcon } { warningText }
-          </Data>
-        </Row>
-        <Row>
-          <div className={ styles.buttonRow }>
-            <a
-              onClick={ this.onToggleRemoveClick.bind(this) }
-              className={ styles.cancel }
-            >
-              Cancel
-            </a>
-            <Button
-              appearance="negative"
-              onClick={
-                this.onRemoveClick.bind(this, snap.git_repository_url)
-              }
-            >
-              Remove
-            </Button>
-          </div>
-        </Row>
-      </Dropdown>
-    );
-  }
-
   render() {
     const {
       snap,
@@ -475,7 +426,14 @@ class RepositoryRow extends Component {
         { showNameMismatchDropdown && <NameMismatchDropdown snap={snap} /> }
         { showUnconfiguredDropdown && this.renderUnconfiguredDropdown() }
         { showUnregisteredDropdown && this.renderUnregisteredDropdown() }
-        { showRemoveDropdown && this.renderRemoveDropdown(registeredName) }
+        { showRemoveDropdown &&
+          <RemoveRepoDropdown
+            latestBuild={latestBuild}
+            registeredName={registeredName}
+            onRemoveClick={this.onRemoveClick.bind(this, snap.git_repository_url)}
+            onCancelClick={this.onToggleRemoveClick.bind(this)}
+          />
+        }
       </Row>
     );
   }
