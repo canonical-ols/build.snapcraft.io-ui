@@ -5,12 +5,10 @@ import { conf } from '../../../helpers/config';
 import Button from '../../vanilla/button';
 import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
 import { Message } from '../../forms';
+import { TickIcon } from '../icons';
 
-// TODO: .external, .tickIcon, .helpText, .buttonRow, .cancel
+// TODO: .external, .helpText, .buttonRow, .cancel
 import styles from '../repositoryRow.css';
-
-// TODO: duplicated from repository row - move to component?
-const tickIcon = <span className={styles.tickIcon} />;
 
 const FILE_NAME_CLAIM_URL = `${conf.get('STORE_DEVPORTAL_URL')}/click-apps/register-name/`;
 const AGREEMENT_URL = `${conf.get('STORE_DEVPORTAL_URL')}/tos/`;
@@ -57,7 +55,7 @@ const UnregisteredDropdown = (props) => {
   if (registerNameStatus.success) {
     caption = (
       <div>
-        { tickIcon } Registered successfully
+        <TickIcon /> Registered successfully
       </div>
     );
   } else if ( registerNameStatus.error

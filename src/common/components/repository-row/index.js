@@ -12,7 +12,10 @@ import {
   UnconfiguredDropdown,
   UnregisteredDropdown
 } from './dropdowns';
-
+import {
+  TickIcon,
+  ErrorIcon
+} from './icons';
 import { signIntoStore } from '../../actions/auth-store';
 import { registerName, registerNameError } from '../../actions/register-name';
 import { removeSnap } from '../../actions/snaps';
@@ -20,9 +23,7 @@ import { removeSnap } from '../../actions/snaps';
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
-
-const tickIcon = <span className={styles.tickIcon} />;
-const errorIcon = <span className={styles.errorIcon} />;
+import iconStyles from './icons/icons.css';
 
 class RepositoryRow extends Component {
 
@@ -250,7 +251,7 @@ class RepositoryRow extends Component {
         </Data>
         <Data col="3">
           <a
-            className={ `${styles.icon} ${styles.deleteIcon}` }
+            className={ iconStyles.deleteIcon }
             onClick={ this.onToggleRemoveClick.bind(this) }
           />
         </Data>
@@ -289,7 +290,7 @@ class RepositoryRow extends Component {
     } else if (snapcraft_data && store_name && snapcraft_data.name !== store_name){
       return (
         <span>
-          { errorIcon }
+          <ErrorIcon />
           {' ' /* space between inline elements */}
           <a onClick={this.onNameMismatchClick.bind(this)}>
             Doesn’t match
@@ -298,14 +299,14 @@ class RepositoryRow extends Component {
       );
     }
 
-    return tickIcon;
+    return <TickIcon />;
   }
 
   renderSnapName(registeredName, showRegisterNameInput) {
     if (registeredName !== null) {
       return (
         <span>
-          { tickIcon } { registeredName }
+          <TickIcon /> { registeredName }
         </span>
       );
     } else if (showRegisterNameInput) {

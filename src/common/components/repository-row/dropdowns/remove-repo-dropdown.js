@@ -2,12 +2,10 @@ import React, { PropTypes } from 'react';
 
 import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
 import Button from '../../vanilla/button';
+import { WarningIcon } from '../icons';
 
-// TODO: separate styles for dropdowns only? (buttonRow, cancel, warningIcon)
+// TODO: separate styles for dropdowns only? (buttonRow, cancel)
 import styles from '../repositoryRow.css';
-
-// TODO: icons as separate component?
-const warningIcon = <span className={styles.warningIcon} />;
 
 const RemoveRepoDropdown = (props) => {
   const { latestBuild, registeredName } = props;
@@ -36,7 +34,7 @@ const RemoveRepoDropdown = (props) => {
     <Dropdown>
       <Row>
         <Data col="100">
-          { warningIcon } { warningText }
+          <WarningIcon /> { warningText }
         </Data>
       </Row>
       <Row>
