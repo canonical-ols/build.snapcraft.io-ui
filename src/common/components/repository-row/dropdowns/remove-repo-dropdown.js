@@ -7,33 +7,13 @@ import { WarningIcon } from '../icons';
 import styles from './dropdowns.css';
 
 const RemoveRepoDropdown = (props) => {
-  const { latestBuild, registeredName } = props;
-  const { onCancelClick, onRemoveClick } = props;
-
-  let warningText;
-  if (latestBuild) {
-    warningText = (
-      'Removing this repo will delete all its builds and build logs.'
-    );
-  } else {
-    warningText = (
-      'Are you sure you want to remove this repo from the list?'
-    );
-  }
-  if (registeredName !== null) {
-    warningText += ' The name will remain registered.';
-  }
-  // XXX cjwatson 2017-02-28: Once we can get hold of published states for
-  // builds, we should also implement this design requirement:
-  //   Separately, if any build has been published, the text should end
-  //   with:
-  //     Published builds will remain published.
+  const { message, onCancelClick, onRemoveClick } = props;
 
   return (
     <Dropdown>
       <Row>
         <Data col="100">
-          <WarningIcon /> { warningText }
+          <WarningIcon /> { message }
         </Data>
       </Row>
       <Row>
@@ -58,8 +38,7 @@ const RemoveRepoDropdown = (props) => {
 };
 
 RemoveRepoDropdown.propTypes = {
-  latestBuild: PropTypes.object,
-  registeredName: PropTypes.string,
+  message: PropTypes.string.isRequired,
   onRemoveClick: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired
 };

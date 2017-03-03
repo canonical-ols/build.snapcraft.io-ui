@@ -12,6 +12,7 @@ import styles from './dropdowns.css';
 const FILE_NAME_CLAIM_URL = `${conf.get('STORE_DEVPORTAL_URL')}/click-apps/register-name/`;
 const AGREEMENT_URL = `${conf.get('STORE_DEVPORTAL_URL')}/tos/`;
 
+// partial component for rendering Developer Programme Aggreement checkbox
 const Agreement = (props) => {
   const checkbox = <input type="checkbox" onChange={ props.onChange } />;
   const link = (
@@ -31,14 +32,9 @@ Agreement.propTypes = {
   onChange: PropTypes.func.isRequired
 };
 
-const UnregisteredDropdown = (props) => {
-  const { authStore, registerNameStatus, snapName } = props;
-  const {
-    onSignAgreementChange,
-    onRegisterClick,
-    onSignInClick,
-    onCancelClick
-  } = props;
+// partial component for rendering caption of the dropdown based on current state
+const Caption = (props) => {
+  const { authStore, registerNameStatus, onSignAgreementChange } = props;
 
   // If the user has signed into the store but we haven't fetched the
   // resulting discharge macaroon, we need to wait for that before
@@ -93,55 +89,106 @@ const UnregisteredDropdown = (props) => {
     );
   }
 
-  let actionDisabled;
-  let actionOnClick;
+  return caption;
+};
+
+Caption.propTypes = {
+  authStore: PropTypes.shape({
+    authenticated: PropTypes.bool,
+    hasDischarge: PropTypes.bool,
+    signedAgreement: PropTypes.bool
+  }),
+  registerNameStatus: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    success: PropTypes.bool,
+    error: PropTypes.object
+  }),
+
+  onSignAgreementChange: PropTypes.func.isRequired
+};
+
+// partial component to render action buttons of the dropdown based on current state
+const ActionButtons = (props) => {
+  const { authStore, registerNameStatus, snapName } = props;
+  const { onCancelClick, onSignInClick, onRegisterClick } = props;
+
+  // by default show 'Sign in' button
+  let actionText = 'Sign in...';
+  let actionOnClick = onSignInClick;
+  let actionDisabled = !!registerNameStatus.error;
   let actionSpinner = false;
-  let actionText;
-  if (authStore.isFetching) {
+
+  if (authStore.isFetching || registerNameStatus.isFetching) {
+    // if we are fetching data show loading button
     actionDisabled = true;
-    actionOnClick = () => {};
     actionSpinner = true;
     actionText = 'Checking...';
   } else if (authStore.authenticated) {
+    // if user already signed in, show 'Register' button
     actionDisabled = (
       snapName === '' ||
-      registerNameStatus.isFetching ||
       !!registerNameStatus.error
     );
+    actionText = 'Register name';
     actionOnClick = onRegisterClick;
-    if (registerNameStatus.isFetching) {
-      actionSpinner = true;
-      actionText = 'Checking...';
-    } else {
-      actionText = 'Register name';
-    }
-  } else {
-    actionDisabled = !!registerNameStatus.error;
-    actionOnClick = onSignInClick.bind(this);
-    actionText = 'Sign in...';
   }
 
+  return (
+    <div className={ styles.buttonRow }>
+      <a onClick={onCancelClick} className={ styles.cancel }>
+        Cancel
+      </a>
+      <Button
+        appearance="positive"
+        disabled={actionDisabled}
+        onClick={actionOnClick}
+        isSpinner={actionSpinner}
+      >
+        { actionText }
+      </Button>
+    </div>
+  );
+};
+
+ActionButtons.propTypes = {
+  snapName: PropTypes.string,
+  authStore: PropTypes.shape({
+    authenticated: PropTypes.bool,
+    isFetching: PropTypes.bool
+  }),
+  registerNameStatus: PropTypes.shape({
+    isFetching: PropTypes.bool,
+    success: PropTypes.bool,
+    error: PropTypes.object
+  }),
+
+  onRegisterClick: PropTypes.func.isRequired,
+  onSignInClick: PropTypes.func.isRequired,
+  onCancelClick: PropTypes.func.isRequired,
+};
+
+// main dropdown component exported from this module
+const UnregisteredDropdown = (props) => {
   return (
     <Dropdown>
       <Row>
         <Data col="100">
-          { caption }
+          <Caption
+            authStore={props.authStore}
+            registerNameStatus={props.registerNameStatus}
+            onSignAgreementChange={props.onSignAgreementChange}
+          />
         </Data>
       </Row>
       <Row>
-        <div className={ styles.buttonRow }>
-          <a onClick={onCancelClick} className={ styles.cancel }>
-            Cancel
-          </a>
-          <Button
-            appearance="positive"
-            disabled={actionDisabled}
-            onClick={actionOnClick}
-            isSpinner={actionSpinner}
-          >
-            { actionText }
-          </Button>
-        </div>
+        <ActionButtons
+          authStore={props.authStore}
+          registerNameStatus={props.registerNameStatus}
+          snapName={props.snapName}
+          onRegisterClick={props.onRegisterClick}
+          onSignInClick={props.onSignInClick}
+          onCancelClick={props.onCancelClick}
+        />
       </Row>
     </Dropdown>
   );
@@ -149,18 +196,8 @@ const UnregisteredDropdown = (props) => {
 
 UnregisteredDropdown.propTypes = {
   snapName: PropTypes.string,
-  authStore: PropTypes.shape({
-    authenticated: PropTypes.bool,
-    hasDischarge: PropTypes.bool,
-    isFetching: PropTypes.bool,
-    signedAgreement: PropTypes.bool,
-    userName: PropTypes.string
-  }),
-  registerNameStatus: PropTypes.shape({
-    isFetching: PropTypes.bool,
-    success: PropTypes.bool,
-    error: PropTypes.object
-  }),
+  authStore: PropTypes.object,
+  registerNameStatus: PropTypes.object,
 
   onSignAgreementChange: PropTypes.func.isRequired,
   onRegisterClick: PropTypes.func.isRequired,

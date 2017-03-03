@@ -270,14 +270,36 @@ class RepositoryRow extends Component {
         }
         { showRemoveDropdown &&
           <RemoveRepoDropdown
-            latestBuild={latestBuild}
-            registeredName={registeredName}
+            message={this.getRemoveWarningMessage(latestBuild, registeredName)}
             onRemoveClick={this.onRemoveClick.bind(this, snap.git_repository_url)}
             onCancelClick={this.onToggleRemoveClick.bind(this)}
           />
         }
       </Row>
     );
+  }
+
+  getRemoveWarningMessage(latestBuild, registeredName) {
+    let warningText;
+    if (latestBuild) {
+      warningText = (
+        'Removing this repo will delete all its builds and build logs.'
+      );
+    } else {
+      warningText = (
+        'Are you sure you want to remove this repo from the list?'
+      );
+    }
+    if (registeredName !== null) {
+      warningText += ' The name will remain registered.';
+    }
+    // XXX cjwatson 2017-02-28: Once we can get hold of published states for
+    // builds, we should also implement this design requirement:
+    //   Separately, if any build has been published, the text should end
+    //   with:
+    //     Published builds will remain published.
+
+    return warningText;
   }
 
   renderConfiguredStatus(snap) {
