@@ -72,39 +72,33 @@ class RepositoryRow extends Component {
     this.saveState();
   }
 
-  // TODO: bartaz - add nameMismatchDropdownExpanded being closed when other opens
+  toggleDropdownState(dropdown) {
+    this.setState({
+      // close all dropdowns
+      nameMismatchDropdownExpanded: false,
+      unconfiguredDropdownExpanded: false,
+      unregisteredDropdownExpanded: false,
+      removeDropdownExpanded: false,
+
+      // and toggle the one
+      [dropdown]: !this.state[dropdown]
+    });
+  }
 
   onConfiguredClick() {
-    this.setState({
-      unconfiguredDropdownExpanded: !this.state.unconfiguredDropdownExpanded,
-      unregisteredDropdownExpanded: false,
-      removeDropdownExpanded: false
-    });
+    this.toggleDropdownState('unconfiguredDropdownExpanded');
   }
 
   onNameMismatchClick() {
-    this.setState({
-      nameMismatchDropdownExpanded: !this.state.nameMismatchDropdownExpanded,
-      unconfiguredDropdownExpanded: false,
-      unregisteredDropdownExpanded: false,
-      removeDropdownExpanded: false
-    });
+    this.toggleDropdownState('nameMismatchDropdownExpanded');
   }
 
   onUnregisteredClick() {
-    this.setState({
-      unconfiguredDropdownExpanded: false,
-      unregisteredDropdownExpanded: !this.state.unregisteredDropdownExpanded,
-      removeDropdownExpanded: false
-    });
+    this.toggleDropdownState('unregisteredDropdownExpanded');
   }
 
   onToggleRemoveClick() {
-    this.setState({
-      unconfiguredDropdownExpanded: false,
-      unregisteredDropdownExpanded: false,
-      removeDropdownExpanded: !this.state.removeDropdownExpanded
-    });
+    this.toggleDropdownState('removeDropdownExpanded');
   }
 
   closeUnregisteredDropdown() {
