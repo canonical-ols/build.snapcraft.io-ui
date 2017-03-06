@@ -25,26 +25,13 @@ describe('WithRepository', () => {
 
   let store;
 
+  // renderDummy helper shallow renders wrapped component and assigns these:
   let wrapper;  // WithRepository rendered wrapper
   let instance; // WithRepository wrapper instance
   let wrapped;  // wrapped Dummy component
 
-  const setupDummy = (repository = REPO, params = PARAMS) => {
-    store = mockStore({ repository });
-
-    const DummyWithRepo = withRepository(Dummy);
-
-    // shallow render container component
-    const dummyWithRepo = shallow(<DummyWithRepo store={store} params={params}/>);
-
-    // get child components/instances from rendered component
-    wrapper = dummyWithRepo.first();
-    instance = wrapper.shallow().instance();
-    wrapped = wrapper.dive();
-  };
-
   beforeEach(() => {
-    setupDummy();
+    renderDummy();
   });
 
   it('should get repository from the store', () => {
@@ -73,7 +60,7 @@ describe('WithRepository', () => {
 
   context('when repo is not in the store', () => {
     beforeEach(() => {
-      setupDummy(null);
+      renderDummy(null);
     });
 
     it('should not render wrapped component', () => {
@@ -90,7 +77,7 @@ describe('WithRepository', () => {
 
   context('when repo in the store is different then in params', () => {
     beforeEach(() => {
-      setupDummy({ fullName: 'and-now-for-something/completely-different' });
+      renderDummy({ fullName: 'and-now-for-something/completely-different' });
     });
 
     it('should not render wrapped component', () => {
@@ -105,6 +92,21 @@ describe('WithRepository', () => {
     });
   });
 
+  // Shallow render Dummy component wrapped in withRepository container
+  // with given repository (mocked in the store) and URL params.
+  // Assigns wrapper, instance and wrapped variables later used in tests.
+  const renderDummy = (repository = REPO, params = PARAMS) => {
+    store = mockStore({ repository });
 
+    const DummyWithRepo = withRepository(Dummy);
+
+    // shallow render container component
+    const dummyWithRepo = shallow(<DummyWithRepo store={store} params={params}/>);
+
+    // get child components/instances from rendered component
+    wrapper = dummyWithRepo.first();
+    instance = wrapper.shallow().instance();
+    wrapped = wrapper.dive();
+  };
 
 });
