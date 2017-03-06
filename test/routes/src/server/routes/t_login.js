@@ -64,8 +64,8 @@ describe('login routes', () => {
     });
 
     context('with no options', () => {
-      it('should redirect from /login/authenticate to SSO', (done) => {
-        supertest(app)
+      it('should redirect from /login/authenticate to SSO', () => {
+        return supertest(app)
           .get('/login/authenticate')
           .expect(res => {
             expect(res.statusCode).toEqual(302);
@@ -74,47 +74,38 @@ describe('login routes', () => {
               protocol: expectedBaseUrl.protocol,
               host: expectedBaseUrl.host
             });
-          })
-          .end((err) => {
             sso.done();
-            done(err);
           });
       });
 
-      it('should include verify url in redirect header', (done) => {
-        supertest(app)
+      it('should include verify url in redirect header', () => {
+        return supertest(app)
           .get('/login/authenticate')
           .expect(res => {
             const parsedLocation = url.parse(res.header.location, true);
             expect(parsedLocation.query['openid.return_to'])
               .toEqual(OPENID_VERIFY_URL);
-          })
-          .end((err) => {
             sso.done();
-            done(err);
           });
       });
 
       it('should not include macaroon extension in redirect ' +
-         'header', (done) => {
-        supertest(app)
+         'header', () => {
+        return supertest(app)
           .get('/login/authenticate')
           .expect(res => {
             const parsedLocation = url.parse(res.header['location'], true);
             expect(parsedLocation.query).toExcludeKey('openid.ns.macaroon');
             expect(parsedLocation.query)
               .toExcludeKey('openid.macaroon.caveat_id');
-          })
-          .end((err) => {
             sso.done();
-            done(err);
           });
       });
     });
 
     context('with options', () => {
-      it('should redirect from /login/authenticate to SSO', (done) => {
-        supertest(app)
+      it('should redirect from /login/authenticate to SSO', () => {
+        return supertest(app)
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': 'dummy caveat' })
@@ -125,15 +116,12 @@ describe('login routes', () => {
               protocol: expectedBaseUrl.protocol,
               host: expectedBaseUrl.host
             });
-          })
-          .end((err) => {
             sso.done();
-            done(err);
           });
       });
 
-      it('should include verify url in redirect header', (done) => {
-        supertest(app)
+      it('should include verify url in redirect header', () => {
+        return supertest(app)
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': 'dummy caveat' })
@@ -145,16 +133,13 @@ describe('login routes', () => {
               '&caveat_id=dummy%20caveat';
             expect(parsedLocation.query['openid.return_to'])
               .toEqual(expectedReturnTo);
-          })
-          .end((err) => {
             sso.done();
-            done(err);
           });
       });
 
-      it('should include macaroon extension in redirect header', (done) => {
+      it('should include macaroon extension in redirect header', () => {
         const expectedCaveatId = 'dummy caveat';
-        supertest(app)
+        return supertest(app)
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': expectedCaveatId })
@@ -164,10 +149,7 @@ describe('login routes', () => {
               .toEqual('http://ns.login.ubuntu.com/2016/openid-macaroon');
             expect(parsedLocation.query['openid.macaroon.caveat_id'])
               .toEqual(expectedCaveatId);
-          })
-          .end((err) => {
             sso.done();
-            done(err);
           });
       });
     });
@@ -183,8 +165,8 @@ describe('login routes', () => {
         delete session.ssoDischarge;
       });
 
-      it('GET returns the macaroon', (done) => {
-        supertest(app)
+      it('GET returns the macaroon', () => {
+        return supertest(app)
           .get('/login/sso-discharge')
           .expect((res) => {
             expect(res.statusCode).toEqual(200);
@@ -195,28 +177,26 @@ describe('login routes', () => {
                 discharge: 'dummy macaroon'
               }
             });
-          })
-          .end(done);
+          });
       });
 
-      it('DELETE deletes the macaroon', (done) => {
-        supertest(app)
+      it('DELETE deletes the macaroon', () => {
+        return supertest(app)
           .delete('/login/sso-discharge')
           .expect((res) => {
             expect(res.statusCode).toEqual(204);
             expect(session.ssoDischarge).toNotExist();
-          })
-          .end(done);
+          });
       });
     });
 
-    context('if user is logged in but has no SSO discharge', (done) => {
+    context('if user is logged in but has no SSO discharge', () => {
       beforeEach(() => {
         delete session.ssoDischarge;
       });
 
       it('GET returns 404', () => {
-        supertest(app)
+        return supertest(app)
           .get('/login/sso-discharge')
           .expect((res) => {
             expect(res.statusCode).toEqual(404);
@@ -227,18 +207,16 @@ describe('login routes', () => {
                 message: 'No SSO discharge macaroon stored'
               }
             });
-          })
-          .end(done);
+          });
       });
 
-      it('DELETE does nothing', (done) => {
-        supertest(app)
+      it('DELETE does nothing', () => {
+        return supertest(app)
           .delete('/login/sso-discharge')
           .expect((res) => {
             expect(res.statusCode).toEqual(204);
             expect(session.ssoDischarge).toNotExist();
-          })
-          .end(done);
+          });
       });
     });
   });
