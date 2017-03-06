@@ -66,11 +66,7 @@ export const notify = async (req, res) => {
     // Clear snap name cache before starting.
     // XXX cjwatson 2017-02-16: We could be smarter about this by looking at
     // the content of the push event.
-    try {
-      await getMemcached().del(cacheId);
-    } catch (error) {
-      logger.error(`Error deleting ${cacheId} from memcached:`, error);
-    }
+    await getMemcached().del(cacheId);
     try {
       const snap = await internalFindSnap(repositoryUrl);
       if (!snap.store_name) {

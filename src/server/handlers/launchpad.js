@@ -282,11 +282,7 @@ export const newSnap = async (req, res) => {
     const urlPrefix = getRepoUrlPrefix(owner);
     const cacheId = getUrlPrefixCacheId(urlPrefix);
 
-    try {
-      await getMemcached().del(cacheId);
-    } catch (error) {
-      logger.error(`Error deleting ${cacheId} from memcached: ${error}`);
-    }
+    await getMemcached().del(cacheId);
     const snapUrl = result.self_link;
     logger.info(`Created ${snapUrl}`);
     return res.status(201).send({
@@ -551,16 +547,8 @@ export const deleteSnap = async (req, res) => {
     const urlPrefix = getRepoUrlPrefix(owner);
     const prefixCacheId = getUrlPrefixCacheId(urlPrefix);
     const repoCacheId = getRepositoryUrlCacheId(req.body.repository_url);
-    try {
-      await getMemcached().del(prefixCacheId);
-    } catch (error) {
-      logger.error(`Error deleting ${prefixCacheId} from memcached: ${error}`);
-    }
-    try {
-      await getMemcached().del(repoCacheId);
-    } catch (error) {
-      logger.error(`Error deleting ${repoCacheId} from memcached: ${error}`);
-    }
+    await getMemcached().del(prefixCacheId);
+    await getMemcached().del(repoCacheId);
     return res.status(200).send({
       status: 'success',
       payload: {
