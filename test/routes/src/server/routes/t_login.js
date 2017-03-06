@@ -67,8 +67,8 @@ describe('login routes', () => {
       it('should redirect from /login/authenticate to SSO', () => {
         return supertest(app)
           .get('/login/authenticate')
-          .expect(res => {
-            expect(res.statusCode).toEqual(302);
+          .expect(302)
+          .then((res) => {
             const expectedBaseUrl = url.parse(UBUNTU_SSO_URL);
             expect(url.parse(res.header.location)).toMatch({
               protocol: expectedBaseUrl.protocol,
@@ -81,7 +81,7 @@ describe('login routes', () => {
       it('should include verify url in redirect header', () => {
         return supertest(app)
           .get('/login/authenticate')
-          .expect(res => {
+          .then((res) => {
             const parsedLocation = url.parse(res.header.location, true);
             expect(parsedLocation.query['openid.return_to'])
               .toEqual(OPENID_VERIFY_URL);
@@ -93,7 +93,7 @@ describe('login routes', () => {
          'header', () => {
         return supertest(app)
           .get('/login/authenticate')
-          .expect(res => {
+          .then((res) => {
             const parsedLocation = url.parse(res.header['location'], true);
             expect(parsedLocation.query).toExcludeKey('openid.ns.macaroon');
             expect(parsedLocation.query)
@@ -109,8 +109,8 @@ describe('login routes', () => {
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': 'dummy caveat' })
-          .expect(res => {
-            expect(res.statusCode).toEqual(302);
+          .expect(302)
+          .then((res) => {
             const expectedBaseUrl = url.parse(UBUNTU_SSO_URL);
             expect(url.parse(res.header.location)).toMatch({
               protocol: expectedBaseUrl.protocol,
@@ -125,7 +125,7 @@ describe('login routes', () => {
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': 'dummy caveat' })
-          .expect(res => {
+          .then((res) => {
             const parsedLocation = url.parse(res.header['location'], true);
             const expectedReturnTo =
               OPENID_VERIFY_URL +
@@ -143,7 +143,7 @@ describe('login routes', () => {
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': expectedCaveatId })
-          .expect(res => {
+          .then((res) => {
             const parsedLocation = url.parse(res.header['location'], true);
             expect(parsedLocation.query['openid.ns.macaroon'])
               .toEqual('http://ns.login.ubuntu.com/2016/openid-macaroon');
@@ -168,8 +168,8 @@ describe('login routes', () => {
       it('GET returns the macaroon', () => {
         return supertest(app)
           .get('/login/sso-discharge')
-          .expect((res) => {
-            expect(res.statusCode).toEqual(200);
+          .expect(200)
+          .then((res) => {
             expect(res.body).toEqual({
               status: 'success',
               payload: {
@@ -183,8 +183,8 @@ describe('login routes', () => {
       it('DELETE deletes the macaroon', () => {
         return supertest(app)
           .delete('/login/sso-discharge')
-          .expect((res) => {
-            expect(res.statusCode).toEqual(204);
+          .expect(204)
+          .then(() => {
             expect(session.ssoDischarge).toNotExist();
           });
       });
@@ -198,8 +198,8 @@ describe('login routes', () => {
       it('GET returns 404', () => {
         return supertest(app)
           .get('/login/sso-discharge')
-          .expect((res) => {
-            expect(res.statusCode).toEqual(404);
+          .expect(404)
+          .then((res) => {
             expect(res.body).toEqual({
               status: 'error',
               payload: {
@@ -213,8 +213,8 @@ describe('login routes', () => {
       it('DELETE does nothing', () => {
         return supertest(app)
           .delete('/login/sso-discharge')
-          .expect((res) => {
-            expect(res.statusCode).toEqual(204);
+          .expect(204)
+          .then(() => {
             expect(session.ssoDischarge).toNotExist();
           });
       });
