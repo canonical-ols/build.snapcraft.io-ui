@@ -4,7 +4,8 @@ import ipaddr from 'ipaddr.js';
 
 import { conf } from '../helpers/config';
 
-const rawNetworks = conf.get('TRUSTED_NETWORKS', '').split(',');
+const confNetworks = conf.get('TRUSTED_NETWORKS');
+const rawNetworks = confNetworks ? confNetworks.split(',') : [];
 const networks = rawNetworks.map((cidr) => ipaddr.parseCIDR(cidr));
 
 export default (req, res, next) => {
