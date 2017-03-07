@@ -86,7 +86,8 @@ export const verify = (req, res, next) => {
       }
       await dbUser.set({
         name: userResponse.body.name || null,
-        login: userResponse.body.login
+        login: userResponse.body.login,
+        last_login_at: new Date()
       });
       if (dbUser.hasChanged()) {
         await dbUser.save();

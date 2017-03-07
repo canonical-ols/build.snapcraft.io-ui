@@ -8,6 +8,7 @@ exports.up = function(knex, Promise) {
       table.text('name');
       table.text('login').notNullable();
       table.timestamps();
+      table.timestamp('last_login_at').notNullable();
     })
   ]);
 };
