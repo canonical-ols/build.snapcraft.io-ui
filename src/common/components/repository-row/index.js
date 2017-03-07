@@ -197,7 +197,14 @@ class RepositoryRow extends Component {
       registerNameStatus.snapName : snap.store_name
     );
 
-    const hasBuilt = latestBuild && snap.snapcraft_data;
+    const hasBuilt = !!(latestBuild && snap.snapcraft_data);
+    const hasLog = !!(hasBuilt && latestBuild.buildLogUrl);
+
+    // only link to builds that have log available
+    const latestBuildUrl = hasLog
+      ? `/${fullName}/builds/${latestBuild.buildId}`
+      : null;
+
     const isActive = (
       showNameMismatchDropdown ||
       showUnconfiguredDropdown ||
@@ -228,14 +235,10 @@ class RepositoryRow extends Component {
           { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
         </Data>
         <Data col="30">
-          {/*
-            TODO: show 'Loading' when waiting for status?
-              and also show 'Never built' when no builds available
-          */}
           { hasBuilt
             ? (
               <BuildStatus
-                link={ `/${fullName}/builds/${latestBuild.buildId}`}
+                link={ latestBuildUrl }
                 colour={ latestBuild.colour }
                 statusMessage={ latestBuild.statusMessage }
                 dateStarted={ latestBuild.dateStarted }
