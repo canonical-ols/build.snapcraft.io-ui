@@ -7,7 +7,6 @@ exports.up = function(knex, Promise) {
       table.integer('github_id').notNullable();
       table.text('name');
       table.text('login').notNullable();
-      table.text('avatar_url');
       table.timestamps();
     })
   ]);
