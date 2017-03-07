@@ -59,8 +59,7 @@ const BuildRow = (props) => {
 BuildRow.propTypes = {
   // params from URL
   repository: PropTypes.shape({
-    owner: PropTypes.string,
-    name: PropTypes.string
+    fullName: PropTypes.string
   }),
 
   // build properties
