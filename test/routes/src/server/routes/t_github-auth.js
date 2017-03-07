@@ -120,7 +120,7 @@ describe('The login route', () => {
             .query({ code: 'foo', state: 'bar' })
             .send();
           const dbUser = await GitHubUser.where({ github_id: 123 }).fetch();
-          expect(dbUser.attributes).toMatch({
+          expect(dbUser.serialize()).toMatch({
             github_id: 123,
             login: 'anowner'
           });
