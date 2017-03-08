@@ -293,12 +293,28 @@ describe('The Launchpad API endpoint', () => {
   });
 
   describe('list snaps route', () => {
+    let apiResponse;
+
+    beforeEach(() => {
+      apiResponse = supertest(app)
+        .get('/launchpad/snaps/list')
+        .query({ owner: 'anowner' });
+    });
 
     context('when snaps exist', () => {
+      const contents = {
+        'https://github.com/another-user/test-snap': { name: 'snap1' },
+        'https://github.com/test-user/test-snap': { name: 'snap2' }
+      };
+
       let testSnaps;
+
+      let lpApi;
+      let ghApi;
 
       beforeEach(() => {
         const lp_api_url = conf.get('LP_API_URL');
+        const gh_api_url = conf.get('GITHUB_API_ENDPOINT');
         const lp_api_base = `${lp_api_url}/devel`;
 
         testSnaps = [
@@ -306,7 +322,7 @@ describe('The Launchpad API endpoint', () => {
             resource_type_link: `${lp_api_base}/#snap`,
             self_link: `${lp_api_base}/~another-user/+snap/test-snap`,
             owner_link: `${lp_api_base}/~another-user`,
-            git_repository_url: 'http://github.com/another-user/test-snap'
+            git_repository_url: 'https://github.com/another-user/test-snap'
           },
           {
             resource_type_link: `${lp_api_base}/#snap`,
@@ -316,12 +332,7 @@ describe('The Launchpad API endpoint', () => {
           }
         ];
 
-        const contents = {
-          'https://github.com/another-user/test-snap': { name: 'snap1' },
-          'https://github.com/test-user/test-snap': {}
-        };
-
-        const api = nock(lp_api_url)
+        lpApi = nock(lp_api_url)
           .get('/devel/+snaps')
           .query({
             'ws.op': 'findByURLPrefix',
@@ -335,16 +346,12 @@ describe('The Launchpad API endpoint', () => {
           });
 
         testSnaps.map((snap) => {
-          const fullName = snap.git_repository_url.replace('http://github.com/', '');
-          const scope = api.get(
-            `/repos/${fullName}/contents/snapcraft.yaml`
-          );
+          const fullName = snap.git_repository_url.replace('https://github.com/', '');
           const repoContents = contents[snap.git_repository_url];
-          if (repoContents !== undefined) {
-            return scope.reply(200, repoContents);
-          } else {
-            return scope.reply(404);
-          }
+
+          ghApi = nock(gh_api_url)
+            .get(`/repos/${fullName}/contents/snap/snapcraft.yaml`)
+            .reply(200, repoContents);
         });
 
       });
@@ -353,33 +360,39 @@ describe('The Launchpad API endpoint', () => {
         nock.cleanAll();
       });
 
-      it('should return a 200 response', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(200, done);
+      it('should satisfy all request mocks', async () => {
+        await apiResponse;
+        lpApi.done();
+        ghApi.done();
       });
 
-      it('should return a "success" status', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(hasStatus('success'))
-          .end(done);
+      it('should return a 200 response', async () => {
+        await apiResponse.expect(200);
       });
 
-      it('should return "snaps-found" message with the correct snaps', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .end((err, res) => {
-            const responseSnaps = res.body.payload.snaps;
+      it('should return a "success" status', async () => {
+        await apiResponse.expect(hasStatus('success'));
+      });
 
-            expect(responseSnaps.length).toEqual(testSnaps.length);
-            expect(responseSnaps[0]).toContain(testSnaps[0]);
+      it('should return "snaps-found" message with the correct snaps', async () => {
+        const response = await apiResponse.expect(hasMessage('snaps-found'));
+        const responseSnaps = response.body.payload.snaps;
 
-            done(err);
-          });
+        expect(responseSnaps.length).toEqual(testSnaps.length);
+        expect(responseSnaps[0]).toContain(testSnaps[0]);
+        expect(responseSnaps[1]).toContain(testSnaps[1]);
+      });
+
+      it('should return snaps with snapcraft_data', async () => {
+        const response = await apiResponse;
+        const snap = response.body.payload.snaps[0];
+
+        expect(snap).toContain({
+          snapcraft_data: contents[snap.git_repository_url]
+        });
+        expect(snap).toContain({
+          snapcraft_data: { path: 'snap/snapcraft.yaml' }
+        });
       });
 
       context('using memcached', () => {
@@ -412,12 +425,12 @@ describe('The Launchpad API endpoint', () => {
     });
 
     context('when snaps don\'t exist', () => {
-
+      let lpApi;
 
       beforeEach(() => {
         const lp_api_url = conf.get('LP_API_URL');
 
-        nock(lp_api_url)
+        lpApi = nock(lp_api_url)
           .get('/devel/+snaps')
           .query({
             'ws.op': 'findByURLPrefix',
@@ -435,39 +448,34 @@ describe('The Launchpad API endpoint', () => {
         nock.cleanAll();
       });
 
-      it('should return a 200 response', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(200, done);
+      it('should satisfy all request mocks', async () => {
+        await apiResponse;
+        lpApi.done();
       });
 
-      it('should return a "success" status', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(hasStatus('success'))
-          .end(done);
+      it('should return a 200 response', async () => {
+        await apiResponse.expect(200);
       });
 
-      it('should return "snaps-found" message with empty list', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .end((err, res) => {
-            const responseSnaps = res.body.payload.snaps;
+      it('should return a "success" status', async () => {
+        await apiResponse.expect(hasStatus('success'));
+      });
 
-            expect(responseSnaps.length).toEqual(0);
+      it('should return "snaps-found" message with empty list', async () => {
+        const response = await apiResponse;
+        const responseSnaps = response.body.payload.snaps;
 
-            done(err);
-          });
+        expect(responseSnaps.length).toEqual(0);
       });
     });
 
     context('when LP returns error', () => {
+      let lpApi;
+
       beforeEach(() => {
         const lp_api_url = conf.get('LP_API_URL');
-        nock(lp_api_url)
+
+        lpApi = nock(lp_api_url)
           .get('/devel/+snaps')
           .query({
             'ws.op': 'findByURLPrefix',
@@ -481,27 +489,21 @@ describe('The Launchpad API endpoint', () => {
         nock.cleanAll();
       });
 
-      it('should return an error response', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(501, done);
+      it('should satisfy all request mocks', async () => {
+        await apiResponse;
+        lpApi.done();
       });
 
-      it('should return an "error" status', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(hasStatus('error'))
-          .end(done);
+      it('should return an error response', async () => {
+        await apiResponse.expect(501);
       });
 
-      it('should return a body with an "lp-error" message', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .expect(hasMessage('lp-error', 'Something went quite wrong.'))
-          .end(done);
+      it('should return an "error" status', async () => {
+        await apiResponse.expect(hasStatus('error'));
+      });
+
+      it('should return a body with an "lp-error" message', async() => {
+        await apiResponse.expect(hasMessage('lp-error', 'Something went quite wrong.'));
       });
     });
 
@@ -531,7 +533,7 @@ describe('The Launchpad API endpoint', () => {
 
         const contents = {
           'https://github.com/another-user/test-snap': { name: 'snap1' },
-          'https://github.com/test-user/test-snap': {}
+          'https://github.com/test-user/test-snap': { name: 'snap2' }
         };
 
         setupInMemoryMemcached({
@@ -548,33 +550,21 @@ describe('The Launchpad API endpoint', () => {
         resetMemcached();
       });
 
-      it('should return a 200 response', (done) => {
-        supertest(app)
-        .get('/launchpad/snaps/list')
-        .query({ owner: 'anowner' })
-          .expect(200, done);
+      it('should return a 200 response', async () => {
+        await apiResponse.expect(200);
       });
 
-      it('should return a "success" status', (done) => {
-        supertest(app)
-        .get('/launchpad/snaps/list')
-        .query({ owner: 'anowner' })
-          .expect(hasStatus('success'))
-          .end(done);
+      it('should return a "success" status', async () => {
+        await apiResponse.expect(hasStatus('success'));
       });
 
-      it('should return "snaps-found" message with the correct snaps', (done) => {
-        supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .end((err, res) => {
-            const responseSnaps = res.body.payload.snaps;
+      it('should return "snaps-found" message with the correct snaps', async () => {
+        const response = await apiResponse;
+        const responseSnaps = response.body.payload.snaps;
 
-            expect(responseSnaps.length).toEqual(testSnaps.length);
-            expect(responseSnaps[0]).toContain(testSnaps[0]);
-
-            done(err);
-          });
+        expect(responseSnaps.length).toEqual(testSnaps.length);
+        expect(responseSnaps[0]).toContain(testSnaps[0]);
+        expect(responseSnaps[1]).toContain(testSnaps[1]);
       });
 
     });
