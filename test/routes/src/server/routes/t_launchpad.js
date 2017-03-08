@@ -404,20 +404,15 @@ describe('The Launchpad API endpoint', () => {
           resetMemcached();
         });
 
-        it('should store snaps in memcached', (done) => {
-
+        it('should store snaps in memcached', async () => {
           const urlPrefix = 'https://github.com/anowner/';
           const cacheId = getUrlPrefixCacheId(urlPrefix);
 
-          supertest(app)
-          .get('/launchpad/snaps/list')
-          .query({ owner: 'anowner' })
-          .end((err) => {
-            const memcachedSnaps = getMemcached().cache[cacheId];
-            expect(memcachedSnaps.length).toEqual(testSnaps.length);
-            expect(memcachedSnaps[0]).toContain(testSnaps[0]);
-            done(err);
-          });
+          await apiResponse;
+          const memcachedSnaps = getMemcached().cache[cacheId];
+          expect(memcachedSnaps.length).toEqual(testSnaps.length);
+          expect(memcachedSnaps[0]).toContain(testSnaps[0]);
+          expect(memcachedSnaps[1]).toContain(testSnaps[1]);
         });
 
       });
