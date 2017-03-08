@@ -357,13 +357,9 @@ describe('The Launchpad API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         lpApi.done();
         ghApi.done();
+        nock.cleanAll();
       });
 
       it('should return a 200 response', async () => {
@@ -440,12 +436,8 @@ describe('The Launchpad API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         lpApi.done();
+        nock.cleanAll();
       });
 
       it('should return a 200 response', async () => {
@@ -481,12 +473,8 @@ describe('The Launchpad API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         lpApi.done();
+        nock.cleanAll();
       });
 
       it('should return an error response', async () => {

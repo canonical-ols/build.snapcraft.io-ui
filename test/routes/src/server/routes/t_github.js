@@ -37,12 +37,8 @@ describe('The GitHub API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         scope.done();
+        nock.cleanAll();
       });
 
       it('should successfully return', async () => {
@@ -75,12 +71,8 @@ describe('The GitHub API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         scope.done();
+        nock.cleanAll();
       });
 
       it('should successfully return', async () => {
@@ -114,12 +106,8 @@ describe('The GitHub API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         scope.done();
+        nock.cleanAll();
       });
 
       it('should successfully return', async () => {
@@ -153,12 +141,8 @@ describe('The GitHub API endpoint', () => {
       });
 
       afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('should satisfy all request mocks', async () => {
-        await apiResponse;
         scope.done();
+        nock.cleanAll();
       });
 
       it('should return 404 error', async () => {
