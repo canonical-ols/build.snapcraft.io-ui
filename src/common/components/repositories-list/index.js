@@ -7,7 +7,6 @@ import {
   getAccountInfo,
   getSSODischarge
 } from '../../actions/auth-store';
-import { createSnap } from '../../actions/create-snap';
 import RepositoryRow from '../repository-row';
 import Spinner from '../spinner';
 import { Table, Head, Body, Row, Header } from '../vanilla/table-interactive';
@@ -91,12 +90,6 @@ class RepositoriesList extends Component {
         registerNameStatus={ registerNameStatus }
       />
     );
-  }
-
-  onButtonClick(repository) {
-    if (repository) {
-      this.props.dispatch(createSnap(repository.url));
-    }
   }
 
   render() {
