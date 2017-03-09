@@ -85,6 +85,9 @@ def migrate(pgsql):
     KNEXFILE_NORMAL: ['snap-build'],
     }, stopstart=True)
 def configure(pgsql, cache):
+    db_name = hookenv.config('db_name')
+    if pgsql.master is None or pgsql.master.dbname != db_name:
+        return
     environment = hookenv.config('environment')
     session_secret = hookenv.config('session_secret')
     memcache_session_secret = hookenv.config('memcache_session_secret')
