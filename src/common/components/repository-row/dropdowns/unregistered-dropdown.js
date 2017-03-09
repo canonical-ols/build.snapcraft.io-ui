@@ -34,7 +34,14 @@ Agreement.propTypes = {
 
 // partial component for rendering caption of the dropdown based on current state
 const Caption = (props) => {
-  const { authStore, registerNameStatus, onSignAgreementChange } = props;
+  const {
+    registeredName,
+    authStore,
+    registerNameStatus,
+    onSignAgreementChange,
+    snapName,
+    onSnapNameChange
+  } = props;
 
   // If the user has signed into the store but we haven't fetched the
   // resulting discharge macaroon, we need to wait for that before
@@ -47,6 +54,36 @@ const Caption = (props) => {
   );
 
   let caption;
+  let changeForm;
+
+  const changeRegisteredName = !!registeredName;
+
+  // only show "change name" info and form if there is a name registered already,
+  // user is authenticated and we are not showing register success message
+  const showChangeForm = (
+    changeRegisteredName &&
+    authStore.authenticated &&
+    !registerNameStatus.success
+  );
+
+  if (showChangeForm) {
+    changeForm = (
+      <div>
+        If you change the registered name:
+        <ul>
+          <li>The old name will remain registered to you and can be used for another snap later.</li>
+        </ul>
+        <p>New name:
+          <input
+            type='text'
+            value={ snapName }
+            onChange={ onSnapNameChange }
+          />
+        </p>
+      </div>
+    );
+  }
+
   if (registerNameStatus.success) {
     caption = (
       <div>
@@ -75,7 +112,9 @@ const Caption = (props) => {
   } else {
     caption = (
       <div>
-        To publish to the snap store, this repo needs a registered name.
+        { !changeRegisteredName &&
+          'To publish to the snap store, this repo needs a registered name.'
+        }
         { !authStore.authenticated &&
           ' You need to sign in to Ubuntu One to register a name.'
         }
@@ -89,10 +128,17 @@ const Caption = (props) => {
     );
   }
 
-  return caption;
+  return (
+    <div>
+      { changeForm }
+      { caption }
+    </div>
+  );
 };
 
 Caption.propTypes = {
+  registeredName: PropTypes.string,
+  snapName: PropTypes.string,
   authStore: PropTypes.shape({
     authenticated: PropTypes.bool,
     hasDischarge: PropTypes.bool,
@@ -104,7 +150,8 @@ Caption.propTypes = {
     error: PropTypes.object
   }),
 
-  onSignAgreementChange: PropTypes.func.isRequired
+  onSignAgreementChange: PropTypes.func.isRequired,
+  onSnapNameChange: PropTypes.func.isRequired
 };
 
 // partial component to render action buttons of the dropdown based on current state
@@ -174,9 +221,12 @@ const UnregisteredDropdown = (props) => {
       <Row>
         <Data col="100">
           <Caption
+            registeredName={props.registeredName}
+            snapName={props.snapName}
             authStore={props.authStore}
             registerNameStatus={props.registerNameStatus}
             onSignAgreementChange={props.onSignAgreementChange}
+            onSnapNameChange={props.onSnapNameChange}
           />
         </Data>
       </Row>
@@ -197,8 +247,9 @@ const UnregisteredDropdown = (props) => {
 UnregisteredDropdown.propTypes = {
   snapName: PropTypes.string,
   authStore: PropTypes.object,
+  registeredName: PropTypes.string,
   registerNameStatus: PropTypes.object,
-
+  onSnapNameChange: PropTypes.func.isRequired,
   onSignAgreementChange: PropTypes.func.isRequired,
   onRegisterClick: PropTypes.func.isRequired,
   onSignInClick: PropTypes.func.isRequired,
