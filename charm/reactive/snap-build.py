@@ -41,6 +41,7 @@ def quote_identifier(identifier):
 def migrate(pgsql):
     db_name = hookenv.config('db_name')
     if pgsql.master is None or pgsql.master.dbname != db_name:
+        hookenv.log('Database context not available yet; skipping')
         return
     node_env = get_node_env(hookenv.config('environment'))
     render(
@@ -87,6 +88,7 @@ def migrate(pgsql):
 def configure(pgsql, cache):
     db_name = hookenv.config('db_name')
     if pgsql.master is None or pgsql.master.dbname != db_name:
+        hookenv.log('Database context not available yet; skipping')
         return
     environment = hookenv.config('environment')
     session_secret = hookenv.config('session_secret')
