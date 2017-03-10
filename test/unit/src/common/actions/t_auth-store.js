@@ -145,6 +145,7 @@ describe('store authentication actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
       localForageStub.clear();
     });
@@ -165,7 +166,6 @@ describe('store authentication actions', () => {
         const expectedMessage = 'No SSO discharge macaroon stored';
 
         await store.dispatch(getSSODischarge());
-        api.done();
         const action = store.getActions().filter(
           (a) => a.type === ActionTypes.GET_SSO_DISCHARGE_ERROR)[0];
         expect(action.payload.message).toBe(expectedMessage);
@@ -189,7 +189,6 @@ describe('store authentication actions', () => {
                                 'storage.';
 
         await store.dispatch(getSSODischarge());
-        api.done();
         const action = store.getActions().filter(
           (a) => a.type === ActionTypes.GET_SSO_DISCHARGE_ERROR)[0];
         expect(action.payload.message).toBe(expectedMessage);
@@ -227,7 +226,6 @@ describe('store authentication actions', () => {
         const expectedMessage = 'Store root macaroon has expired.';
 
         await store.dispatch(getSSODischarge());
-        api.done();
         const action = store.getActions().filter(
           (a) => a.type === ActionTypes.GET_SSO_DISCHARGE_ERROR)[0];
         expect(action.payload.message).toBe(expectedMessage);
@@ -261,7 +259,6 @@ describe('store authentication actions', () => {
                                 'store root macaroon.';
 
         await store.dispatch(getSSODischarge());
-        api.done();
         const action = store.getActions().filter(
           (a) => a.type === ActionTypes.GET_SSO_DISCHARGE_ERROR)[0];
         expect(action.payload.message).toBe(expectedMessage);
@@ -296,7 +293,6 @@ describe('store authentication actions', () => {
 
       it('creates a success action', async () => {
         await store.dispatch(getSSODischarge());
-        api.done();
         expect(store.getActions()).toHaveActionOfType(
           ActionTypes.GET_SSO_DISCHARGE_SUCCESS
         );
@@ -312,6 +308,7 @@ describe('store authentication actions', () => {
     });
 
     afterEach(() => {
+      storeApi.done();
       nock.cleanAll();
       localForageStub.clear();
     });
@@ -331,7 +328,6 @@ describe('store authentication actions', () => {
         const location = {};
         await store.dispatch(signIntoStore(location));
         expect(location).toExcludeKey('href');
-        storeApi.done();
         const action = store.getActions().filter(
           (a) => a.type === ActionTypes.SIGN_INTO_STORE_ERROR)[0];
         expect(action.payload.message).toBe(expectedMessage);
@@ -494,6 +490,7 @@ describe('store authentication actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
       localForageStub.clear();
     });
@@ -502,7 +499,6 @@ describe('store authentication actions', () => {
       const expectedAction = { type: ActionTypes.GET_ACCOUNT_INFO };
       await store.dispatch(getAccountInfo('test-user'));
       expect(store.getActions()).toInclude(expectedAction);
-      api.done();
     });
 
     it('stores an error if there is no package upload request ' +
@@ -515,7 +511,6 @@ describe('store authentication actions', () => {
         message: 'Not logged into store',
         detail: 'No package_upload_request macaroons in local storage'
       });
-      api.done();
     });
 
     context('if there is an package upload request macaroon', () => {
@@ -550,7 +545,6 @@ describe('store authentication actions', () => {
         expect(action.payload.json.payload).toEqual(
           accountAssertionsDisabledError
         );
-        api.done();
       });
 
       it('stores success action if getting account information succeeds ' +
@@ -564,7 +558,6 @@ describe('store authentication actions', () => {
         };
         await store.dispatch(getAccountInfo('test-user'));
         expect(store.getActions()).toInclude(expectedAction);
-        api.done();
       });
 
       it('stores success action if getting account information fails ' +
@@ -578,7 +571,6 @@ describe('store authentication actions', () => {
         };
         await store.dispatch(getAccountInfo('test-user'));
         expect(store.getActions()).toInclude(expectedAction);
-        api.done();
       });
 
       context('if getting account information fails because of a missing ' +
@@ -599,7 +591,6 @@ describe('store authentication actions', () => {
           expect(action.payload.json.payload).toEqual(
             shortNamespaceInUseError
           );
-          api.done();
         });
 
         it('stores success action if setting the short namespace fails ' +
@@ -612,7 +603,6 @@ describe('store authentication actions', () => {
           };
           await store.dispatch(getAccountInfo('test-user'));
           expect(store.getActions()).toInclude(expectedAction);
-          api.done();
         });
 
         context('if setting the short namespace succeeds', () => {
@@ -632,7 +622,6 @@ describe('store authentication actions', () => {
             expect(action.payload.json.payload).toEqual(
               accountAssertionsDisabledError
             );
-            api.done();
           });
 
           it('stores success action if getting account information ' +
@@ -646,7 +635,6 @@ describe('store authentication actions', () => {
             };
             await store.dispatch(getAccountInfo('test-user'));
             expect(store.getActions()).toInclude(expectedAction);
-            api.done();
           });
 
           it('stores success action if getting account information fails ' +
@@ -660,7 +648,6 @@ describe('store authentication actions', () => {
             };
             await store.dispatch(getAccountInfo('test-user'));
             expect(store.getActions()).toInclude(expectedAction);
-            api.done();
           });
         });
       });
