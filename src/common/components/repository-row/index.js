@@ -317,12 +317,8 @@ class RepositoryRow extends Component {
       );
     } else if (snapcraft_data && store_name && snapcraft_data.name !== store_name){
       return (
-        <span>
-          <ErrorIcon />
-          {' ' /* space between inline elements */}
-          <a onClick={this.onNameMismatchClick.bind(this)}>
-            Doesn’t match
-          </a>
+        <span onClick={this.onNameMismatchClick.bind(this)}>
+          <ErrorIcon /> <a>Doesn’t match</a>
         </span>
       );
     }
@@ -333,9 +329,9 @@ class RepositoryRow extends Component {
   renderSnapName(registeredName, showRegisterNameInput) {
     if (registeredName !== null) {
       return (
-        <a onClick={this.onUnregisteredClick.bind(this)}>
-          <TickIcon /> { registeredName }
-        </a>
+        <span onClick={this.onUnregisteredClick.bind(this)}>
+          <TickIcon /> <a>{ registeredName }</a>
+        </span>
       );
     } else if (showRegisterNameInput) {
       return (

@@ -4,8 +4,7 @@ import { conf } from '../../../helpers/config';
 
 import Button from '../../vanilla/button';
 import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
-import { Message } from '../../forms';
-import { TickIcon } from '../icons';
+import { TickIcon, ErrorIcon } from '../icons';
 
 import styles from './dropdowns.css';
 
@@ -87,13 +86,20 @@ const Caption = (props) => {
         <ul>
           <li>The old name will remain registered to you and can be used for another snap later.</li>
         </ul>
-        <p>New name:
-          <input
-            type='text'
-            value={ snapName }
-            onChange={ onSnapNameChange }
-          />
+        <p>
+          <label>New name:
+            {' ' /* force space between inline elements */}
+            <input
+              className={ styles.snapNameInput }
+              type='text'
+              value={ snapName }
+              onChange={ onSnapNameChange }
+            />
+          </label>
         </p>
+        <div className={ styles.helpText }>
+          Lower-case letters, numbers, and hyphens only.
+        </div>
       </div>
     );
   }
@@ -109,25 +115,23 @@ const Caption = (props) => {
     && registerNameStatus.error.json.payload
     && registerNameStatus.error.json.payload.code === 'already_registered') {
     caption = (
-      <Message status='error'>
-        <p>Sorry, that name is already taken. Try a different name.</p>
+      <div>
+        <p><ErrorIcon /> Sorry, that name is already taken. Try a different name.</p>
         <p className={ styles.helpText }>
           If you think you should have sole rights to the name,
           you can <a href={ FILE_NAME_CLAIM_URL } target='_blank'>file a claim</a>.
         </p>
-      </Message>
+      </div>
     );
   } else if (registerNameStatus.error) {
     caption = (
-      <Message status='error'>
-        { registerNameStatus.error.message }
-      </Message>
+      <p><ErrorIcon /> { registerNameStatus.error.message }</p>
     );
   } else {
     caption = (
       <div>
         { message }
-        { (authStoreFetchingDischarge || authStore.authenticated) &&
+        { !showChangeForm && (authStoreFetchingDischarge || authStore.authenticated) &&
           <div className={ styles.helpText }>
             Lower-case letters, numbers, and hyphens only.
           </div>
@@ -138,7 +142,7 @@ const Caption = (props) => {
   }
 
   return (
-    <div>
+    <div className={styles.caption}>
       { changeForm }
       { caption }
     </div>
@@ -165,7 +169,7 @@ Caption.propTypes = {
 
 // partial component to render action buttons of the dropdown based on current state
 const ActionButtons = (props) => {
-  const { authStore, registerNameStatus, snapName } = props;
+  const { authStore, registeredName, registerNameStatus, snapName } = props;
   const { onCancelClick, onSignInClick, onRegisterClick } = props;
 
   // by default show 'Sign in' button
@@ -185,7 +189,7 @@ const ActionButtons = (props) => {
       snapName === '' ||
       !!registerNameStatus.error
     );
-    actionText = 'Register name';
+    actionText = !registeredName ? 'Register name' : 'Register new name';
     actionOnClick = onRegisterClick;
   }
 
@@ -212,6 +216,7 @@ ActionButtons.propTypes = {
     authenticated: PropTypes.bool,
     isFetching: PropTypes.bool
   }),
+  registeredName: PropTypes.string,
   registerNameStatus: PropTypes.shape({
     isFetching: PropTypes.bool,
     success: PropTypes.bool,
@@ -242,6 +247,7 @@ const UnregisteredDropdown = (props) => {
       <Row>
         <ActionButtons
           authStore={props.authStore}
+          registeredName={props.registeredName}
           registerNameStatus={props.registerNameStatus}
           snapName={props.snapName}
           onRegisterClick={props.onRegisterClick}
