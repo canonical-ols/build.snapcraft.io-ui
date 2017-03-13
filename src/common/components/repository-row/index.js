@@ -264,6 +264,7 @@ class RepositoryRow extends Component {
         { showUnregisteredDropdown &&
           <RegisterNameDropdown
             registeredName={registeredName}
+            snapcraftData={snap.snapcraft_data}
             snapName={this.state.snapName}
             authStore={authStore}
             registerNameStatus={registerNameStatus}

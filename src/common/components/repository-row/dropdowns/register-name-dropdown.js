@@ -39,6 +39,7 @@ const Caption = (props) => {
     registerNameStatus,
     onSignAgreementChange,
     snapName,
+    snapcraftData,
     onSnapNameChange
   } = props;
 
@@ -84,6 +85,9 @@ const Caption = (props) => {
       <div>
         If you change the registered name:
         <ul>
+          { snapcraftData.name === registeredName &&
+            <li>Builds will stop until you update the snapcraft.yaml to match.</li>
+          }
           <li>The old name will remain registered to you and can be used for another snap later.</li>
         </ul>
         <p>
@@ -152,6 +156,7 @@ const Caption = (props) => {
 Caption.propTypes = {
   registeredName: PropTypes.string,
   snapName: PropTypes.string,
+  snapcraftData: PropTypes.object,
   authStore: PropTypes.shape({
     authenticated: PropTypes.bool,
     hasDischarge: PropTypes.bool,
@@ -237,6 +242,7 @@ const RegisterNameDropdown = (props) => {
           <Caption
             registeredName={props.registeredName}
             snapName={props.snapName}
+            snapcraftData={props.snapcraftData}
             authStore={props.authStore}
             registerNameStatus={props.registerNameStatus}
             onSignAgreementChange={props.onSignAgreementChange}
@@ -264,6 +270,7 @@ RegisterNameDropdown.propTypes = {
   authStore: PropTypes.object,
   registeredName: PropTypes.string,
   registerNameStatus: PropTypes.object,
+  snapcraftData: PropTypes.object,
   onSnapNameChange: PropTypes.func.isRequired,
   onSignAgreementChange: PropTypes.func.isRequired,
   onRegisterClick: PropTypes.func.isRequired,
