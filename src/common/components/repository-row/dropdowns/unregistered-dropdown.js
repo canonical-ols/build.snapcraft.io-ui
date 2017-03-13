@@ -55,6 +55,7 @@ const Caption = (props) => {
 
   let caption;
   let changeForm;
+  let message;
 
   const changeRegisteredName = !!registeredName;
 
@@ -65,6 +66,19 @@ const Caption = (props) => {
     authStore.authenticated &&
     !registerNameStatus.success
   );
+
+  if (!changeRegisteredName) {
+    // if user is registering new name
+    message = 'To publish to the snap store, this repo needs a registered name.';
+    if (!authStore.authenticated) {
+      message += ' You need to sign in to Ubuntu One to register a name.';
+    }
+  } else {
+    // if user is changing already registered name
+    if (!authStore.authenticated) {
+      message = 'You need to sign in to Ubuntu One to change a snap’s registered name.';
+    }
+  }
 
   if (showChangeForm) {
     changeForm = (
@@ -112,12 +126,7 @@ const Caption = (props) => {
   } else {
     caption = (
       <div>
-        { !changeRegisteredName &&
-          'To publish to the snap store, this repo needs a registered name.'
-        }
-        { !authStore.authenticated &&
-          ' You need to sign in to Ubuntu One to register a name.'
-        }
+        { message }
         { (authStoreFetchingDischarge || authStore.authenticated) &&
           <div className={ styles.helpText }>
             Lower-case letters, numbers, and hyphens only.
