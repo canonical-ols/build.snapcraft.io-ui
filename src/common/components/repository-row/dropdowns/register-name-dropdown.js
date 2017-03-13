@@ -229,7 +229,7 @@ ActionButtons.propTypes = {
 };
 
 // main dropdown component exported from this module
-const UnregisteredDropdown = (props) => {
+const RegisterNameDropdown = (props) => {
   return (
     <Dropdown>
       <Row>
@@ -259,7 +259,7 @@ const UnregisteredDropdown = (props) => {
   );
 };
 
-UnregisteredDropdown.propTypes = {
+RegisterNameDropdown.propTypes = {
   snapName: PropTypes.string,
   authStore: PropTypes.object,
   registeredName: PropTypes.string,
@@ -271,4 +271,4 @@ UnregisteredDropdown.propTypes = {
   onCancelClick: PropTypes.func.isRequired,
 };
 
-export default UnregisteredDropdown;
+export default RegisterNameDropdown;

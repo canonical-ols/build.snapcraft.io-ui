@@ -10,7 +10,7 @@ import {
   NameMismatchDropdown,
   RemoveRepoDropdown,
   UnconfiguredDropdown,
-  UnregisteredDropdown
+  RegisterNameDropdown
 } from './dropdowns';
 import {
   TickIcon,
@@ -262,7 +262,7 @@ class RepositoryRow extends Component {
         { showNameMismatchDropdown && <NameMismatchDropdown snap={snap} /> }
         { showUnconfiguredDropdown && <UnconfiguredDropdown snap={snap} /> }
         { showUnregisteredDropdown &&
-          <UnregisteredDropdown
+          <RegisterNameDropdown
             registeredName={registeredName}
             snapName={this.state.snapName}
             authStore={authStore}
