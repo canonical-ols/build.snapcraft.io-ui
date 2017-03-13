@@ -41,6 +41,7 @@ def quote_identifier(identifier):
 def migrate(pgsql):
     db_name = hookenv.config('db_name')
     if pgsql.master is None or pgsql.master.dbname != db_name:
+        hookenv.log('Database context not available yet; skipping')
         return
     node_env = get_node_env(hookenv.config('environment'))
     render(
@@ -79,12 +80,17 @@ def migrate(pgsql):
 @when('leadership.set.migrated')
 @when('cache.available')
 @when('db.master.available')
+@when('ols.pg.configured')
 @when('ols.service.installed')
 @restart_on_change({
     SYSTEMD_CONFIG: ['snap-build'],
     KNEXFILE_NORMAL: ['snap-build'],
     }, stopstart=True)
 def configure(pgsql, cache):
+    db_name = hookenv.config('db_name')
+    if pgsql.master is None or pgsql.master.dbname != db_name:
+        hookenv.log('Database context not available yet; skipping')
+        return
     environment = hookenv.config('environment')
     session_secret = hookenv.config('session_secret')
     memcache_session_secret = hookenv.config('memcache_session_secret')
