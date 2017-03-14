@@ -18,14 +18,12 @@ const stateStyles = [
 export class Signal extends Component {
 
   render() {
-    const { state, label, message } = this.props;
+    const { state, message } = this.props;
     const signalStyle = stateStyles[state];
 
     return (
       <div className={ styles.box }>
-        <div className={ classNames(styles.signal, signalStyle) }>
-          { (state === SIGNALS.DONE) ? '' : label }
-        </div>
+        <div className={ classNames(styles.signal, signalStyle) }></div>
         <p>{ message }</p>
       </div>
     );
@@ -45,13 +43,10 @@ export default class TrafficLights extends Component {
 
     this.state = {
       signals: [{
-        label: '',
         message: 'Connect to Github'
       }, {
-        label: '',
         message: 'Choose a repo'
       }, {
-        label: '',
         message: 'Name and YAML'
       }]
     };

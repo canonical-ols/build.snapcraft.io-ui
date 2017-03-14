@@ -8,7 +8,7 @@ $signal-colour-default: $light-grey;
 
 .signal {
   background: $signal-colour-default;
-  border-radius: 16px;
+  border-radius: 50%;
   color: #fff;
   display: inline-block;
   font-size: 1.5rem;
