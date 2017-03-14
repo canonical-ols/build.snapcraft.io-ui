@@ -21,7 +21,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'plugins': [
-    'mocha-no-only',
+    'mocha',
     'react'
   ],
   'rules': {
@@ -60,8 +60,8 @@ module.exports = {
       'error',
       'always'
     ],
-    'mocha-no-only/mocha-no-only': [
-      'error'
-    ]
+    'mocha/handle-done-callback': ['error'],
+    'mocha/no-exclusive-tests': ['error'],
+    'mocha/no-return-and-callback': ['error']
   }
 };
