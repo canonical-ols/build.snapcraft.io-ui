@@ -25,7 +25,7 @@ import { parseGitHubRepoUrl } from '../../helpers/github-url';
 import styles from './repositoryRow.css';
 import iconStyles from './icons/icons.css';
 
-class RepositoryRow extends Component {
+export class RepositoryRowView extends Component {
 
   constructor(props) {
     super(props);
@@ -40,7 +40,7 @@ class RepositoryRow extends Component {
     this.state = {
       snapName,
       nameMismatchDropdownExpanded: false,
-      unconfiguredDropdownExpanded: false,
+      unconfiguredDropdownExpanded: props.configureIsOpen,
       unregisteredDropdownExpanded: props.registerNameIsOpen,
       removeDropdownExpanded: false,
       signAgreement: false
@@ -65,12 +65,16 @@ class RepositoryRow extends Component {
   }
 
   componentDidMount() {
-    this.loadState();
+    if (typeof window !== 'undefined') {
+      this.loadState();
+    }
   }
 
   componentDidUpdate() {
     // save the component state in browser storage whenever it changes
-    this.saveState();
+    if (typeof window !== 'undefined') {
+      this.saveState();
+    }
   }
 
   toggleDropdownState(dropdown) {
@@ -164,6 +168,18 @@ class RepositoryRow extends Component {
         nameMismatchDropdownExpanded: false
       });
     }
+
+    if (nextProps.registerNameIsOpen !== this.props.registerNameIsOpen) {
+      this.setState({
+        unregisteredDropdownExpanded: nextProps.registerNameIsOpen
+      });
+    }
+
+    if (nextProps.configureIsOpen !== this.props.configureIsOpen) {
+      this.setState({
+        unconfiguredDropdownExpanded: nextProps.configureIsOpen
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -195,8 +211,7 @@ class RepositoryRow extends Component {
       registerNameStatus
     } = this.props;
 
-    const unconfigured = true;
-    const showUnconfiguredDropdown = unconfigured && this.state.unconfiguredDropdownExpanded;
+    const showUnconfiguredDropdown = this.state.unconfiguredDropdownExpanded;
     const showUnregisteredDropdown = this.state.unregisteredDropdownExpanded;
     const showRemoveDropdown = this.state.removeDropdownExpanded;
     const showNameMismatchDropdown = this.state.nameMismatchDropdownExpanded;
@@ -361,8 +376,6 @@ class RepositoryRow extends Component {
       );
     }
   }
-
-
 }
 
 function snapNameIsMismatched(snap) {
@@ -371,7 +384,7 @@ function snapNameIsMismatched(snap) {
   return snapcraft_data && store_name && snapcraft_data.name !== store_name;
 }
 
-RepositoryRow.propTypes = {
+RepositoryRowView.propTypes = {
   snap: PropTypes.shape({
     git_repository_url: PropTypes.string,
     store_name: PropTypes.string,
@@ -392,11 +405,9 @@ RepositoryRow.propTypes = {
   registerNameStatus: PropTypes.shape({
     success: PropTypes.bool
   }),
-  dispatch: PropTypes.func.isRequired,
-  registerNameIsOpen: PropTypes.bool
+  dispatch: PropTypes.func,
+  registerNameIsOpen: PropTypes.bool,
+  configureIsOpen: PropTypes.bool
 };
 
-// FIXME:
-// `connect` shouldn't be used just to add dispatch to props
-// this makes it much harder to test it as it get wrapped
-export default connect()(RepositoryRow);
+export default connect()(RepositoryRowView);
