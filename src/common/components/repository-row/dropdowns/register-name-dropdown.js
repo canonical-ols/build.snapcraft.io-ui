@@ -57,6 +57,12 @@ const Caption = (props) => {
   let changeForm;
   let message;
 
+  const helpText = (
+    <div className={ styles.helpText }>
+      Lower-case letters, numbers, and hyphens only.
+    </div>
+  );
+
   const changeRegisteredName = !!registeredName;
 
   // only show "change name" info and form if there is a name registered already,
@@ -67,16 +73,18 @@ const Caption = (props) => {
     !registerNameStatus.success
   );
 
-  if (!changeRegisteredName) {
+  const showHelpText = !showChangeForm && (authStoreFetchingDischarge || authStore.authenticated);
+
+  if (changeRegisteredName) {
+    // if user is changing already registered name
+    if (!authStore.authenticated) {
+      message = 'You need to sign in to Ubuntu One to change a snap’s registered name.';
+    }
+  } else {
     // if user is registering new name
     message = 'To publish to the snap store, this repo needs a registered name.';
     if (!authStore.authenticated) {
       message += ' You need to sign in to Ubuntu One to register a name.';
-    }
-  } else {
-    // if user is changing already registered name
-    if (!authStore.authenticated) {
-      message = 'You need to sign in to Ubuntu One to change a snap’s registered name.';
     }
   }
 
@@ -101,9 +109,7 @@ const Caption = (props) => {
             />
           </label>
         </p>
-        <div className={ styles.helpText }>
-          Lower-case letters, numbers, and hyphens only.
-        </div>
+        { helpText }
       </div>
     );
   }
@@ -135,11 +141,7 @@ const Caption = (props) => {
     caption = (
       <div>
         { message }
-        { !showChangeForm && (authStoreFetchingDischarge || authStore.authenticated) &&
-          <div className={ styles.helpText }>
-            Lower-case letters, numbers, and hyphens only.
-          </div>
-        }
+        { showHelpText && helpText }
         { userMustSignAgreement && <Agreement onChange={onSignAgreementChange}/> }
       </div>
     );
@@ -194,7 +196,7 @@ const ActionButtons = (props) => {
       snapName === '' ||
       !!registerNameStatus.error
     );
-    actionText = !registeredName ? 'Register name' : 'Register new name';
+    actionText = registeredName ? 'Register new name' : 'Register name';
     actionOnClick = onRegisterClick;
   }
 
