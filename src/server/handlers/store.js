@@ -1,5 +1,6 @@
 import 'isomorphic-fetch';
 
+import db from '../db';
 import { conf } from '../helpers/config';
 
 export const registerName = async (req, res) => {
@@ -7,17 +8,28 @@ export const registerName = async (req, res) => {
   const root = req.body.root;
   const discharge = req.body.discharge;
 
-  const response = await fetch(`${conf.get('STORE_API_URL')}/register-name/`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ snap_name: snapName })
+  await db.transaction(async (trx) => {
+    // XXX cjwatson 2017-03-17: This may need to move somewhere else in
+    // order to support having the client call `register-name` on the store
+    // directly (see #272).
+    if (req.session && req.session.user) {
+      await db.model('GitHubUser').incrementMetric(
+        req.session.user.id, 'names_registered', 1, { transacting: trx }
+      );
+    }
+    const url = `${conf.get('STORE_API_URL')}/register-name/`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ snap_name: snapName })
+    });
+    const json = await response.json();
+    return res.status(response.status).send(json);
   });
-  const json = await response.json();
-  return res.status(response.status).send(json);
 };
 
 export const getAccount = async (req, res) => {

@@ -88,7 +88,8 @@ export async function internalRegisterName(root, discharge, snapName,
       repository_url: repositoryUrl,
       root,
       discharge
-    })
+    }),
+    credentials: 'same-origin'
   });
   if (response.status >= 200 && response.status < 300) {
     return response;
