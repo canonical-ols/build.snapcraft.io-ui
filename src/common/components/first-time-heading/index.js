@@ -35,19 +35,21 @@ class FirstTimeHeading extends Component {
       if (snaps.length === 0) {
         message = 'Let’s get started! First, choose one or more GitHub repos for building.';
         progress = [SIGNALS.DONE, SIGNALS.ACTIVE, SIGNALS.DEFAULT];
-      // at least one repo, but none have a name yet
-      } else if (snaps.filter(hasStoreName).length === 0) {
-        message = 'Great! Next, register a snap name for publishing.';
-        progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.ACTIVE];
-      // at least one repo has a name but no snapcraft.yaml, and none have both
-      } else if (snaps.filter(hasStoreNameButNotSnapcraftData).length &&
-                 snaps.filter(hasStoreNameAndSnapcraftData).length === 0) {
-        message = 'Okay, your repo is registered. Now push a snapcraft.yaml file, and building will start.';
-        progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.ACTIVE];
-        // only one repo has both a name and snapcraft.yaml, and it hasn’t had a build yet
-      } else if (snaps.filter(hasStoreNameAndSnapcraftData).filter(this.hasNoBuilds.bind(this)).length === 1) {
-        message = 'All set up! Your first build is on the way.';
-        progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.DONE];
+      } else if (this.props.isOnMyRepos) { // further steps are only visible on 'My Repos' page
+        // at least one repo, but none have a name yet
+        if (snaps.filter(hasStoreName).length === 0) {
+          message = 'Great! Next, register a snap name for publishing.';
+          progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.ACTIVE];
+          // at least one repo has a name but no snapcraft.yaml, and none have both
+        } else if (snaps.filter(hasStoreNameButNotSnapcraftData).length &&
+                   snaps.filter(hasStoreNameAndSnapcraftData).length === 0) {
+          message = 'Okay, your repo is registered. Now push a snapcraft.yaml file, and building will start.';
+          progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.ACTIVE];
+          // only one repo has both a name and snapcraft.yaml, and it hasn’t had a build yet
+        } else if (snaps.filter(hasStoreNameAndSnapcraftData).filter(this.hasNoBuilds.bind(this)).length === 1) {
+          message = 'All set up! Your first build is on the way.';
+          progress = [SIGNALS.DONE, SIGNALS.DONE, SIGNALS.DONE];
+        }
       }
     }
 
@@ -57,7 +59,6 @@ class FirstTimeHeading extends Component {
     };
   }
 
-  // TODO: bartaz display state properly (not based on message)
   renderProgress(progress) {
     return (progress ? <TrafficLights signalState={ progress } /> : null);
   }
@@ -80,7 +81,8 @@ class FirstTimeHeading extends Component {
 
 FirstTimeHeading.propTypes = {
   snaps: PropTypes.object,
-  snapBuilds: PropTypes.object
+  snapBuilds: PropTypes.object,
+  isOnMyRepos: PropTypes.bool
 };
 
 export default FirstTimeHeading;
