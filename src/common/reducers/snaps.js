@@ -29,7 +29,7 @@ export function snaps(state = {
   isFetching: false,
   success: false,
   error: null,
-  snaps: null,
+  snaps: null
 }, action) {
   switch(action.type) {
     case ActionTypes.FETCH_SNAPS:

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-import { fetchUserSnaps } from '../../actions/snaps';
+import { fetchUserSnapsIfNeeded } from '../../actions/snaps';
 import { fetchBuilds } from '../../actions/snap-builds';
 import { LinkButton } from '../vanilla/button';
 import { HeadingThree } from '../vanilla/heading';
@@ -36,7 +36,7 @@ class RepositoriesHome extends Component {
     const owner = this.props.user.login;
 
     if (authenticated) {
-      this.props.dispatch(fetchUserSnaps(owner));
+      this.props.dispatch(fetchUserSnapsIfNeeded(owner));
     }
 
   }

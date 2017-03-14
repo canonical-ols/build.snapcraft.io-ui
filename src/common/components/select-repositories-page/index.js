@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { fetchUserSnaps } from '../../actions/snaps';
+import { fetchUserSnapsIfNeeded } from '../../actions/snaps';
 import { fetchBuilds } from '../../actions/snap-builds';
 import { fetchUserRepositories } from '../../actions/repositories';
 import SelectRepositoryList from '../select-repository-list';
@@ -16,7 +16,7 @@ class SelectRepositoriesPage extends Component {
 
     if (authenticated) {
       this.props.dispatch(fetchUserRepositories());
-      this.props.dispatch(fetchUserSnaps(owner));
+      this.props.dispatch(fetchUserSnapsIfNeeded(owner));
     }
 
     this.fetchData(this.props);

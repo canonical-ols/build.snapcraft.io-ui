@@ -8,6 +8,7 @@ import { conf } from '../../../../../src/server/helpers/config';
 
 import {
   fetchUserSnaps,
+  fetchUserSnapsIfNeeded,
   fetchSnapsSuccess,
   fetchSnapsError,
   removeSnap,
@@ -21,10 +22,12 @@ const mockStore = configureMockStore(middlewares);
 
 describe('repositories actions', () => {
   const initialState = {
-    isFetching: false,
-    success: false,
-    error: null,
-    snaps: null
+    snaps: {
+      isFetching: false,
+      success: false,
+      error: null,
+      snaps: null
+    }
   };
 
   let store;
@@ -76,6 +79,46 @@ describe('repositories actions', () => {
 
     it('should create a valid flux standard action', () => {
       expect(isFSA(action)).toBe(true);
+    });
+  });
+
+  context('fetchUserSnapsIfNeeded', function() {
+    let api;
+    const expectedAction = {
+      type: ActionTypes.FETCH_SNAPS
+    };
+
+    beforeEach(() => {
+      api = nock(conf.get('BASE_URL'));
+      api.get('/api/launchpad/snaps/list')
+        .query({ owner: 'anowner' })
+        .reply(200, {
+          status: 'success',
+          payload: {
+            code: 'snaps-found',
+            repos: []
+          }
+        });
+    });
+
+    afterEach(() => {
+      nock.cleanAll();
+    });
+
+    it('should fetch if not already fetching', function() {
+      store.dispatch(fetchUserSnapsIfNeeded('anowner'))
+      .then(() => {
+        api.isDone();
+        expect(store.getActions()).toInclude(expectedAction);
+      });
+    });
+
+    it('should not fetch if already fetching', function() {
+      initialState.snaps.isFetching = true;
+      store.dispatch(fetchUserSnapsIfNeeded('foo'));
+
+      expect(store.getState().snaps.isFetching).toBe(true);
+      expect(store.getActions()).toExclude(expectedAction);
     });
   });
 
