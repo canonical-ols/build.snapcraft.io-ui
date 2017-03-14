@@ -21,6 +21,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'plugins': [
+    'mocha-no-only',
     'react'
   ],
   'rules': {
@@ -58,6 +59,9 @@ module.exports = {
     'object-curly-spacing': [
       'error',
       'always'
+    ],
+    'mocha-no-only/mocha-no-only': [
+      'error'
     ]
   }
 };
