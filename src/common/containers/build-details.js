@@ -19,7 +19,7 @@ import styles from './container.css';
 
 class BuildDetails extends Component {
   render() {
-    const { repository, buildId, build } = this.props;
+    const { user, repository, buildId, build } = this.props;
     const { snap, error, isFetching } = this.props.snapBuilds;
 
     return (
@@ -28,7 +28,9 @@ class BuildDetails extends Component {
           title={`${repository.fullName} builds`}
         />
         <Breadcrumbs>
-          <Link to={'/dashboard'}>My repos</Link>
+          { user &&
+            <Link to={`/user/${user.login}`}>My repos</Link>
+          }
           <Link to={`/${repository.fullName}/builds`}>{repository.fullName}</Link>
         </Breadcrumbs>
         <HeadingOne>
@@ -73,6 +75,7 @@ class BuildDetails extends Component {
 
 }
 BuildDetails.propTypes = {
+  user: PropTypes.object,
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -96,6 +99,7 @@ const mapStateToProps = (state, ownProps) => {
   const build = ownProps.snapBuilds.builds.filter((build) => build.buildId === buildId)[0];
 
   return {
+    user: state.user,
     buildId,
     build
   };
