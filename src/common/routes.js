@@ -13,8 +13,8 @@ export default (
   <Route component={App}>
     <Route path="/" component={Landing}/>
     <Route component={ EnsureLoggedIn }>
-      <Route path="/dashboard" component={Dashboard}/>
-      <Route path="/dashboard/select-repositories" component={SelectRepositories}/>
+      <Route path="/user/:owner" component={Dashboard}/>
+      <Route path="/select-repositories" component={SelectRepositories}/>
     </Route>
     <Route path="/:owner/:name/builds" component={Builds}/>
     <Route path="/:owner/:name/builds/:buildId" component={BuildDetails}/>

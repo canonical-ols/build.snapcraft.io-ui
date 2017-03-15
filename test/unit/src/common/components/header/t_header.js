@@ -18,7 +18,7 @@ describe('<Header />', function() {
     });
 
     it('should not render dashboard link', () => {
-      expect(element.findWhere(isLinkTo('/dashboard')).length).toBe(0);
+      expect(element.findWhere(isLinkTo('/user/jdoe')).length).toBe(0);
     });
 
     it('should render sign in link', () => {
@@ -45,7 +45,7 @@ describe('<Header />', function() {
     });
 
     it('should render dashboard link', () => {
-      expect(element.findWhere(isLinkTo('/dashboard')).length).toBe(1);
+      expect(element.findWhere(isLinkTo('/user/jdoe')).length).toBe(1);
     });
 
     it('should render sign out link', () => {

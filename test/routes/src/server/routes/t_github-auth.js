@@ -133,7 +133,7 @@ describe('The login route', () => {
             .send()
             .end((err, res) => {
               expect(res.statusCode).toEqual(302);
-              expect(res.headers.location).toEqual('/dashboard');
+              expect(res.headers.location).toEqual('/user/anowner');
               done(err);
             });
         });
