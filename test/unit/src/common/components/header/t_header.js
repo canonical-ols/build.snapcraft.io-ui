@@ -17,7 +17,7 @@ describe('<Header />', function() {
       expect(element.findWhere(isLinkTo('/')).length).toBe(1);
     });
 
-    it('should not render dashboard link', () => {
+    it('should not render my repos link', () => {
       expect(element.findWhere(isLinkTo('/user/jdoe')).length).toBe(0);
     });
 
@@ -44,7 +44,7 @@ describe('<Header />', function() {
       expect(element.html().indexOf('Hi, Joe Doe')).toBeGreaterThan(0);
     });
 
-    it('should render dashboard link', () => {
+    it('should render my repos link', () => {
       expect(element.findWhere(isLinkTo('/user/jdoe')).length).toBe(1);
     });
 

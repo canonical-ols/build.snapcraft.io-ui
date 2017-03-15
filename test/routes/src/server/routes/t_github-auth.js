@@ -126,7 +126,7 @@ describe('The login route', () => {
           });
         });
 
-        it('should redirect request to the dashboard select repositories view', (done) => {
+        it('should redirect request to the my repos view', (done) => {
           supertest(app)
             .get('/auth/verify')
             .query({ code: 'foo', state: 'bar' })
