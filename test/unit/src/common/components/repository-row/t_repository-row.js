@@ -61,7 +61,7 @@ describe('<RepositoryRow />', () => {
     });
 
     it('should contain BuildStatus linked to build page', () => {
-      const expectedUrl = `/${fullName}/builds/${latestBuild.buildId}`;
+      const expectedUrl = `/user/${fullName}/${latestBuild.buildId}`;
       expect(view.find('BuildStatus').length).toBe(1);
       expect(view.find('BuildStatus').prop('link')).toBe(expectedUrl);
     });

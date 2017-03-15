@@ -31,7 +31,7 @@ class BuildDetails extends Component {
           { user &&
             <Link to={`/user/${user.login}`}>My repos</Link>
           }
-          <Link to={`/${repository.fullName}/builds`}>{repository.fullName}</Link>
+          <Link to={`/user/${repository.fullName}`}>{repository.fullName}</Link>
         </Breadcrumbs>
         <HeadingOne>
           Build #{buildId}

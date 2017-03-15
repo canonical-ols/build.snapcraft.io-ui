@@ -19,8 +19,8 @@ export default (
       </Route>
       <Route path="/select-repositories" component={SelectRepositories}/>
     </Route>
-    <Route path="/:owner/:name/builds" component={Builds}/>
-    <Route path="/:owner/:name/builds/:buildId" component={BuildDetails}/>
+    <Route path="/user/:owner/:name" component={Builds}/>
+    <Route path="/user/:owner/:name/:buildId" component={BuildDetails}/>
     <Route path="/login/failed" component={LoginFailed}/>
   </Route>
 );
