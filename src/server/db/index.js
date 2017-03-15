@@ -25,5 +25,8 @@ if (!config) {
 
 const connection = knex(config);
 const db = new Bookshelf(connection);
+db.plugin('registry');
 
 export default db;
+
+require('./models');

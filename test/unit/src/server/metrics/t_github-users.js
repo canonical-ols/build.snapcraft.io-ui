@@ -1,7 +1,7 @@
 import expect from 'expect';
 import promClient from 'prom-client';
 
-import { GitHubUser } from '../../../../../src/server/db/models/github-user';
+import db from '../../../../../src/server/db';
 
 describe('The GitHub users metric', () => {
   let updateGitHubUsersTotal;
@@ -11,7 +11,7 @@ describe('The GitHub users metric', () => {
     // to make sure it registers metrics when tests are run and cleared in after hook
     updateGitHubUsersTotal = require('../../../../../src/server/metrics/github-users').default;
 
-    await GitHubUser.query('truncate').fetch();
+    await db.model('GitHubUser').query('truncate').fetch();
   });
 
   afterEach(() => {
@@ -20,7 +20,7 @@ describe('The GitHub users metric', () => {
 
   it('returns the number of rows in GitHubUser', async () => {
     for (let i = 0; i < 5; i++) {
-      const user = GitHubUser.forge({
+      const user = db.model('GitHubUser').forge({
         github_id: i,
         name: null,
         login: `person-${i}`,

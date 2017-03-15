@@ -1,7 +1,7 @@
 import request from 'request';
 import logging from '../logging';
 
-import { GitHubUser } from '../db/models/github-user';
+import db from '../db';
 import { conf } from '../helpers/config';
 import { requestUser } from './github';
 
@@ -78,11 +78,12 @@ export const verify = (req, res, next) => {
     req.session.user = userResponse.body;
 
     // Save user info to DB
+    const gitHubUser = db.model('GitHubUser');
     try {
-      let dbUser = await GitHubUser.where({ github_id: userResponse.body.id })
+      let dbUser = await gitHubUser.where({ github_id: userResponse.body.id })
         .fetch();
       if (dbUser === null) {
-        dbUser = GitHubUser.forge({ github_id: userResponse.body.id });
+        dbUser = gitHubUser.forge({ github_id: userResponse.body.id });
       }
       await dbUser.set({
         name: userResponse.body.name || null,
