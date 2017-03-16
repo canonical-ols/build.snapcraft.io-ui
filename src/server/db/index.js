@@ -29,4 +29,7 @@ db.plugin('registry');
 
 export default db;
 
+// Import all our models here to ensure that they are added to the registry.
+// This needs to be require rather than import as otherwise we have problems
+// with circular dependencies.
 require('./models');
