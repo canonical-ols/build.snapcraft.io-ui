@@ -1,1 +1,1 @@
-require('./github-user');
+import './github-user';
