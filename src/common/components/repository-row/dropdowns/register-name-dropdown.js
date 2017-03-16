@@ -15,7 +15,12 @@ const AGREEMENT_URL = `${conf.get('STORE_DEVPORTAL_URL')}/tos/`;
 const Agreement = (props) => {
   const checkbox = <input type="checkbox" onChange={ props.onChange } />;
   const link = (
-    <a className={ styles.external } href={ AGREEMENT_URL } target="_blank">
+    <a
+      className={ styles.external }
+      href={ AGREEMENT_URL }
+      target="_blank"
+      rel="noreferrer noopener"
+    >
       Developer Programme Agreement
     </a>
   );
@@ -129,7 +134,14 @@ const Caption = (props) => {
         <p><ErrorIcon /> Sorry, that name is already taken. Try a different name.</p>
         <p className={ styles.helpText }>
           If you think you should have sole rights to the name,
-          you can <a href={ FILE_NAME_CLAIM_URL } target='_blank'>file a claim</a>.
+          you can
+          <a
+            href={ FILE_NAME_CLAIM_URL }
+            target='_blank'
+            rel="noreferrer noopener"
+          >
+            file a claim
+          </a>.
         </p>
       </div>
     );
