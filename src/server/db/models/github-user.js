@@ -9,7 +9,7 @@ import db from '../index';
  *   updated_at: update date
  *   last_login_at: last login date
  */
-export const GitHubUser = db.model('GitHubUser', {
+db.model('GitHubUser', {
   tableName: 'github_user',
   hasTimestamps: true
 });
