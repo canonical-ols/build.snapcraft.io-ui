@@ -89,7 +89,7 @@ describe('login routes', () => {
          'header', async () => {
         const res = await supertest(app)
           .get('/login/authenticate');
-        const parsedLocation = url.parse(res.header['location'], true);
+        const parsedLocation = url.parse(res.header.location, true);
         expect(parsedLocation.query).toExcludeKey('openid.ns.macaroon');
         expect(parsedLocation.query).toExcludeKey('openid.macaroon.caveat_id');
         sso.done();
@@ -116,7 +116,7 @@ describe('login routes', () => {
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': 'dummy caveat' });
-        const parsedLocation = url.parse(res.header['location'], true);
+        const parsedLocation = url.parse(res.header.location, true);
         const expectedReturnTo =
           OPENID_VERIFY_URL +
           '?starting_url=http%3A%2F%2Fwww.example.com%2Forigin' +
@@ -132,7 +132,7 @@ describe('login routes', () => {
           .get('/login/authenticate')
           .query({ 'starting_url': 'http://www.example.com/origin' })
           .query({ 'caveat_id': expectedCaveatId });
-        const parsedLocation = url.parse(res.header['location'], true);
+        const parsedLocation = url.parse(res.header.location, true);
         expect(parsedLocation.query['openid.ns.macaroon'])
           .toEqual('http://ns.login.ubuntu.com/2016/openid-macaroon');
         expect(parsedLocation.query['openid.macaroon.caveat_id'])
