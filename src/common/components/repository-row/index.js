@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import localforage from 'localforage';
+import { bindActionCreators } from 'redux';
 
 import { Row, Data } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
@@ -16,9 +17,9 @@ import {
   TickIcon,
   ErrorIcon
 } from './icons';
-import { signIntoStore } from '../../actions/auth-store';
-import { registerName, registerNameError, registerNameClear } from '../../actions/register-name';
-import { removeSnap } from '../../actions/snaps';
+import * as authStoreActionCreators from '../../actions/auth-store';
+import * as registerNameActionCreators from '../../actions/register-name';
+import * as snapActionCreators from '../../actions/snaps';
 
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
@@ -112,7 +113,7 @@ export class RepositoryRowView extends Component {
   }
 
   onSignInClick() {
-    this.props.dispatch(signIntoStore());
+    this.props.authActions.signIntoStore();
   }
 
   onSignAgreementChange(event) {
@@ -120,7 +121,7 @@ export class RepositoryRowView extends Component {
   }
 
   onSnapNameChange(event) {
-    const { dispatch, fullName } = this.props;
+    const { fullName } = this.props;
     const snapName = event.target.value.replace(/[^a-z0-9-]/g, '');
     let clientValidationError = null;
     this.setState({ snapName });
@@ -131,23 +132,23 @@ export class RepositoryRowView extends Component {
       };
     }
 
-    dispatch(registerNameError(fullName, clientValidationError));
+    this.props.nameActions.registerNameError(fullName, clientValidationError);
   }
 
   onRegisterClick(repositoryUrl) {
-    const { authStore, snap, dispatch } = this.props;
+    const { authStore, snap } = this.props;
     const repository = parseGitHubRepoUrl(repositoryUrl);
     const { snapName, signAgreement } = this.state;
     const requestBuilds = (!!snap.snapcraft_data);
 
-    dispatch(registerName(repository, snapName, {
+    this.props.nameActions.registerName(repository, snapName, {
       signAgreement: signAgreement ? authStore.userName : null,
       requestBuilds
-    }));
+    });
   }
 
   onRemoveClick(repositoryUrl) {
-    this.props.dispatch(removeSnap(repositoryUrl));
+    this.props.snapActions.removeSnap(repositoryUrl);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -155,7 +156,7 @@ export class RepositoryRowView extends Component {
         !this.props.registerNameStatus.success) {
       this.closeUnregisteredTimerID = window.setTimeout(() => {
         this.closeUnregisteredDropdown();
-        this.props.dispatch(registerNameClear(this.props.fullName));
+        this.props.nameActions.registerNameClear(this.props.fullName);
       }, 2000);
     }
 
@@ -405,9 +406,19 @@ RepositoryRowView.propTypes = {
   registerNameStatus: PropTypes.shape({
     success: PropTypes.bool
   }),
-  dispatch: PropTypes.func,
   registerNameIsOpen: PropTypes.bool,
-  configureIsOpen: PropTypes.bool
+  configureIsOpen: PropTypes.bool,
+  authActions: PropTypes.object,
+  nameActions: PropTypes.object,
+  snapActions: PropTypes.object
 };
 
-export default connect()(RepositoryRowView);
+function mapDispatchToProps(dispatch) {
+  return {
+    authActions: bindActionCreators(authStoreActionCreators, dispatch),
+    nameActions: bindActionCreators(registerNameActionCreators, dispatch),
+    snapActions: bindActionCreators(snapActionCreators, dispatch)
+  };
+}
+
+export default connect(null, mapDispatchToProps)(RepositoryRowView);

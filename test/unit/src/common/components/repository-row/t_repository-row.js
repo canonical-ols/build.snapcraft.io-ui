@@ -108,9 +108,19 @@ describe('<RepositoryRowView />', () => {
   });
 
   context('when latest build log is not yet available', () => {
+    let buildLogUrl;
+
+    before(function() {
+      buildLogUrl = props.latestBuild.buildLogUrl;
+    });
+
     beforeEach(() => {
-      Object.assign(props.latestBuild, { buildLogUrl: null });
+      props.latestBuild.buildLogUrl = null;
       view = shallow(<RepositoryRowView { ...props }/>);
+    });
+
+    after(function() {
+      props.latestBuild.buildLogUrl = buildLogUrl;
     });
 
     it('should contain BuildStatus not linked to build page', () => {
