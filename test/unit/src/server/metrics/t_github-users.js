@@ -18,26 +18,28 @@ describe('The GitHub users metric', () => {
     promClient.register.clear();
   });
 
-  it('returns the number of rows in GitHubUser', async () => {
-    for (let i = 0; i < 5; i++) {
-      const user = db.model('GitHubUser').forge({
-        github_id: i,
-        name: null,
-        login: `person-${i}`,
-        last_login_at: new Date()
+  it('returns the number of rows in GitHubUser', () => {
+    return db.transaction(async (trx) => {
+      for (let i = 0; i < 5; i++) {
+        const user = db.model('GitHubUser').forge({
+          github_id: i,
+          name: null,
+          login: `person-${i}`,
+          last_login_at: new Date()
+        });
+        await user.save({}, { transacting: trx });
+      }
+      await updateGitHubUsersTotal(trx);
+      const metricName = 'bsi_github_users_total';
+      expect(promClient.register.getSingleMetric(metricName).get()).toEqual({
+        type: 'gauge',
+        name: metricName,
+        help: 'Total number of GitHub users who have ever logged in.',
+        values: [{
+          labels: { metric_type: 'kpi' },
+          value: 5
+        }]
       });
-      await user.save();
-    }
-    await updateGitHubUsersTotal();
-    const metricName = 'bsi_github_users_total';
-    expect(promClient.register.getSingleMetric(metricName).get()).toEqual({
-      type: 'gauge',
-      name: metricName,
-      help: 'Total number of GitHub users who have ever logged in.',
-      values: [{
-        labels: { metric_type: 'kpi' },
-        value: 5
-      }]
     });
   });
 });

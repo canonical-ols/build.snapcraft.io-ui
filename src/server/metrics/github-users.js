@@ -8,7 +8,9 @@ const gitHubUsersTotal = new promClient.Gauge(
   ['metric_type']
 );
 
-export default async function updateGitHubUsersTotal() {
-  const gitHubUser = db.model('GitHubUser');
-  gitHubUsersTotal.set({ metric_type: 'kpi' }, await gitHubUser.count());
+export default async function updateGitHubUsersTotal(trx) {
+  gitHubUsersTotal.set(
+    { metric_type: 'kpi' },
+    await db.model('GitHubUser').count('*', { transacting: trx })
+  );
 }

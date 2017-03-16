@@ -78,24 +78,27 @@ export const verify = (req, res, next) => {
     req.session.user = userResponse.body;
 
     // Save user info to DB
-    const gitHubUser = db.model('GitHubUser');
-    try {
-      let dbUser = await gitHubUser.where({ github_id: userResponse.body.id })
-        .fetch();
-      if (dbUser === null) {
-        dbUser = gitHubUser.forge({ github_id: userResponse.body.id });
+    await db.transaction(async (trx) => {
+      const gitHubUser = db.model('GitHubUser');
+      try {
+        let dbUser = await gitHubUser
+          .where({ github_id: userResponse.body.id })
+          .fetch({ transacting: trx });
+        if (dbUser === null) {
+          dbUser = gitHubUser.forge({ github_id: userResponse.body.id });
+        }
+        await dbUser.set({
+          name: userResponse.body.name || null,
+          login: userResponse.body.login,
+          last_login_at: new Date()
+        });
+        if (dbUser.hasChanged()) {
+          await dbUser.save({}, { transacting: trx });
+        }
+      } catch (error) {
+        return next(error);
       }
-      await dbUser.set({
-        name: userResponse.body.name || null,
-        login: userResponse.body.login,
-        last_login_at: new Date()
-      });
-      if (dbUser.hasChanged()) {
-        await dbUser.save();
-      }
-    } catch (error) {
-      return next(error);
-    }
+    });
 
     // Redirect to logged in URL
     res.redirect('/dashboard');
