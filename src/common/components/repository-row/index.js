@@ -10,6 +10,7 @@ import {
   NameMismatchDropdown,
   RemoveRepoDropdown,
   UnconfiguredDropdown,
+  EditConfigDropdown,
   RegisterNameDropdown
 } from './dropdowns';
 import {
@@ -78,6 +79,7 @@ class RepositoryRow extends Component {
       // close all dropdowns
       nameMismatchDropdownExpanded: false,
       unconfiguredDropdownExpanded: false,
+      editConfigDropdownExpanded: false,
       unregisteredDropdownExpanded: false,
       removeDropdownExpanded: false,
 
@@ -87,6 +89,10 @@ class RepositoryRow extends Component {
   }
 
   onConfiguredClick() {
+    this.toggleDropdownState('editConfigDropdownExpanded');
+  }
+
+  onNotConfiguredClick() {
     this.toggleDropdownState('unconfiguredDropdownExpanded');
   }
 
@@ -195,8 +201,8 @@ class RepositoryRow extends Component {
       registerNameStatus
     } = this.props;
 
-    const unconfigured = true;
-    const showUnconfiguredDropdown = unconfigured && this.state.unconfiguredDropdownExpanded;
+    const showUnconfiguredDropdown = !snapIsConfigured(snap) && this.state.unconfiguredDropdownExpanded;
+    const showEditConfigDropdown = snapIsConfigured(snap) && this.state.editConfigDropdownExpanded;
     const showUnregisteredDropdown = this.state.unregisteredDropdownExpanded;
     const showRemoveDropdown = this.state.removeDropdownExpanded;
     const showNameMismatchDropdown = this.state.nameMismatchDropdownExpanded;
@@ -219,6 +225,7 @@ class RepositoryRow extends Component {
     const isActive = (
       showNameMismatchDropdown ||
       showUnconfiguredDropdown ||
+      showEditConfigDropdown   ||
       showUnregisteredDropdown ||
       showRemoveDropdown
     );
@@ -271,6 +278,12 @@ class RepositoryRow extends Component {
         </Data>
         { showNameMismatchDropdown && <NameMismatchDropdown snap={snap} /> }
         { showUnconfiguredDropdown && <UnconfiguredDropdown snap={snap} /> }
+        { showEditConfigDropdown &&
+          <EditConfigDropdown
+            repositoryUrl={ snap.git_repository_url }
+            configFilePath={ snap.snapcraft_data.path }
+          />
+        }
         { showUnregisteredDropdown &&
           <RegisterNameDropdown
             registeredName={registeredName}
@@ -324,7 +337,7 @@ class RepositoryRow extends Component {
 
     if (!snapcraft_data) {
       return (
-        <a onClick={this.onConfiguredClick.bind(this)}>Not configured</a>
+        <a onClick={this.onNotConfiguredClick.bind(this)}>Not configured</a>
       );
     } else if (snapNameIsMismatched(snap)){
       return (
@@ -334,7 +347,11 @@ class RepositoryRow extends Component {
       );
     }
 
-    return <TickIcon />;
+    return (
+      <span onClick={this.onConfiguredClick.bind(this)}>
+        <TickIcon />
+      </span>
+    );
   }
 
   renderSnapName(registeredName, showRegisterNameInput) {
@@ -365,11 +382,13 @@ class RepositoryRow extends Component {
 
 }
 
-function snapNameIsMismatched(snap) {
+const snapNameIsMismatched = (snap) => {
   const { snapcraft_data, store_name } = snap;
 
   return snapcraft_data && store_name && snapcraft_data.name !== store_name;
-}
+};
+
+const snapIsConfigured = (snap) => !!snap.snapcraft_data;
 
 RepositoryRow.propTypes = {
   snap: PropTypes.shape({
