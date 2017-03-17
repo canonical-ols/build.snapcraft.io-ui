@@ -27,7 +27,6 @@ if (!config) {
 const connection = knex(config);
 const db = new Bookshelf(connection);
 db.plugin('registry');
+registerModels(db);
 
 export default db;
-
-registerModels(db);
