@@ -103,20 +103,17 @@ describe('repositories actions', () => {
           });
       });
 
-      it('should store repositories on fetch success', () => {
-        return store.dispatch(fetchUserSnaps('anowner'))
-          .then(() => {
-            api.done();
-            expect(store.getActions()).toHaveActionOfType(
-              ActionTypes.FETCH_SNAPS_SUCCESS
-            );
-          });
+      it('should store repositories on fetch success', async () => {
+        await store.dispatch(fetchUserSnaps('anowner'));
+        api.done();
+        expect(store.getActions()).toHaveActionOfType(
+          ActionTypes.FETCH_SNAPS_SUCCESS
+        );
       });
 
     });
 
-    it('should store error on Launchpad request failure', () => {
-
+    it('should store error on Launchpad request failure', async () => {
       api.get('/api/launchpad/snaps/list')
         .query({ owner: 'anowner' })
         .reply(404, {
@@ -127,13 +124,11 @@ describe('repositories actions', () => {
           }
         });
 
-      return store.dispatch(fetchUserSnaps('anowner'))
-        .then(() => {
-          api.done();
-          expect(store.getActions()).toHaveActionOfType(
-            ActionTypes.FETCH_SNAPS_ERROR
-          );
-        });
+      await store.dispatch(fetchUserSnaps('anowner'));
+      api.done();
+      expect(store.getActions()).toHaveActionOfType(
+        ActionTypes.FETCH_SNAPS_ERROR
+      );
     });
 
   });
@@ -150,7 +145,7 @@ describe('repositories actions', () => {
       nock.cleanAll();
     });
 
-    it('stores success action on successful removal', () => {
+    it('stores success action on successful removal', async () => {
       api
         .post('/api/launchpad/snaps/delete', { repository_url: repositoryUrl })
         .reply(200, {
@@ -161,16 +156,14 @@ describe('repositories actions', () => {
           }
         });
 
-      return store.dispatch(removeSnap(repositoryUrl))
-        .then(() => {
-          api.done();
-          expect(store.getActions()).toHaveActionOfType(
-            ActionTypes.REMOVE_SNAP_SUCCESS
-          );
-        });
+      await store.dispatch(removeSnap(repositoryUrl));
+      api.done();
+      expect(store.getActions()).toHaveActionOfType(
+        ActionTypes.REMOVE_SNAP_SUCCESS
+      );
     });
 
-    it('stores error action on failed removal', () => {
+    it('stores error action on failed removal', async () => {
       api
         .post('/api/launchpad/snaps/delete', { repository_url: repositoryUrl })
         .reply(404, {
@@ -181,13 +174,11 @@ describe('repositories actions', () => {
           }
         });
 
-      return store.dispatch(removeSnap(repositoryUrl))
-        .then(() => {
-          api.done();
-          expect(store.getActions()).toHaveActionOfType(
-            ActionTypes.REMOVE_SNAP_ERROR
-          );
-        });
+      await store.dispatch(removeSnap(repositoryUrl));
+      api.done();
+      expect(store.getActions()).toHaveActionOfType(
+        ActionTypes.REMOVE_SNAP_ERROR
+      );
     });
   });
 
