@@ -87,6 +87,7 @@ describe('repositories actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
     });
 
@@ -105,7 +106,6 @@ describe('repositories actions', () => {
 
       it('should store repositories on fetch success', async () => {
         await store.dispatch(fetchUserSnaps('anowner'));
-        api.done();
         expect(store.getActions()).toHaveActionOfType(
           ActionTypes.FETCH_SNAPS_SUCCESS
         );
@@ -125,7 +125,6 @@ describe('repositories actions', () => {
         });
 
       await store.dispatch(fetchUserSnaps('anowner'));
-      api.done();
       expect(store.getActions()).toHaveActionOfType(
         ActionTypes.FETCH_SNAPS_ERROR
       );
@@ -142,6 +141,7 @@ describe('repositories actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
     });
 
@@ -157,7 +157,6 @@ describe('repositories actions', () => {
         });
 
       await store.dispatch(removeSnap(repositoryUrl));
-      api.done();
       expect(store.getActions()).toHaveActionOfType(
         ActionTypes.REMOVE_SNAP_SUCCESS
       );
@@ -175,7 +174,6 @@ describe('repositories actions', () => {
         });
 
       await store.dispatch(removeSnap(repositoryUrl));
-      api.done();
       expect(store.getActions()).toHaveActionOfType(
         ActionTypes.REMOVE_SNAP_ERROR
       );

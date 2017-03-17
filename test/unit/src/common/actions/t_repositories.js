@@ -84,6 +84,7 @@ describe('repositories actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
     });
 
@@ -107,7 +108,6 @@ describe('repositories actions', () => {
 
       it('should store repositories on fetch success', async () => {
         await store.dispatch(fetchUserRepositories());
-        api.done();
         expect(store.getActions()).toHaveActionOfType(
           ActionTypes.SET_REPOSITORIES
         );
@@ -128,7 +128,6 @@ describe('repositories actions', () => {
 
       it('should store no pageLinks', async () => {
         await store.dispatch(fetchUserRepositories());
-        api.done();
         expect(store.getActions()).notToHaveActionOfType(
           ActionTypes.SET_REPOSITORY_PAGE_LINKS
         );

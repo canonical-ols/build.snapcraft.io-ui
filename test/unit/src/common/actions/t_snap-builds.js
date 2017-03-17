@@ -88,6 +88,7 @@ describe('snap builds actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
     });
 
@@ -105,7 +106,6 @@ describe('snap builds actions', () => {
         });
 
       await store.dispatch(fetchBuilds(repositoryUrl, snapUrl));
-      api.done();
       expect(store.getActions()).toHaveActionOfType(
         ActionTypes.FETCH_BUILDS_SUCCESS
       );
@@ -140,6 +140,7 @@ describe('snap builds actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
     });
 
@@ -164,7 +165,6 @@ describe('snap builds actions', () => {
         });
 
       await store.dispatch(fetchSnap(repositoryUrl));
-      api.done();
       expect(store.getActions()).toInclude({
         type: ActionTypes.FETCH_SNAP_SUCCESS,
         payload: {
@@ -251,6 +251,7 @@ describe('snap builds actions', () => {
     });
 
     afterEach(() => {
+      api.done();
       nock.cleanAll();
     });
 
@@ -268,7 +269,6 @@ describe('snap builds actions', () => {
         });
 
       await store.dispatch(requestBuilds(repositoryUrl));
-      api.done();
       expect(store.getActions()).toHaveActionOfType(
         ActionTypes.FETCH_BUILDS_SUCCESS
       );
