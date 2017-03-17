@@ -4,6 +4,7 @@ import Bookshelf from 'bookshelf';
 
 import { conf } from '../helpers/config';
 import logging from '../logging';
+import registerModels from './models';
 
 let knexConfigPath = conf.get('KNEX_CONFIG_PATH');
 if (!path.isAbsolute(knexConfigPath)) {
@@ -29,7 +30,4 @@ db.plugin('registry');
 
 export default db;
 
-// Import all our models here to ensure that they are added to the registry.
-// This needs to be require rather than import as otherwise we have problems
-// with circular dependencies.
-require('./models');
+registerModels(db);
