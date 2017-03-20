@@ -141,7 +141,12 @@ export class RepositoryRowView extends Component {
     this.props.nameActions.registerNameError(fullName, clientValidationError);
   }
 
-  onRegisterClick(repositoryUrl) {
+  onRegisterSubmit(repositoryUrl, event) {
+    event.preventDefault();
+
+    // if name is invalid do nothing
+    if (this.props.registerNameStatus.error) return;
+
     const { authStore, snap } = this.props;
     const repository = parseGitHubRepoUrl(repositoryUrl);
     const { snapName, signAgreement } = this.state;
@@ -264,10 +269,10 @@ export class RepositoryRowView extends Component {
           }
         </Data>
         <Data col="15">
-          { this.renderConfiguredStatus.call(this, snap) }
+          { this.renderConfiguredStatus(snap) }
         </Data>
         <Data col="25">
-          { this.renderSnapName.call(this, registeredName, showRegisterNameInput) }
+          { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
         </Data>
         <Data col="30">
           { hasBuilt
@@ -309,7 +314,7 @@ export class RepositoryRowView extends Component {
             authStore={authStore}
             registerNameStatus={registerNameStatus}
             onSignAgreementChange={this.onSignAgreementChange.bind(this)}
-            onRegisterClick={this.onRegisterClick.bind(this, snap.git_repository_url)}
+            onRegisterClick={this.onRegisterSubmit.bind(this, snap.git_repository_url)}
             onSignInClick={this.onSignInClick.bind(this)}
             onCancelClick={this.onUnregisteredClick.bind(this)}
             onSnapNameChange={this.onSnapNameChange.bind(this)}
@@ -371,7 +376,7 @@ export class RepositoryRowView extends Component {
     );
   }
 
-  renderSnapName(registeredName, showRegisterNameInput) {
+  renderSnapName(registeredName, showRegisterNameInput, snap) {
     if (registeredName !== null) {
       return (
         <span onClick={this.onUnregisteredClick.bind(this)}>
@@ -380,12 +385,14 @@ export class RepositoryRowView extends Component {
       );
     } else if (showRegisterNameInput) {
       return (
-        <input
-          type='text'
-          className={ styles.snapNameInput }
-          value={ this.state.snapName }
-          onChange={ this.onSnapNameChange.bind(this) }
-        />
+        <form onSubmit={this.onRegisterSubmit.bind(this, snap.git_repository_url)}>
+          <input
+            type='text'
+            className={ styles.snapNameInput }
+            value={ this.state.snapName }
+            onChange={ this.onSnapNameChange.bind(this) }
+          />
+        </form>
       );
     } else {
       return (
@@ -424,7 +431,8 @@ RepositoryRowView.propTypes = {
     userName: PropTypes.string
   }),
   registerNameStatus: PropTypes.shape({
-    success: PropTypes.bool
+    success: PropTypes.bool,
+    error: PropTypes.object
   }),
   registerNameIsOpen: PropTypes.bool,
   configureIsOpen: PropTypes.bool,
