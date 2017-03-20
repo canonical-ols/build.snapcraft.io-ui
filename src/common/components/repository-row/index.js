@@ -314,7 +314,7 @@ export class RepositoryRowView extends Component {
             authStore={authStore}
             registerNameStatus={registerNameStatus}
             onSignAgreementChange={this.onSignAgreementChange.bind(this)}
-            onRegisterClick={this.onRegisterSubmit.bind(this, snap.git_repository_url)}
+            onRegisterSubmit={this.onRegisterSubmit.bind(this, snap.git_repository_url)}
             onSignInClick={this.onSignInClick.bind(this)}
             onCancelClick={this.onUnregisteredClick.bind(this)}
             onSnapNameChange={this.onSnapNameChange.bind(this)}
