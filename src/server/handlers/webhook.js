@@ -1,6 +1,7 @@
 import { createHmac } from 'crypto';
 
 import { getGitHubRepoUrl } from '../../common/helpers/github-url';
+import db from '../db';
 import { conf } from '../helpers/config';
 import { getMemcached } from '../helpers/memcached';
 import logging from '../logging';
@@ -13,11 +14,33 @@ import {
 
 const logger = logging.getLogger('express');
 
-export const makeWebhookSecret = (owner, name) => {
+export const getGitHubRootSecret = () => {
   const rootSecret = conf.get('GITHUB_WEBHOOK_SECRET');
   if (!rootSecret) {
     throw new Error('GitHub webhook secret not configured');
   }
+  return rootSecret;
+};
+
+export const getLaunchpadRootSecret = () => {
+  const rootSecret = conf.get('LP_WEBHOOK_SECRET');
+  if (!rootSecret) {
+    throw new Error('Launchpad webhook secret not configured');
+  }
+  return rootSecret;
+};
+
+const selectWebhookRootSecret = (headers) => {
+  if (headers['x-github-event']) {
+    return getGitHubRootSecret();
+  } else if (headers['x-launchpad-event-type']) {
+    return getLaunchpadRootSecret();
+  } else {
+    throw new Error('Unknown webhook sender');
+  }
+};
+
+export const makeWebhookSecret = (rootSecret, owner, name) => {
   const hmac = createHmac('sha1', rootSecret);
   hmac.update(owner);
   hmac.update(name);
@@ -39,11 +62,19 @@ export const notify = async (req, res) => {
     logger.info(`Unexpected token ${firstchar}`);
     return res.status(400).send();
   }
+  let parsedBody;
+  try {
+    parsedBody = JSON.parse(req.body);
+  } catch (e) {
+    logger.error(e.message);
+    return res.status(400).send();
+  }
   logger.debug('Received webhook: ', req.body);
 
   let secret;
   try {
-    secret = makeWebhookSecret(owner, name);
+    const rootSecret = selectWebhookRootSecret(req.headers);
+    secret = makeWebhookSecret(rootSecret, owner, name);
   } catch (e) {
     logger.error(e.message);
     return res.status(500).send();
@@ -58,9 +89,10 @@ export const notify = async (req, res) => {
   }
 
   // Acknowledge webhook
-  if (req.headers['x-github-event'] === 'ping') {
+  if (req.headers['x-github-event'] === 'ping' ||
+      req.headers['x-launchpad-event-type'] === 'ping') {
     return res.status(200).send();
-  } else {
+  } else if (req.headers['x-github-event'] === 'push') {
     const repositoryUrl = getGitHubRepoUrl(owner, name);
     const cacheId = getSnapcraftYamlCacheId(repositoryUrl);
     // Clear snap name cache before starting.
@@ -83,5 +115,23 @@ export const notify = async (req, res) => {
       logger.error(`Failed to request builds of ${repositoryUrl}: ${error}.`);
       return res.status(500).send();
     }
+  } else if (req.headers['x-launchpad-event-type'] === 'snap:build:0.1') {
+    if (parsedBody.store_upload_status === 'Uploaded') {
+      try {
+        await db.transaction(async (trx) => {
+          // XXX cjwatson 2017-03-17: This will go wrong once we support
+          // organizations, since we have no way to know which developer to
+          // credit for the builds.  At the moment, the best we can do is to
+          // credit the owner of the repository.
+          await db.model('GitHubUser').incrementMetric(
+            { login: owner }, 'builds_released', 1, { transacting: trx }
+          );
+        });
+      } catch (error) {
+        logger.error(error.message);
+        return res.status(500).send();
+      }
+    }
+    return res.status(200).send();
   }
 };
