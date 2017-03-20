@@ -198,8 +198,8 @@ describe('snap builds actions', () => {
 
       it('should pass error message from repsponse to action', async () => {
         await store.dispatch(fetchBuilds(repositoryUrl, barUrl));
-        const action = store.getActions().filter(
-          a => a.type === ActionTypes.FETCH_BUILDS_ERROR)[0];
+        const action = store.getActions()
+          .filter((a) => a.type === ActionTypes.FETCH_BUILDS_ERROR)[0];
         expect(action.payload.error.message).toBe('Bad snap URL');
       });
 
@@ -232,8 +232,8 @@ describe('snap builds actions', () => {
 
       it('should pass error message from repsponse to action', async () => {
         await store.dispatch(fetchSnap(repositoryUrl));
-        const action = store.getActions().filter(
-          a => a.type === ActionTypes.FETCH_BUILDS_ERROR)[0];
+        const action = store.getActions()
+          .filter((a) => a.type === ActionTypes.FETCH_BUILDS_ERROR)[0];
         expect(action.payload.error.message).toBe('Bad repo URL');
       });
 
