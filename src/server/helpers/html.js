@@ -17,10 +17,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   /> : null;
 
 const googleTagManagerNoScript = GAID ?
-  <noscript
-    dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${GAID}"
-height="0" width="0" style="display:none;visibility:hidden"></iframe>` }}
-  /> : null;
+  <noscript>
+    <iframe
+      src="https://www.googletagmanager.com/ns.html?id=${GAID}"
+      height="0"
+      width="0"
+      style={{
+        display: 'none',
+        visibility: 'hidden'
+      }}
+    />
+  </noscript>
+  : null;
 
 export default class Html extends Component {
   render() {
