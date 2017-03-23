@@ -14,7 +14,7 @@ import PageLinks from '../page-links';
 import Button, { LinkButton } from '../vanilla/button';
 import { HeadingThree } from '../vanilla/heading';
 import { fetchUserRepositories } from '../../actions/repositories';
-import { hasRepository } from '../../helpers/repositories';
+import { hasRepository, hasSnapForRepository } from '../../helpers/repositories';
 import { isAddingSnaps } from '../../selectors';
 
 import styles from './styles.css';
@@ -65,11 +65,12 @@ export class SelectRepositoryListComponent extends Component {
   }
 
   renderRepository(repo) {
+    const { repositoriesStatus, selectRepositoriesForm, snaps } = this.props;
     const { fullName } = repo;
-    const status = this.props.repositoriesStatus[fullName] || {};
+    const status = repositoriesStatus[fullName] || {};
 
-    const selected = this.props.isRepoSelected(repo);
-    const enabled = this.props.isRepoEnabled(repo);
+    const selected = hasRepository(selectRepositoriesForm.selectedRepos, repo);
+    const enabled = snaps.success && hasSnapForRepository(snaps.snaps, repo);
 
     return (
       <SelectRepositoryRow
@@ -169,8 +170,6 @@ SelectRepositoryListComponent.propTypes = {
   repositoriesStatus: PropTypes.object,
   selectRepositoriesForm: PropTypes.object,
   isAddingSnaps: PropTypes.bool,
-  isRepoSelected: PropTypes.func,
-  isRepoEnabled: PropTypes.func,
   onSelectRepository: PropTypes.func,
   router: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
@@ -191,15 +190,7 @@ function mapStateToProps(state) {
     repositories,
     repositoriesStatus,
     selectRepositoriesForm,
-    isAddingSnaps: isAddingSnaps(state),
-    isRepoSelected: (repo) => hasRepository(selectRepositoriesForm.selectedRepos, repo),
-    isRepoEnabled: (repo) => {
-      const { success, snaps } = state.snaps;
-      if (success && snaps.length) {
-        return snaps.some((snap) => snap.git_repository_url === repo.url);
-      }
-      return false;
-    }
+    isAddingSnaps: isAddingSnaps(state)
   };
 }
 
