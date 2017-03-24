@@ -68,32 +68,19 @@ describe('The Notification component', () => {
     });
   });
 
-  context('when action is supplied', () => {
+  xcontext('when onRemoveClick callback is supplied', () => {
     let callback = createSpy();
 
     beforeEach(() => {
       element = shallow(
         <Notification
-          action={ callback }
-          actionText='Dismiss'
+          onRemoveClick={ callback }
         />
       );
     });
 
-    it('should show an action link', () => {
-      expect(element.containsMatchingElement(<a>Dismiss</a>)).toExist();
-    });
-
-    context('and action link is clicked', () => {
-      beforeEach(() => {
-        element.instance().onActionClick({
-          preventDefault: () => {}
-        });
-      });
-
-      it('should call link callback', () => {
-        expect(callback).toHaveBeenCalled();
-      });
+    xit('should render remove icon', () => {
+      // TODO
     });
   });
 });
