@@ -42,7 +42,7 @@ export default class Notification extends Component {
 }
 
 Notification.propTypes = {
-  children: PropTypes.string,
+  children: PropTypes.node,
   message: PropTypes.string,   // Alias of "children"
   status: PropTypes.oneOf([ 'error', 'success','warning' ]),
   action: PropTypes.func,
