@@ -416,12 +416,7 @@ const initializeMetrics = async (gitHubId, snaps) => {
       }
       if (rowData.names_registered === undefined ||
           rowData.names_registered === null) {
-        let namesRegistered = 0;
-        for (const snap of snaps) {
-          if (snap.store_name) {
-            namesRegistered += 1;
-          }
-        }
+        const namesRegistered = snaps.filter((snap) => snap.store_name).length;
         row.set({ names_registered: namesRegistered });
       }
       if (rowData.builds_requested === undefined ||
