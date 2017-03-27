@@ -41,26 +41,26 @@ describe('<BetaNotificationTriggerView />', () => {
   context('when user is logged in', () => {
     let wrapper;
     let callback;
-    let componentDidMount;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       callback = expect.createSpy();
       wrapper = shallow(<BetaNotificationTriggerView authenticated={true} showNotification={callback}/>);
 
       // componentDidMount is async because of internal localforage usage
       // and because mocked localforage uses setTimeout to call async callbacks
       // we need to first store reference to componentDidMount promise:
-      componentDidMount = wrapper.instance().componentDidMount();
+      const componentDidMount = wrapper.instance().componentDidMount();
       // and then tick the mocked clock to make localforage resolve properly
       clock.tick(1);
+      // and finally we can wait for componentDidMount to fully resolve
+      await componentDidMount;
     });
 
     afterEach(() => {
       wrapper.instance().componentWillUnmount();
     });
 
-    it('should call showNotification callback after 2 minutes', async () => {
-      await componentDidMount;
+    it('should call showNotification callback after 2 minutes', () => {
       expect(callback).toNotHaveBeenCalled();
       clock.tick(2 * 60 * 1000); // wait for 2 minutes
       expect(callback).toHaveBeenCalled();
