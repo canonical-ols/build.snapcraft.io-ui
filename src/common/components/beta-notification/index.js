@@ -10,7 +10,7 @@ const SURVEY_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSeCAKWHb4w-iNrg-Yq
 
 export const BETA_NOTIFICATION_DISMISSED_KEY = 'beta_notification_dismissed';
 
-class BetaNotification extends Component {
+export class BetaNotificationView extends Component {
 
   async storeNotificationDismissed() {
     await localforage.setItem(BETA_NOTIFICATION_DISMISSED_KEY, true);
@@ -19,16 +19,12 @@ class BetaNotification extends Component {
   onRemoveClick(event) {
     event.preventDefault();
 
-    this.props.dispatch({
-      type: BETA_NOTIFICATION_TOGGLE,
-      payload: false
-    });
-
+    this.props.dismissNotification();
     this.storeNotificationDismissed();
   }
 
   render() {
-    return this.props.betaNotification.notificationVisible
+    return this.props.isVisible
       ? (
         <Notification onRemoveClick={this.onRemoveClick.bind(this)}>
           Hey, got a spare five minutes to <a href={SURVEY_LINK} target="_blank" rel="noopener noreferrer"> give us some feedback</a>?
@@ -38,15 +34,22 @@ class BetaNotification extends Component {
   }
 }
 
-BetaNotification.propTypes = {
-  betaNotification: PropTypes.object,
-  dispatch: PropTypes.func
+BetaNotificationView.propTypes = {
+  isVisible: PropTypes.bool,
+  dismissNotification: PropTypes.func
 };
 
 function mapStateToProps(state) {
+  return { ...state.betaNotification };
+}
+
+function mapDispatchToProps(dispatch) {
   return {
-    betaNotification: state.betaNotification
+    dismissNotification: () => dispatch({
+      type: BETA_NOTIFICATION_TOGGLE,
+      payload: false
+    })
   };
 }
 
-export default connect(mapStateToProps)(BetaNotification);
+export default connect(mapStateToProps, mapDispatchToProps)(BetaNotificationView);
