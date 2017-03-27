@@ -1,12 +1,20 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import localforage from 'localforage';
 
 import { BETA_NOTIFICATION_TOGGLE } from '../../reducers/beta-notification';
 import Notification from '../vanilla/notification';
 
+
 const SURVEY_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSeCAKWHb4w-iNrg-YqyiRVMHULDlZMx9bXyK9a7s40sXYjQzQ/viewform?usp=sf_link';
 
+export const BETA_NOTIFICATION_DISMISSED_KEY = 'beta_notification_dismissed';
+
 class BetaNotification extends Component {
+
+  async storeNotificationDismissed() {
+    await localforage.setItem(BETA_NOTIFICATION_DISMISSED_KEY, true);
+  }
 
   onRemoveClick(event) {
     event.preventDefault();
@@ -15,7 +23,8 @@ class BetaNotification extends Component {
       type: BETA_NOTIFICATION_TOGGLE,
       payload: false
     });
-    // TODO: store notification as dismissed (in localstorage)
+
+    this.storeNotificationDismissed();
   }
 
   render() {
