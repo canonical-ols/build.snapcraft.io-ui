@@ -58,7 +58,7 @@ describe('snaps reducers', () => {
 
     const action = {
       type: ActionTypes.FETCH_SNAPS_SUCCESS,
-      payload: SNAPS
+      payload: { snaps: SNAPS }
     };
 
     it('should stop fetching', () => {
@@ -127,10 +127,28 @@ describe('snaps reducers', () => {
   });
 
   context('REMOVE_SNAP', () => {
-    const action = { type: ActionTypes.REMOVE_SNAP };
+    const state = {
+      ...initialState,
+      isFetching: true,
+      snaps: SNAPS,
+      error: 'Previous error'
+    };
+
+    const action = {
+      type: ActionTypes.REMOVE_SNAP,
+      payload: {
+        repository_url: 'https://github.com/anowner/aname'
+      }
+    };
 
     it('stores fetching status', () => {
-      expect(snaps(initialState, action).isFetching).toBe(true);
+      expect(snaps(state, action).isFetching).toBe(true);
+    });
+
+    it('marks a snap for deletion', () => {
+      expect(snaps(state, action).snaps.filter((snap) => {
+        return snap.__FOR_REMOVAL__;
+      }).length).toEqual(1);
     });
   });
 
@@ -142,25 +160,29 @@ describe('snaps reducers', () => {
       error: 'Previous error'
     };
 
-    const action = {
+    const removeAction = {
       type: ActionTypes.REMOVE_SNAP_SUCCESS,
       payload: { repository_url: 'https://github.com/anowner/aname' }
     };
 
+    const successAction = {
+      type: ActionTypes.REMOVE_SNAP_SUCCESS
+    };
+
     it('clears fetching status', () => {
-      expect(snaps(state, action).isFetching).toBe(false);
+      expect(snaps(state, successAction).isFetching).toBe(false);
     });
 
     it('stores success status', () => {
-      expect(snaps(state, action).success).toBe(true);
+      expect(snaps(state, successAction).success).toBe(true);
     });
 
     it('clears error', () => {
-      expect(snaps(state, action).error).toBe(null);
+      expect(snaps(state, successAction).error).toBe(null);
     });
 
     it('removes snap from state', () => {
-      expect(snaps(state, action).snaps.map((snap) => {
+      expect(snaps(snaps(state, removeAction), successAction).snaps.map((snap) => {
         return snap.git_repository_url;
       })).toEqual(['https://github.com/anowner/anothername']);
     });
@@ -176,10 +198,7 @@ describe('snaps reducers', () => {
 
     const action = {
       type: ActionTypes.REMOVE_SNAP_ERROR,
-      payload: {
-        repository_url: 'https://github.com/anowner/aname',
-        error: 'Something went wrong!'
-      },
+      payload: 'Something went wrong!',
       error: true
     };
 

@@ -45,7 +45,7 @@ export function snaps(state = {
         isFetching: false,
         success: true,
         snaps: [
-          ...action.payload
+          ...action.payload.snaps
         ],
         error: null
       };
@@ -64,7 +64,17 @@ export function snaps(state = {
     case ActionTypes.REMOVE_SNAP:
       return {
         ...state,
-        isFetching: true
+        isFetching: true,
+        snaps: (
+          state.snaps !== null ?
+          state.snaps.map((snap) => {
+            if (snap.git_repository_url === action.payload.repository_url) {
+              snap.__FOR_REMOVAL__ = true;
+            }
+
+            return snap;
+          }) : null
+        )
       };
     case ActionTypes.REMOVE_SNAP_SUCCESS:
       return {
@@ -74,7 +84,7 @@ export function snaps(state = {
         snaps: (
           state.snaps !== null ?
           state.snaps.filter((snap) => {
-            return snap.git_repository_url !== action.payload.repository_url;
+            return !snap.__FOR_REMOVAL__;
           }) : null
         ),
         error: null
@@ -84,7 +94,17 @@ export function snaps(state = {
         ...state,
         isFetching: false,
         success: false,
-        error: action.payload.error
+        error: action.payload,
+        snaps: (
+          state.snaps !== null ?
+          state.snaps.map((snap) => {
+            if (snap.__FOR_REMOVAL__) {
+              delete snap.__FOR_REMOVAL__;
+            }
+
+            return snap;
+          }) : null
+        )
       };
     default:
       return state;
