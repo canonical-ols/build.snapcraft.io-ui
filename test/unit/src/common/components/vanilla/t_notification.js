@@ -68,7 +68,7 @@ describe('The Notification component', () => {
     });
   });
 
-  xcontext('when onRemoveClick callback is supplied', () => {
+  context('when onRemoveClick callback is supplied', () => {
     let callback = createSpy();
 
     beforeEach(() => {
@@ -79,8 +79,8 @@ describe('The Notification component', () => {
       );
     });
 
-    xit('should render remove icon', () => {
-      // TODO
+    it('should render remove icon', () => {
+      expect(element.containsMatchingElement(<a tabIndex="0" onClick={callback} />)).toBe(true);
     });
   });
 });
