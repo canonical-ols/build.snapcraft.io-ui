@@ -514,6 +514,18 @@ export const authorizeSnap = async (req, res) => {
   try {
     await checkAdminPermissions(req.session, repositoryUrl);
     const result = await internalFindSnap(repositoryUrl);
+    // Registration happened a short while ago; we increment the metric here
+    // in order to support having the client call `register-name` on the
+    // store directly rather than going via our backend.  As such, we don't
+    // need to roll this back if authorization fails.
+    await db.transaction(async (trx) => {
+      if (req.session && req.session.user) {
+        await db.model('GitHubUser').incrementMetric(
+          { github_id: req.session.user.id }, 'names_registered', 1,
+          { transacting: trx }
+        );
+      }
+    });
     const snapUrl = result.self_link;
     await getLaunchpad().patch(snapUrl, {
       store_upload: true,

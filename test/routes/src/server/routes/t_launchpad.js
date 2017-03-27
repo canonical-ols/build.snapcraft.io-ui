@@ -992,7 +992,7 @@ describe('The Launchpad API endpoint', () => {
         const lpApiBase = `${lpApiUrl}/devel`;
         let lpScope;
 
-        beforeEach(() => {
+        beforeEach(async () => {
           lpScope = nock(lpApiUrl);
           lpScope
             .get('/devel/+snaps')
@@ -1011,6 +1011,14 @@ describe('The Launchpad API endpoint', () => {
                 }
               ]
             });
+          await db.model('GitHubUser').query('truncate').fetch();
+          await db.model('GitHubUser')
+            .forge({
+              github_id: session.user.id,
+              login: session.user.login,
+              last_login_at: new Date()
+            })
+            .save();
         });
 
         context('when setting snap attributes fails', () => {
@@ -1041,6 +1049,40 @@ describe('The Launchpad API endpoint', () => {
                 expect(res.body.payload.code).toEqual('lp-error');
               })
               .end(done);
+          });
+
+          it('leaves names_registered unmodified if it is unset', async () => {
+            await supertest(app)
+              .post('/launchpad/snaps/authorize')
+              .send({
+                repository_url: 'https://github.com/anowner/aname',
+                snap_name: snapName,
+                series: '16',
+                channels: ['edge'],
+                macaroon: 'dummy-macaroon'
+              });
+            const dbUser = await db.model('GitHubUser')
+              .where({ github_id: session.user.id })
+              .fetch();
+            expect(dbUser.get('names_registered')).toBeFalsy();
+          });
+
+          it('increments names_registered if it is set', async () => {
+            const dbUser = await db.model('GitHubUser')
+              .where({ github_id: session.user.id })
+              .fetch();
+            await dbUser.save({ names_registered: 1 });
+            await supertest(app)
+              .post('/launchpad/snaps/authorize')
+              .send({
+                repository_url: 'https://github.com/anowner/aname',
+                snap_name: snapName,
+                series: '16',
+                channels: ['edge'],
+                macaroon: 'dummy-macaroon'
+              });
+            await dbUser.refresh();
+            expect(dbUser.get('names_registered')).toEqual(2);
           });
         });
 
@@ -1082,6 +1124,40 @@ describe('The Launchpad API endpoint', () => {
                 lpScope.done();
                 done(err);
               });
+          });
+
+          it('leaves names_registered unmodified if it is unset', async () => {
+            await supertest(app)
+              .post('/launchpad/snaps/authorize')
+              .send({
+                repository_url: 'https://github.com/anowner/aname',
+                snap_name: snapName,
+                series: '16',
+                channels: ['edge'],
+                macaroon: 'dummy-macaroon'
+              });
+            const dbUser = await db.model('GitHubUser')
+              .where({ github_id: session.user.id })
+              .fetch();
+            expect(dbUser.get('names_registered')).toBeFalsy();
+          });
+
+          it('increments names_registered if it is set', async () => {
+            const dbUser = await db.model('GitHubUser')
+              .where({ github_id: session.user.id })
+              .fetch();
+            await dbUser.save({ names_registered: 1 });
+            await supertest(app)
+              .post('/launchpad/snaps/authorize')
+              .send({
+                repository_url: 'https://github.com/anowner/aname',
+                snap_name: snapName,
+                series: '16',
+                channels: ['edge'],
+                macaroon: 'dummy-macaroon'
+              });
+            await dbUser.refresh();
+            expect(dbUser.get('names_registered')).toEqual(2);
           });
 
           context('when snaps are memcached', () => {
