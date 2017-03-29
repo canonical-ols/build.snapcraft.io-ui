@@ -11,6 +11,11 @@
   margin-bottom: 12px;
 }
 
+.subscribeEmailLabel {
+  display: block;
+  margin-bottom: 2px;
+}
+
 .subscribeEmailInput {
   -webkit-appearance: textfield;
   border-radius: 2px;

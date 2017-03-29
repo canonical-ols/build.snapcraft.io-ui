@@ -93,11 +93,11 @@ class SelectRepositoriesPage extends Component {
               <Popover left={this.state.popoverOffsetLeft} top={this.state.popoverOffsetTop}>
                 <p>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
                 <form onSubmit={this.onSubscribeSubmit.bind(this)}>
-                  {/* TODO: add label, remove placeholder */}
+                  <label className={styles.subscribeEmailLabel} htmlFor="subscribe_email">E-mail address:</label>
                   <input
+                    id="subscribe_email"
                     className={styles.subscribeEmailInput}
                     type="email"
-                    placeholder="you@email.com"
                     onChange={this.onEmailChange.bind(this)}
                     value={this.state.subscribeEmail}
                   />
