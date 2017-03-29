@@ -9,6 +9,7 @@ import { HeadingThree } from '../vanilla/heading';
 import FirstTimeHeading from '../first-time-heading';
 import { CardHighlighted } from '../vanilla/card';
 import Tooltip from '../tooltip';
+import Button from '../vanilla/button';
 
 import styles from './select-repositories-page.css';
 
@@ -19,7 +20,8 @@ class SelectRepositoriesPage extends Component {
     this.state = {
       showTooltip: false,
       tooltipOffsetLeft: 0,
-      tooltipOffsetTop: 0
+      tooltipOffsetTop: 0,
+      subscribeEmail: ''
     };
   }
 
@@ -61,6 +63,21 @@ class SelectRepositoriesPage extends Component {
     });
   }
 
+  onEmailChange(event) {
+    const { target } = event;
+
+    this.setState({
+      subscribeEmail: target.value
+    });
+  }
+
+  onSubscribeSubmit(event) {
+    event.preventDefault();
+
+    // TODO: bartaz: do real submit
+    window.console.log('SUBMIT', this.state.subscribeEmail);
+  }
+
   render() {
     const { snaps, snapBuilds } = this.props;
     return (
@@ -75,6 +92,17 @@ class SelectRepositoriesPage extends Component {
             { this.state.showTooltip &&
               <Tooltip left={this.state.tooltipOffsetLeft} top={this.state.tooltipOffsetTop}>
                 <p>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
+                <form onSubmit={this.onSubscribeSubmit.bind(this)}>
+                  {/* TODO: add label, remove placeholder */}
+                  <input
+                    className={styles.tooltipInput}
+                    type="email"
+                    placeholder="you@email.com"
+                    onChange={this.onEmailChange.bind(this)}
+                    value={this.state.subscribeEmail}
+                  />
+                  <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
+                </form>
               </Tooltip>
             }
           </div>

@@ -6,3 +6,26 @@
   position: relative;
   margin-bottom: 24px;
 }
+
+.info p {
+  margin-bottom: 12px;
+}
+
+.tooltipInput {
+  -webkit-appearance: textfield;
+  border-radius: 2px;
+  border: 1px solid $border-color;
+  background-color: $background-color;
+  font-size: 13px;
+  margin: 0;
+  outline: none;
+  padding: 6px 11px;
+  height: 33px; /* hardcoded to fit button height */
+  vertical-align: baseline;
+  font-weight: 300;
+
+  box-sizing: border-box;
+
+  margin-right: 12px;
+  width: 240px;
+}

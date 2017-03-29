@@ -152,3 +152,8 @@ $neutral-border-color: $dark-grey;
   padding: .5em 1.5em;
   font-size: 1.5em;
 }
+
+.ensmallened {
+  padding: 6px 12px;
+  font-size: 13px;
+}
