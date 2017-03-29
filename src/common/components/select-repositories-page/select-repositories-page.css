@@ -3,5 +3,6 @@
 }
 
 .info {
+  position: relative;
   margin-bottom: 24px;
 }

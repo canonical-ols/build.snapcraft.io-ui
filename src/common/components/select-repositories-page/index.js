@@ -8,10 +8,21 @@ import SelectRepositoryList from '../select-repository-list';
 import { HeadingThree } from '../vanilla/heading';
 import FirstTimeHeading from '../first-time-heading';
 import { CardHighlighted } from '../vanilla/card';
+import Tooltip from '../tooltip';
 
 import styles from './select-repositories-page.css';
 
 class SelectRepositoriesPage extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      showTooltip: false,
+      tooltipOffsetLeft: 0,
+      tooltipOffsetTop: 0
+    };
+  }
+
   componentDidMount() {
     const { authenticated } = this.props.auth;
     const owner = this.props.user.login;
@@ -40,6 +51,16 @@ class SelectRepositoriesPage extends Component {
     }
   }
 
+  onHelpClick(event) {
+    const { target } = event;
+
+    this.setState({
+      showTooltip: !this.state.showTooltip,
+      tooltipOffsetLeft: target.offsetLeft + (target.offsetWidth / 2),
+      tooltipOffsetTop: target.offsetTop + target.offsetHeight
+    });
+  }
+
   render() {
     const { snaps, snapBuilds } = this.props;
     return (
@@ -49,7 +70,14 @@ class SelectRepositoriesPage extends Component {
           <HeadingThree className={ styles.heading }>
             Choose repos to add
           </HeadingThree>
-          <p className={ styles.info }>Organization and private repos not shown yet.</p>
+          <div className={ styles.info }>
+            <p>Organization and private repos not shown yet. (<a onClick={this.onHelpClick.bind(this)}>Why?</a>)</p>
+            { this.state.showTooltip &&
+              <Tooltip left={this.state.tooltipOffsetLeft} top={this.state.tooltipOffsetTop}>
+                <p>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
+              </Tooltip>
+            }
+          </div>
           <SelectRepositoryList/>
         </CardHighlighted>
       </div>
