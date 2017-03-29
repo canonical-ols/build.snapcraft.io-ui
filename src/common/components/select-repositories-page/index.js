@@ -8,7 +8,7 @@ import SelectRepositoryList from '../select-repository-list';
 import { HeadingThree } from '../vanilla/heading';
 import FirstTimeHeading from '../first-time-heading';
 import { CardHighlighted } from '../vanilla/card';
-import Tooltip from '../tooltip';
+import Popover from '../popover';
 import Button from '../vanilla/button';
 
 import styles from './select-repositories-page.css';
@@ -18,9 +18,9 @@ class SelectRepositoriesPage extends Component {
     super();
 
     this.state = {
-      showTooltip: false,
-      tooltipOffsetLeft: 0,
-      tooltipOffsetTop: 0,
+      showPopover: false,
+      popoverOffsetLeft: 0,
+      popoverOffsetTop: 0,
       subscribeEmail: ''
     };
   }
@@ -57,9 +57,9 @@ class SelectRepositoriesPage extends Component {
     const { target } = event;
 
     this.setState({
-      showTooltip: !this.state.showTooltip,
-      tooltipOffsetLeft: target.offsetLeft + (target.offsetWidth / 2),
-      tooltipOffsetTop: target.offsetTop + target.offsetHeight
+      showPopover: !this.state.showPopover,
+      popoverOffsetLeft: target.offsetLeft + (target.offsetWidth / 2),
+      popoverOffsetTop: target.offsetTop + target.offsetHeight
     });
   }
 
@@ -89,13 +89,13 @@ class SelectRepositoriesPage extends Component {
           </HeadingThree>
           <div className={ styles.info }>
             <p>Organization and private repos not shown yet. (<a onClick={this.onHelpClick.bind(this)}>Why?</a>)</p>
-            { this.state.showTooltip &&
-              <Tooltip left={this.state.tooltipOffsetLeft} top={this.state.tooltipOffsetTop}>
+            { this.state.showPopover &&
+              <Popover left={this.state.popoverOffsetLeft} top={this.state.popoverOffsetTop}>
                 <p>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
                 <form onSubmit={this.onSubscribeSubmit.bind(this)}>
                   {/* TODO: add label, remove placeholder */}
                   <input
-                    className={styles.tooltipInput}
+                    className={styles.subscribeEmailInput}
                     type="email"
                     placeholder="you@email.com"
                     onChange={this.onEmailChange.bind(this)}
@@ -103,7 +103,7 @@ class SelectRepositoriesPage extends Component {
                   />
                   <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
                 </form>
-              </Tooltip>
+              </Popover>
             }
           </div>
           <SelectRepositoryList/>

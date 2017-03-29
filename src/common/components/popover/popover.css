@@ -1,4 +1,4 @@
-.tooltip {
+.popover {
   border-radius: 5px;
   background: #FFF;
   padding: 10px;
@@ -16,7 +16,7 @@
   line-height: 20px;
 }
 
-.tooltip::after{
+.popover::after{
   content: "";
   position: absolute;
   width: 0;

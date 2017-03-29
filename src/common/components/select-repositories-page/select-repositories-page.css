@@ -11,7 +11,7 @@
   margin-bottom: 12px;
 }
 
-.tooltipInput {
+.subscribeEmailInput {
   -webkit-appearance: textfield;
   border-radius: 2px;
   border: 1px solid $border-color;
