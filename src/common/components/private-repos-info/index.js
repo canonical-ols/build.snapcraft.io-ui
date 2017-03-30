@@ -7,6 +7,10 @@ import Button from '../vanilla/button';
 
 import styles from './private-repos-info.css';
 
+const MAILCHIMP_FORM_URL = 'https://canonical.us3.list-manage.com/subscribe/post-json';
+const MAILCHIMP_FORM_U = '56dac47c206ba0f58ec25f314';
+const MAILCHIMP_FORM_ID = '381f5c55f1';
+
 export default class PrivateReposInfo extends Component {
   constructor() {
     super();
@@ -61,13 +65,13 @@ export default class PrivateReposInfo extends Component {
   async onSubscribeSubmit(event) {
     event.preventDefault();
 
-    const formUrl = url.parse('https://canonical.us3.list-manage.com/subscribe/post-json');
+    const formUrl = url.parse(MAILCHIMP_FORM_URL);
     const submitUrl = url.format({
       ...formUrl,
       query: {
-        u: '56dac47c206ba0f58ec25f314',
-        id: '381f5c55f1',
-        MERGE0: this.state.subscribeEmail
+        u: MAILCHIMP_FORM_U,
+        id: MAILCHIMP_FORM_ID,
+        EMAIL: this.state.subscribeEmail
       }
     });
 
@@ -103,7 +107,8 @@ export default class PrivateReposInfo extends Component {
         />
         <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
         { this.state.subscribeError &&
-          <p className={styles.errorMsg}>{ this.state.message }</p>
+          // MailChimp errors may contain HTML links in error messages
+          <p className={styles.errorMsg} dangerouslySetInnerHTML={{ __html: this.state.message }}></p>
         }
       </form>
     );
