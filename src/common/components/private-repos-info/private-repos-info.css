@@ -7,7 +7,7 @@ $background-color: #FFF;
   margin-bottom: 24px;
 }
 
-.info p {
+.infoMsg {
   margin-bottom: 12px;
 }
 
@@ -33,10 +33,18 @@ $background-color: #FFF;
 
   margin-right: 12px;
   width: 240px;
+  margin-bottom: 6px;
 }
 
 .subscribeEmailInput:active,
 .subscribeEmailInput:focus {
   border-color: $border-color-focus;
   outline: none;
+}
+
+.successMsg {
+  color: #888;
+}
+.errorMsg {
+  color: $error;
 }

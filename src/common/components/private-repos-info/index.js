@@ -15,7 +15,10 @@ export default class PrivateReposInfo extends Component {
       showPopover: false,
       popoverOffsetLeft: 0,
       popoverOffsetTop: 0,
-      subscribeEmail: ''
+      subscribeEmail: '',
+      subscribeSuccess: false,
+      subscribeError: false,
+      message: ''
     };
   }
 
@@ -50,18 +53,42 @@ export default class PrivateReposInfo extends Component {
       }
     });
 
-    // TODO: bartaz: do real submit
-    window.console.log('SUBMIT', submitUrl);
+    try {
+      const response = await fetchJsonp(submitUrl, { jsonpCallback: 'c' });
+      const json = await response.json();
 
-    const response = await fetchJsonp(submitUrl, { jsonpCallback: 'c' });
-    const json = await response.json();
-    window.console.log('RESPONSE', json);
+      this.setState({
+        subscribeSuccess: json.result === 'success',
+        subscribeError: json.result === 'error',
+        message: json.msg
+      });
+    } catch (e) {
+      this.setState({
+        subscribeSuccess: false,
+        subscribeError: true,
+        message: e.message || 'There was unexpected error while subscribing. Please try again later.'
+      });
+    }
+  }
 
-    // TODO bartaz:
-    // example success
-    // {"result":"success","msg":"Almost finished... We need to confirm your email address. To complete the subscription process, please click the link in the email we just sent you."}
-    // example error
-    // {"result":"error","msg":"This email cannot be added to this list. Please enter a different email address."}
+  renderSubsribeForm() {
+    return (
+      <form onSubmit={this.onSubscribeSubmit.bind(this)}>
+        <label className={styles.subscribeEmailLabel} htmlFor="subscribe_email">E-mail address:</label>
+        <input
+          id="subscribe_email"
+          required={true}
+          className={styles.subscribeEmailInput}
+          type="email"
+          onChange={this.onEmailChange.bind(this)}
+          value={this.state.subscribeEmail}
+        />
+        <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
+        { this.state.subscribeError &&
+          <p className={styles.errorMsg}>{ this.state.message }</p>
+        }
+      </form>
+    );
   }
 
   render() {
@@ -70,19 +97,11 @@ export default class PrivateReposInfo extends Component {
         <p>Organization and private repos not shown yet. (<a onClick={this.onHelpClick.bind(this)}>Why?</a>)</p>
         { this.state.showPopover &&
           <Popover left={this.state.popoverOffsetLeft} top={this.state.popoverOffsetTop}>
-            <p>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
-            <form onSubmit={this.onSubscribeSubmit.bind(this)}>
-              <label className={styles.subscribeEmailLabel} htmlFor="subscribe_email">E-mail address:</label>
-              <input
-                id="subscribe_email"
-                required={true}
-                className={styles.subscribeEmailInput}
-                type="email"
-                onChange={this.onEmailChange.bind(this)}
-                value={this.state.subscribeEmail}
-              />
-              <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
-            </form>
+            <p className={styles.infoMsg}>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
+            { this.state.subscribeSuccess
+              ? <p className={styles.successMsg}>{ this.state.message }</p>
+              : this.renderSubsribeForm()
+            }
           </Popover>
         }
       </div>
