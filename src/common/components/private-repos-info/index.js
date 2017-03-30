@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import url from 'url';
+import fetchJsonp from 'fetch-jsonp';
 
 import Popover from '../popover';
 import Button from '../vanilla/button';
@@ -36,9 +37,8 @@ export default class PrivateReposInfo extends Component {
     });
   }
 
-  onSubscribeSubmit(event) {
+  async onSubscribeSubmit(event) {
     event.preventDefault();
-
 
     const formUrl = url.parse('https://canonical.us3.list-manage.com/subscribe/post-json');
     const submitUrl = url.format({
@@ -52,6 +52,16 @@ export default class PrivateReposInfo extends Component {
 
     // TODO: bartaz: do real submit
     window.console.log('SUBMIT', submitUrl);
+
+    const response = await fetchJsonp(submitUrl, { jsonpCallback: 'c' });
+    const json = await response.json();
+    window.console.log('RESPONSE', json);
+
+    // TODO bartaz:
+    // example success
+    // {"result":"success","msg":"Almost finished... We need to confirm your email address. To complete the subscription process, please click the link in the email we just sent you."}
+    // example error
+    // {"result":"error","msg":"This email cannot be added to this list. Please enter a different email address."}
   }
 
   render() {
