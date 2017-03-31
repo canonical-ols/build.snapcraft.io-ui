@@ -95,6 +95,7 @@ export default class PrivateReposInfo extends Component {
         <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
         { this.state.subscribeError &&
           // MailChimp errors may contain HTML links in error messages
+          // but we sanitize it on server side, so should be safe to insert
           <p className={styles.errorMsg} dangerouslySetInnerHTML={{ __html: this.state.message }}></p>
         }
       </form>
