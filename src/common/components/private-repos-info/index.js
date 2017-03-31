@@ -92,7 +92,7 @@ export default class PrivateReposInfo extends Component {
           onChange={this.onEmailChange.bind(this)}
           value={this.state.subscribeEmail}
         />
-        <Button type="submit" appearance='neutral' flavour='ensmallened'>Keep me posted</Button>
+        <Button type="submit" appearance='neutral' flavour='smaller'>Keep me posted</Button>
         { this.state.subscribeError &&
           // MailChimp errors may contain HTML links in error messages
           // but we sanitize it on server side, so should be safe to insert
