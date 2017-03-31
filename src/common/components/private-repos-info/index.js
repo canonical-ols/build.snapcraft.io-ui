@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import url from 'url';
-import fetchJsonp from 'fetch-jsonp';
+
+import { conf } from '../../helpers/config';
+const BASE_URL = conf.get('BASE_URL');
 
 import Popover from '../popover';
 import Button from '../vanilla/button';
 
 import styles from './private-repos-info.css';
-
-const MAILCHIMP_FORM_URL = 'https://canonical.us3.list-manage.com/subscribe/post-json';
-const MAILCHIMP_FORM_U = '56dac47c206ba0f58ec25f314';
-const MAILCHIMP_FORM_ID = '381f5c55f1';
 
 export default class PrivateReposInfo extends Component {
   constructor() {
@@ -65,18 +62,8 @@ export default class PrivateReposInfo extends Component {
   async onSubscribeSubmit(event) {
     event.preventDefault();
 
-    const formUrl = url.parse(MAILCHIMP_FORM_URL);
-    const submitUrl = url.format({
-      ...formUrl,
-      query: {
-        u: MAILCHIMP_FORM_U,
-        id: MAILCHIMP_FORM_ID,
-        EMAIL: this.state.subscribeEmail
-      }
-    });
-
     try {
-      const response = await fetchJsonp(submitUrl, { jsonpCallback: 'c' });
+      const response = await fetch(`${BASE_URL}/api/subscribe/private-repos?email=${encodeURIComponent(this.state.subscribeEmail)}`);
       const json = await response.json();
 
       this.setState({
