@@ -417,7 +417,7 @@ describe('The WebHook API endpoint', () => {
           .save();
       });
 
-      describe('if store_upload_status is not Uploaded', () => {
+      context('if store_upload_status is not Uploaded', () => {
         const body = JSON.stringify({ store_upload_status: 'Pending' });
         let signature;
 
@@ -456,7 +456,7 @@ describe('The WebHook API endpoint', () => {
         });
       });
 
-      describe('if store_upload_status is Uploaded', () => {
+      context('if store_upload_status is Uploaded', () => {
         const body = JSON.stringify({ store_upload_status: 'Uploaded' });
         let signature;
 
