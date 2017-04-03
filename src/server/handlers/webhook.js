@@ -47,6 +47,65 @@ export const makeWebhookSecret = (rootSecret, owner, name) => {
   return hmac.digest('hex');
 };
 
+const handlePing = async (req, res) => {
+  return res.status(200).send();
+};
+
+const handleGitHubPush = async (req, res, owner, name) => {
+  const repositoryUrl = getGitHubRepoUrl(owner, name);
+  const cacheId = getSnapcraftYamlCacheId(repositoryUrl);
+  // Clear snap name cache before starting.
+  // XXX cjwatson 2017-02-16: We could be smarter about this by looking at
+  // the content of the push event.
+  await getMemcached().del(cacheId);
+  try {
+    const snap = await internalFindSnap(repositoryUrl);
+    if (!snap.store_name) {
+      throw 'Cannot build snap until name is registered';
+    }
+    if (!snap.auto_build) {
+      // XXX cjwatson 2017-02-16: Cache returned snap name, if any.
+      await internalGetSnapcraftYaml(owner, name);
+    }
+    await internalRequestSnapBuilds(snap, owner);
+    logger.info(`Requested builds of ${repositoryUrl}.`);
+    return res.status(200).send();
+  } catch (error) {
+    logger.error(`Failed to request builds of ${repositoryUrl}: ${error}.`);
+    return res.status(500).send();
+  }
+};
+
+const handleLaunchpadSnapBuild = async (req, res, owner, name, parsedBody) => {
+  if (parsedBody.store_upload_status === 'Uploaded') {
+    try {
+      await db.transaction(async (trx) => {
+        // XXX cjwatson 2017-03-17: This will go wrong once we support
+        // organizations, since we have no way to know which developer to
+        // credit for the builds.  At the moment, the best we can do is to
+        // credit the owner of the repository.
+        await db.model('GitHubUser').incrementMetric(
+          { login: owner }, 'builds_released', 1, { transacting: trx }
+        );
+      });
+    } catch (error) {
+      logger.error(error.message);
+      return res.status(500).send();
+    }
+  }
+  return res.status(200).send();
+};
+
+const gitHubHandlers = {
+  ping: handlePing,
+  push: handleGitHubPush
+};
+
+const launchpadHandlers = {
+  ping: handlePing,
+  'snap:build:0.1': handleLaunchpadSnapBuild
+};
+
 // Response bodies won't go anywhere very useful, but at least try to send
 // meaningful codes.
 export const notify = async (req, res) => {
@@ -89,49 +148,25 @@ export const notify = async (req, res) => {
   }
 
   // Acknowledge webhook
-  if (req.headers['x-github-event'] === 'ping' ||
-      req.headers['x-launchpad-event-type'] === 'ping') {
-    return res.status(200).send();
-  } else if (req.headers['x-github-event'] === 'push') {
-    const repositoryUrl = getGitHubRepoUrl(owner, name);
-    const cacheId = getSnapcraftYamlCacheId(repositoryUrl);
-    // Clear snap name cache before starting.
-    // XXX cjwatson 2017-02-16: We could be smarter about this by looking at
-    // the content of the push event.
-    await getMemcached().del(cacheId);
-    try {
-      const snap = await internalFindSnap(repositoryUrl);
-      if (!snap.store_name) {
-        throw 'Cannot build snap until name is registered';
-      }
-      if (!snap.auto_build) {
-        // XXX cjwatson 2017-02-16: Cache returned snap name, if any.
-        await internalGetSnapcraftYaml(owner, name);
-      }
-      await internalRequestSnapBuilds(snap, owner);
-      logger.info(`Requested builds of ${repositoryUrl}.`);
-      return res.status(200).send();
-    } catch (error) {
-      logger.error(`Failed to request builds of ${repositoryUrl}: ${error}.`);
-      return res.status(500).send();
+  const gitHubEvent = req.headers['x-github-event'];
+  const launchpadEvent = req.headers['x-launchpad-event-type'];
+  let handler;
+  if (gitHubEvent) {
+    handler = gitHubHandlers[gitHubEvent];
+    if (!handler) {
+      logger.info(`Unhandled GitHub webhook event ${gitHubEvent}`);
     }
-  } else if (req.headers['x-launchpad-event-type'] === 'snap:build:0.1') {
-    if (parsedBody.store_upload_status === 'Uploaded') {
-      try {
-        await db.transaction(async (trx) => {
-          // XXX cjwatson 2017-03-17: This will go wrong once we support
-          // organizations, since we have no way to know which developer to
-          // credit for the builds.  At the moment, the best we can do is to
-          // credit the owner of the repository.
-          await db.model('GitHubUser').incrementMetric(
-            { login: owner }, 'builds_released', 1, { transacting: trx }
-          );
-        });
-      } catch (error) {
-        logger.error(error.message);
-        return res.status(500).send();
-      }
+  } else if (launchpadEvent) {
+    handler = launchpadHandlers[launchpadEvent];
+    if (!handler) {
+      logger.info(`Unhandled Launchpad webhook event ${launchpadEvent}`);
     }
-    return res.status(200).send();
+  } else {
+    logger.info('Ignoring non-GitHub and non-Launchpad webhook');
+  }
+  if (handler) {
+    return handler(req, res, owner, name, parsedBody);
+  } else {
+    return res.status(400).send();
   }
 };
