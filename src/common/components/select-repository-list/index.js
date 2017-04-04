@@ -12,14 +12,14 @@ import {
   fetchUserRepositories,
 } from '../../actions/repositories';
 import {
-  buildRepositories,
+  addRepos,
   resetRepository,
   toggleRepositorySelection,
 } from '../../actions/repository';
 import {
   getEnabledRepositories,
   getSelectedRepositories,
-  getRepositoriesToBuild,
+  getReposToAdd,
   hasFailedRepositories,
   isAddingSnaps
 } from '../../selectors/index.js';
@@ -90,11 +90,12 @@ export class SelectRepositoryListComponent extends Component {
   }
 
   handleAddRepositories() {
-    const { repositoriesToBuild, user } = this.props;
+    const { reposToAdd, user } = this.props;
 
     // TODO else "You have not selected any repositories"
-    if (repositoriesToBuild && repositoriesToBuild.length) {
-      this.props.dispatch(buildRepositories(repositoriesToBuild, user.login));
+
+    if (reposToAdd.length) {
+      this.props.dispatch(addRepos(reposToAdd, user.login));
     }
   }
 
@@ -194,7 +195,7 @@ SelectRepositoryListComponent.propTypes = {
   router: PropTypes.object.isRequired,
   snaps: PropTypes.object,
   selectedRepositories: PropTypes.array,
-  repositoriesToBuild: PropTypes.array,
+  reposToAdd: PropTypes.array,
   enabledRepositories: PropTypes.object,
   hasFailedRepositories: PropTypes.bool,
   isAddingSnaps: PropTypes.bool
@@ -215,7 +216,7 @@ function mapStateToProps(state) {
     repositories, // ?repository-pagination
     isAddingSnaps: isAddingSnaps(state),
     selectedRepositories: getSelectedRepositories(state),
-    repositoriesToBuild: getRepositoriesToBuild(state),
+    reposToAdd: getReposToAdd(state),
     enabledRepositories: getEnabledRepositories(state),
     hasFailedRepositories: hasFailedRepositories(state)
   };
