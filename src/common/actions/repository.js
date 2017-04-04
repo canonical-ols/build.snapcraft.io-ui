@@ -36,6 +36,7 @@ export function addRepos(repositories, owner) {
   };
 }
 
+// add a repository to launchpad's build queue, returns a snap representation
 export function addRepo(repository) {
   const { id, url, owner, name } = repository;
 
