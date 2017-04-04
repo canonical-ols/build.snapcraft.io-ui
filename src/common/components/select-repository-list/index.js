@@ -93,7 +93,6 @@ export class SelectRepositoryListComponent extends Component {
     const { reposToAdd, user } = this.props;
 
     // TODO else "You have not selected any repositories"
-
     if (reposToAdd.length) {
       this.props.dispatch(addRepos(reposToAdd, user.login));
     }
@@ -103,22 +102,22 @@ export class SelectRepositoryListComponent extends Component {
     this.props.dispatch(fetchUserRepositories(pageNumber));
   }
 
-  pageSlice(array, pageLinks) {
+  pageSlice(repositoriesIndex, pageLinks) {
     if (!pageLinks) {
-      return array;
+      return repositoriesIndex;
     }
 
     const PAGE_SIZE = 30; // TODO move to config or state
     const { next, prev } = pageLinks;
-    let out = [];
+    let page = [];
 
     if (next) {
-      out = array.slice((next - 2) * PAGE_SIZE, (next - 1) * PAGE_SIZE);
+      page = repositoriesIndex.slice((next - 2) * PAGE_SIZE, (next - 1) * PAGE_SIZE);
     } else if (prev) {
-      out = array.slice(prev * 30);
+      page = repositoriesIndex.slice(prev * 30);
     }
 
-    return out;
+    return page;
   }
 
   render() {

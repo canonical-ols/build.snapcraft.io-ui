@@ -7,7 +7,7 @@ import {
 } from '../../../../../../src/common/components/select-repository-list';
 import SelectRepositoryRow from '../../../../../../src/common/components/select-repository-row';
 import {
-  buildRepositories,
+  addRepos,
   resetRepository,
   toggleRepositorySelection,
 } from '../../../../../../src/common/actions/repository';
@@ -62,7 +62,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
         1001: {}
       },
       selectedRepositories: [], // stub the selector
-      repositoriesToBuild: [] // stub the selector
+      reposToAdd: [] // stub the selector
     };
   });
 
@@ -214,7 +214,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
     let testProps;
 
     beforeEach(function() {
-      testProps = Object.assign({}, props, { repositoriesToBuild: ['foo'] });
+      testProps = Object.assign({}, props, { reposToAdd: ['foo'] });
       spy = spyOn(testProps, 'dispatch');
       wrapper = shallow(<SelectRepositoryListComponent { ...testProps } />);
     });
@@ -225,7 +225,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
 
     it('should dispatch selected repositories for building on add button click', function() {
       wrapper.find(Button).simulate('click');
-      expect(spy).toHaveBeenCalledWith(buildRepositories(testProps.repositoriesToBuild));
+      expect(spy).toHaveBeenCalledWith(addRepos(testProps.reposToAdd));
     });
   });
 });
