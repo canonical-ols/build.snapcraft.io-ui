@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
 import { conf } from '../../helpers/config';
-import { buildRepositories } from '../../actions/repository';
 import SelectRepositoryRow from '../select-repository-row';
 import Spinner from '../spinner';
 import PageLinks from '../page-links';
@@ -13,6 +12,7 @@ import {
   fetchUserRepositories,
 } from '../../actions/repositories';
 import {
+  buildRepositories,
   resetRepository,
   toggleRepositorySelection,
 } from '../../actions/repository';
@@ -33,7 +33,7 @@ const SNAP_NAME_NOT_REGISTERED_ERROR_CODE = 'snap-name-not-registered';
 export class SelectRepositoryListComponent extends Component {
 
   componentDidMount() {
-    this.props.selectedRepositories.map(id => {
+    this.props.selectedRepositories && this.props.selectedRepositories.map(id => {
       this.props.dispatch(resetRepository(id));
     });
   }
@@ -93,7 +93,7 @@ export class SelectRepositoryListComponent extends Component {
     const { repositoriesToBuild, user } = this.props;
 
     // TODO else "You have not selected any repositories"
-    if (repositoriesToBuild.length) {
+    if (repositoriesToBuild && repositoriesToBuild.length) {
       this.props.dispatch(buildRepositories(repositoriesToBuild, user.login));
     }
   }
@@ -107,32 +107,27 @@ export class SelectRepositoryListComponent extends Component {
       return array;
     }
 
-    const PAGE_SIZE = 30; // XXX move to config or state
+    const PAGE_SIZE = 30; // TODO move to config or state
     const { next, prev } = pageLinks;
     let out = [];
 
     if (next) {
-      out = array.slice((next - 2) * PAGE_SIZE, (next - 1) * PAGE_SIZE - 1);
+      out = array.slice((next - 2) * PAGE_SIZE, (next - 1) * PAGE_SIZE);
     } else if (prev) {
       out = array.slice(prev * 30);
-    } else {
-      out = array;
     }
 
     return out;
   }
 
   render() {
-    // isADdingSNaps means "is in the process of sending a repo to be built" ..
     const { user, selectedRepositories, isAddingSnaps } = this.props;
     const { ids, error, isFetching, pageLinks } = this.props.repositories;
     const pagination = this.renderPageLinks(pageLinks);
 
     let renderedRepos = null;
 
-    // XXX if not success, then what? we lose the previously good list of repos?
     if (!error) {
-
       renderedRepos = this.pageSlice(ids, pageLinks)
         .map((id) => {
           return this.renderRepository(id);
