@@ -25,7 +25,7 @@ export function repository(state={
         __isSelected: true
       };
     }
-    case ActionTypes.REPOSITORY_SUCCESS:
+    case ActionTypes.REPOSITORY_BUILD_SUCCESS:
     case ActionTypes.REPOSITORY_RESET: {
       return {
         ...state,
@@ -34,7 +34,7 @@ export function repository(state={
         __error: null
       };
     }
-    case ActionTypes.REPOSITORY_FAILURE: {
+    case ActionTypes.REPOSITORY_BUILD_FAILURE: {
       return {
         ...state,
         __error: action.payload.error.json

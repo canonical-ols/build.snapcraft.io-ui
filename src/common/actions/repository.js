@@ -17,8 +17,8 @@ export function toggleRepositorySelection(id) {
 }
 
 export const REPOSITORY_BUILD = 'REPOSITORY_BUILD';
-export const REPOSITORY_SUCCESS = 'REPOSITORY_SUCCESS';
-export const REPOSITORY_FAILURE = 'REPOSITORY_FAILURE';
+export const REPOSITORY_BUILD_SUCCESS = 'REPOSITORY_BUILD_SUCCESS';
+export const REPOSITORY_BUILD_FAILURE = 'REPOSITORY_BUILD_FAILURE';
 export const REPOSITORY_RESET = 'REPOSITORY_RESET';
 
 export function buildRepositories(repositories, owner) {
@@ -94,7 +94,7 @@ export async function createWebhook(owner, name) {
 
 function buildRepositorySuccess(id) {
   return {
-    type: REPOSITORY_SUCCESS,
+    type: REPOSITORY_BUILD_SUCCESS,
     payload: {
       id
     }
@@ -103,7 +103,7 @@ function buildRepositorySuccess(id) {
 
 function buildRepositoryError(id, error) {
   return {
-    type: REPOSITORY_FAILURE,
+    type: REPOSITORY_BUILD_FAILURE,
     payload: {
       id,
       error
