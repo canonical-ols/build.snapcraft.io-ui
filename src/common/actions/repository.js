@@ -36,7 +36,7 @@ export function addRepos(repositories, owner) {
   };
 }
 
-// add a repository to launchpad's build queue, returns a snap representation
+// add a repository to launchpad's build queue
 export function addRepo(repository) {
   const { id, url, owner, name } = repository;
 
@@ -50,6 +50,11 @@ export function addRepo(repository) {
 
     try {
       await createWebhook(owner, name);
+
+      // XXX
+      // actual LP API call that we use on server side returns a snap representation
+      // that we could use to immediatelly update client side state with newly
+      // added snap
       const response = await fetch(`${BASE_URL}/api/launchpad/snaps`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
