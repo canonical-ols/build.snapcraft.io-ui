@@ -100,7 +100,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
     });
 
     it('should render same number of rows as repos in state', function() {
-      expect(wrapper.find(SelectRepositoryRow).length).toBe(3);
+      expect(wrapper.find(SelectRepositoryRow).length).toBe(props.repositories.ids.length);
     });
 
     it('should contain same number of enabled rows as enabledRepositores selector', function() {
