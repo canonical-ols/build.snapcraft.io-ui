@@ -79,7 +79,7 @@ export class SelectRepositoryListComponent extends Component {
         key={ `repo_${fullName}` }
         repository={ repository }
         onChange={ this.onSelectRepository.bind(this, id) }
-        errorMsg={ repository.__error && this.getErrorMessage(repository.__error) }
+        errorMsg={ repository.error && this.getErrorMessage(repository.error) }
         isEnabled={ isEnabled }
       />
     );

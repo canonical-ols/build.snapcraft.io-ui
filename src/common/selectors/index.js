@@ -59,7 +59,7 @@ export const getSelectedRepositories = createSelector(
   [getRepositoriesIndex, getRepositories],
   (repos, entities) => {
     return repos.filter((id) => {
-      return entities[id].__isSelected;
+      return entities[id].isSelected;
     });
   }
 );
@@ -92,7 +92,7 @@ export const hasFailedRepositories = createSelector(
   (index, repositories) => {
     return index.some((id) => {
       const repository = repositories[id];
-      return repository.__error;
+      return repository.error;
     });
   }
 );
@@ -161,6 +161,6 @@ export const snapsWithNoBuilds = createSelector(
 export const isAddingSnaps = createSelector(
   [getRepositoriesIndex, getRepositories],
   (repositoriesIndex, repositories) => {
-    return !!(repositoriesIndex.length && repositoriesIndex.some((id) => repositories[id].__isFetching));
+    return !!(repositoriesIndex.length && repositoriesIndex.some((id) => repositories[id].isFetching));
   }
 );
