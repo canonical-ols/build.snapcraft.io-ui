@@ -14,8 +14,8 @@ class SelectRepositoryRow extends Component {
     } = this.props;
 
     // TODO tidy up when we get rid of prefixes
-    const isChecked = repository.__isSelected || isEnabled;
-    const isFetching = repository.__isFetching;
+    const isChecked = repository.isSelected || isEnabled;
+    const isFetching = repository.isFetching;
     const isDisabled = isEnabled || isFetching;
 
     const rowClass = classNames({
@@ -47,7 +47,7 @@ class SelectRepositoryRow extends Component {
 }
 
 SelectRepositoryRow.defaultProps = {
-  __isSelected: false,
+  isSelected: false,
   isEnabled: false
 };
 
@@ -58,7 +58,7 @@ SelectRepositoryRow.propTypes = {
   }).isRequired,
   isEnabled: PropTypes.bool,
   onChange: PropTypes.func,
-  __isSelected: PropTypes.bool
+  isSelected: PropTypes.bool
 };
 
 export default SelectRepositoryRow;

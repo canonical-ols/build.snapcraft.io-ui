@@ -1,40 +1,40 @@
 import * as ActionTypes from '../../actions/repository';
 
 export default function repository(state={
-  __isSelected: false,
-  __isFetching: false,
-  __error: null
+  isSelected: false,
+  isFetching: false,
+  error: null
 }, action) {
 
   switch(action.type) {
     case ActionTypes.REPO_TOGGLE_SELECT: {
-      const wasSelected = state.__isSelected;
+      const wasSelected = state.isSelected;
 
       return {
         ...state,
-        __isSelected: !wasSelected
+        isSelected: !wasSelected
       };
     }
     case ActionTypes.REPO_ADD: {
       return {
         ...state,
-        __isFetching: true,
-        __isSelected: true
+        isFetching: true,
+        isSelected: true
       };
     }
     case ActionTypes.REPO_SUCCESS:
     case ActionTypes.REPO_RESET: {
       return {
         ...state,
-        __isSelected: false,
-        __isFetching: false,
-        __error: null
+        isSelected: false,
+        isFetching: false,
+        error: null
       };
     }
     case ActionTypes.REPO_FAILURE: {
       return {
         ...state,
-        __error: action.payload.error.json
+        error: action.payload.error.json
       };
     }
     default:

@@ -57,7 +57,7 @@ describe('The SelectRepositoryRow component', () => {
 
       context('and the checked prop is "true"', () => {
         beforeEach(() => {
-          props.repository.__isSelected = true;
+          props.repository.isSelected = true;
         });
 
         it('should contain a checked checkbox', () => {
@@ -68,7 +68,7 @@ describe('The SelectRepositoryRow component', () => {
 
       context('and the checked prop is "false"', () => {
         beforeEach(() => {
-          props.repository.__isSelected = false;
+          props.repository.isSelected = false;
         });
 
         it('should contain an unchecked checkbox', () => {
@@ -90,7 +90,7 @@ describe('The SelectRepositoryRow component', () => {
 
       context('and the reposistory is fetching', () => {
         beforeEach(() => {
-          props.repository.__isFetching = true;
+          props.repository.isFetching = true;
         });
 
         it('should contain a disabled checkbox', () => {
