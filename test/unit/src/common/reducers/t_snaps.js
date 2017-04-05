@@ -59,22 +59,24 @@ describe('snaps reducers', () => {
 
     const action = {
       type: ActionTypes.FETCH_SNAPS_SUCCESS,
-      payload: SNAPS
+      payload: {
+        snaps: SNAPS
+      }
     };
 
-    xit('should stop fetching', () => {
+    it('should stop fetching', () => {
       expect(snaps(state, action).isFetching).toBe(false);
     });
 
-    xit('should store success state', () => {
+    it('should store success state', () => {
       expect(snaps(state, action).success).toBe(true);
     });
 
-    xit('should clean error', () => {
+    it('should clean error', () => {
       expect(snaps(state, action).error).toBe(null);
     });
 
-    xit('should store full snap info', () => {
+    it('should store full snap info', () => {
       snaps(state, action).snaps.forEach((snap, i) => {
         expect(snap).toEqual(SNAPS[i]);
       });
