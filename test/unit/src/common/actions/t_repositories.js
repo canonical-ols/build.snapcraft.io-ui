@@ -31,7 +31,7 @@ describe('repositories actions', () => {
     store = mockStore(initialState);
   });
 
-  context('setRepositories', () => {
+  context('fetchRepositoriesSuccess', () => {
     let payload = [ { fullName: 'test1' }, { fullName: 'test2' }];
 
     beforeEach(() => {
