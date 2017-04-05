@@ -1,9 +1,6 @@
-import merge from 'lodash/merge';
+import * as ActionTypes from '../../actions/repository';
 
-import * as ActionTypes from '../actions/repository';
-
-// export only for testing
-export function repository(state={
+export default function repository(state={
   __isSelected: false,
   __isFetching: false,
   __error: null
@@ -43,24 +40,4 @@ export function repository(state={
     default:
       return state;
   }
-}
-
-// TODO snaps
-
-export function entities(state = { snaps: {}, repos: {} }, action) {
-  if (action.payload && action.payload.entities) {
-    return merge({}, state, action.payload.entities);
-  }
-
-  if (ActionTypes[action.type]) {
-    return {
-      ...state,
-      repos: {
-        ...state.repos,
-        [action.payload.id]: repository(state.repos[action.payload.id], action)
-      }
-    };
-  }
-
-  return state;
 }
