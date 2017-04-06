@@ -183,38 +183,49 @@ describe('selectors', function() {
 
   context('isAddingSnaps', function() {
     const stateNoRepos = {
-      repositoriesStatus: {}
+      entities: {
+        repos: {}
+      },
+      repositories: {
+        ids: []
+      }
     };
 
     const stateNotFetching = {
-      repositoriesStatus: {
-        'foo/bar': {
-          isFetching: false,
-          error: null,
-          success: false
+      entities: {
+        repos: {
+          1001: {
+            isFetching: false
+          }
         }
+      },
+      repositories: {
+        ids: [1001]
       }
     };
 
     const stateFetching = {
-      repositoriesStatus: {
-        'foo/bar': {
-          isFetching: true,
-          error: null,
-          success: false
+      entities: {
+        repos: {
+          1001: {
+            isFetching: true
+          }
         }
+      },
+      repositories: {
+        ids: [1001]
       }
     };
 
-    xit('should be false when no repo have status', function() {
+    it('should be false when no repo have status', function() {
       expect(isAddingSnaps(stateNoRepos)).toBe(false);
     });
 
-    xit('should be false when no snaps are being created', function() {
+    it('should be false when no snaps are being created', function() {
       expect(isAddingSnaps(stateNotFetching)).toBe(false);
     });
 
-    xit('should be true if any snap is currently fetching', function() {
+    it('should be true if any snap is currently fetching', function() {
       expect(isAddingSnaps(stateFetching)).toBe(true);
     });
 
