@@ -5,12 +5,12 @@ import * as fixtures from './fixtures.js';
 
 describe('repository entities', function() {
 
-  context('reducer', function() {
+  context('update entity reducer', function() {
 
     let state;
 
     beforeEach(function() {
-      state = repository(fixtures.initialState, {
+      state = repository(undefined, {
         type: 'REPO_ADD',
         payload: {
           id: 1001
@@ -37,7 +37,7 @@ describe('repository entities', function() {
         payload: {
           id: 1001,
           error: {
-            json: 'something went wrong'
+            json: fixtures.repoFailureState.error
           }
         }
       })).toEqual(fixtures.repoFailureState);
@@ -60,7 +60,7 @@ describe('repository entities', function() {
         }
       });
 
-      expect(state.repos[1001].isSelected).toBe(true);
+      expect(state.isSelected).toBe(true);
     });
   });
 });

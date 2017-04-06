@@ -29,59 +29,36 @@ export const payload = {
   result: [ 1001,1002,1003 ]
 };
 
-export const reposPayload = {
-  id: 1001
-};
-
-export const repoAddState = {
-  owners: {},
-  repos: {
-    1001: {
-      error: null,
-      isFetching: true,
-      isSelected: true
-    }
-  },
-  snaps: {}
-};
-
-export const repoSuccessState = {
-  owners: {},
-  repos: {
-    1001: {
-      error: null,
-      isFetching: false,
-      isSelected: false
-    }
-  },
-  snaps: {}
-};
-
-export const repoFailureState = {
-  owners: {},
-  repos: {
-    1001: {
-      error: 'something went wrong',
-      isFetching: false,
-      isSelected: true
-    }
-  },
-  snaps: {}
-};
-
-export const repoResetState = {
-  repos: {
-    1001: {
-      error: null,
-      isFetching: false,
-      isSelected: false
-    }
-  },
-  owners: {},
-  snaps: {}
-};
-
 export const finalState = {
   ...initialState,
   ...payload.entities
 };
+
+export const repoPayload = {
+  id: 1001
+};
+
+export const repoAddState = {
+  isSelected: true,
+  isFetching: true,
+  error: null
+};
+
+export const repoSuccessState = {
+  isSelected: false,
+  isFetching: false,
+  error: null
+};
+
+export const repoFailureState = {
+  isSelected: true,
+  isFetching: false,
+  error: 'something went wrong'
+};
+
+export const repoResetState = {
+  isSelected: false,
+  isFetching: false,
+  error: null
+};
+

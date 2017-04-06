@@ -16,8 +16,28 @@ export function entities(state = {
 
   // only modify repos if action is one of REPO_ types
   if (RepoActionTypes[action.type]) {
-    return repository(state, action);
+    return reduceRepoEntity(state, action);
   }
 
   return state;
+}
+
+function reduceRepoEntity(state, action) {
+  return reduceEntityHelper(state, action, repository, 'repos');
+}
+
+function reduceEntityHelper(state, action, reducer, name) {
+  const { payload } = action;
+
+  if (payload && payload.id) {
+    return {
+      ...state,
+      [name]: {
+        ...state[name],
+        [payload.id]: reducer(state[name][payload.id], action)
+      }
+    };
+  } else {
+    return state;
+  }
 }
