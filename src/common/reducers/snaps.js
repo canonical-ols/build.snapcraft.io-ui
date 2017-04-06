@@ -51,7 +51,7 @@ export function snaps(state = {
         isFetching: false,
         success: true,
         snaps: [
-          ...action.payload.snaps
+          ...action.payload.response.payload.snaps
         ],
         ids: union(state.ids, action.payload.result),
         error: null
@@ -61,7 +61,7 @@ export function snaps(state = {
         ...state,
         isFetching: false,
         success: false,
-        error: action.payload
+        error: action.payload.error
       };
     case RegisterNameActionTypes.REGISTER_NAME_SUCCESS:
       return {
