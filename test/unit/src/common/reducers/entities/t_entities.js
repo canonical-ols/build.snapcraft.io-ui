@@ -36,7 +36,6 @@ describe('entities', function() {
     });
   });
 
-  // TODO split these out
   context('repository helper', function() {
 
     for (let type in RepoActionTypes) {
