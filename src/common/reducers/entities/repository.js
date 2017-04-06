@@ -48,6 +48,7 @@ export function _repository(state={
     case ActionTypes.REPO_FAILURE: {
       return {
         ...state,
+        isFetching: false,
         error: action.payload.error.json
       };
     }

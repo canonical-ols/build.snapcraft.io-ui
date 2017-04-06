@@ -33,6 +33,18 @@ export const reposPayload = {
   id: 1001
 };
 
+export const repoAddState = {
+  owners: {},
+  repos: {
+    1001: {
+      error: null,
+      isFetching: true,
+      isSelected: true
+    }
+  },
+  snaps: {}
+};
+
 export const repoSuccessState = {
   owners: {},
   repos: {
@@ -45,8 +57,19 @@ export const repoSuccessState = {
   snaps: {}
 };
 
-export const repoResetState = {
+export const repoFailureState = {
   owners: {},
+  repos: {
+    1001: {
+      error: 'something went wrong',
+      isFetching: false,
+      isSelected: true
+    }
+  },
+  snaps: {}
+};
+
+export const repoResetState = {
   repos: {
     1001: {
       error: null,
@@ -54,6 +77,7 @@ export const repoResetState = {
       isSelected: false
     }
   },
+  owners: {},
   snaps: {}
 };
 
