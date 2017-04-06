@@ -26,7 +26,6 @@ export default function repository(state={
     case ActionTypes.REPO_SUCCESS: {
       return {
         ...state,
-        isSelected: true,
         isFetching: false,
         error: null
       };
