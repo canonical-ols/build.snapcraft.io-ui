@@ -12,14 +12,6 @@ export const REMOVE_SNAP_ERROR = 'REMOVE_SNAP_ERROR';
 export function fetchUserSnaps(owner) {
   const query = `owner=${encodeURIComponent(owner)}`;
 
-  // TODO merge master
-  // TODO partly changed to deal with repositories refactor, needs further
-  // work to remove snaps altogether - sstewart, 03/04/17
-  // dispatch(fetchSnapsSuccess({
-  //   snaps: result.payload.snaps,
-  //   result: result.result,
-  //   entities: result.entities
-  // }));
   return {
     [CALL_API]: {
       types: [ FETCH_SNAPS, FETCH_SNAPS_SUCCESS, FETCH_SNAPS_ERROR ],

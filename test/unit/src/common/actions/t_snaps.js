@@ -8,67 +8,6 @@ import * as ActionTypes from '../../../../../src/common/actions/snaps';
 import { CALL_API } from '../../../../../src/common/middleware/call-api';
 
 describe('repositories actions', () => {
-
-  // TODO merge master - see if it is needed
-  // const initialState = {
-  //   isFetching: false,
-  //   success: false,
-  //   error: null,
-  //   snaps: null
-  // };
-  //
-  // let store;
-  // let action;
-
-  // beforeEach(() => {
-  //   store = mockStore(initialState);
-  // });
-  //
-  // context('fetchSnapsSuccess', () => {
-  //   let payload = [ { fullName: 'test1' }, { fullName: 'test2' }];
-  //
-  //   beforeEach(() => {
-  //     action = fetchSnapsSuccess(payload);
-  //   });
-  //
-  //   it('should create an action to store snaps', () => {
-  //     const expectedAction = {
-  //       type: ActionTypes.FETCH_SNAPS_SUCCESS,
-  //       payload
-  //     };
-  //
-  //     store.dispatch(action);
-  //     expect(store.getActions()).toInclude(expectedAction);
-  //   });
-  //
-  //   it('should create a valid flux standard action', () => {
-  //     expect(isFSA(action)).toBe(true);
-  //   });
-  // });
-  //
-  // context('fetchSnapsError', () => {
-  //   let payload = 'Something went wrong!';
-  //
-  //   beforeEach(() => {
-  //     action = fetchSnapsError(payload);
-  //   });
-  //
-  //   it('should create an action to store request error on failure', () => {
-  //     const expectedAction = {
-  //       type: ActionTypes.FETCH_SNAPS_ERROR,
-  //       error: true,
-  //       payload
-  //     };
-  //
-  //     store.dispatch(action);
-  //     expect(store.getActions()).toInclude(expectedAction);
-  //   });
-  //
-  //   it('should create a valid flux standard action', () => {
-  //     expect(isFSA(action)).toBe(true);
-  //   });
-  // });
-
   context('fetchUserSnaps', () => {
     it('should supply request, success and failure actions when invoking CALL_API', () => {
       expect(fetchUserSnaps('anowner')[CALL_API].types).toEqual([

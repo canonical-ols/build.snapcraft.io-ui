@@ -12,7 +12,9 @@ export function entities(state = { snaps: {}, repos: {} }, action) {
     return merge({}, state, action.payload.entities);
   }
 
-  // TODO merge master - duplication of above, do we need to support both formats?
+  // XXX
+  // some action that don't use CALL_API middleware pass entities in payload directly
+  // while CALL_API middleware does it in response prop
   if (action.payload && action.payload.response && action.payload.response.entities) {
     return merge({}, state, action.payload.response.entities);
   }

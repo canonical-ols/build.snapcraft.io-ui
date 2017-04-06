@@ -57,7 +57,6 @@ describe('snaps reducers', () => {
       error: 'Previous error'
     };
 
-    // TODO merge master - see if the structure is of action payload is correct
     const action = {
       type: ActionTypes.FETCH_SNAPS_SUCCESS,
       payload: {
@@ -65,6 +64,13 @@ describe('snaps reducers', () => {
           payload: {
             snaps: SNAPS
           }
+          // XXX
+          // after partial refactoring of repositories it also now contains
+          // entities: {},
+          // result: []
+          //
+          // during final refactoring of snaps payload.snaps should be totally
+          // replaced by entities and result
         }
       }
     };
