@@ -49,25 +49,5 @@ describe('entities', function() {
         expect(repoSpy).toHaveBeenCalled();
       });
     }
-
-    /**
-    it('should update state on REPO_SUCCESS', function() {
-      expect(entities(fixtures.initialState, {
-        type: 'REPO_SUCCESS',
-        payload: {
-          id: 1001
-        }
-      })).toEqual(fixtures.repoSuccessState);
-    });
-
-    it('should update state on REPO_RESET', function() {
-      expect(entities(fixtures.initialState, {
-        type: 'REPO_RESET',
-        payload: {
-          id: 1001
-        }
-      })).toEqual(fixtures.repoResetState);
-    });
-    **/
   });
 });
