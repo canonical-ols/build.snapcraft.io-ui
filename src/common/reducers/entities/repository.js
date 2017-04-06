@@ -1,5 +1,6 @@
 import * as ActionTypes from '../../actions/repository';
 
+
 export default function repository(state={
   isSelected: false,
   isFetching: false,
@@ -34,6 +35,7 @@ export default function repository(state={
     case ActionTypes.REPO_FAILURE: {
       return {
         ...state,
+        isFetching: false,
         error: action.payload.error.json
       };
     }
