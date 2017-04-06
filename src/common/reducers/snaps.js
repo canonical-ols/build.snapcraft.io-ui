@@ -53,7 +53,7 @@ export function snaps(state = {
         snaps: [
           ...action.payload.response.payload.snaps
         ],
-        ids: union(state.ids, action.payload.result),
+        ids: union(state.ids, action.payload.response.result),
         error: null
       };
     case ActionTypes.FETCH_SNAPS_ERROR:

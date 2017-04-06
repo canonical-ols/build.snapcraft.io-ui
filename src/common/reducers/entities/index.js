@@ -12,6 +12,11 @@ export function entities(state = { snaps: {}, repos: {} }, action) {
     return merge({}, state, action.payload.entities);
   }
 
+  // TODO merge master - duplication of above, do we need to support both formats?
+  if (action.payload && action.payload.response && action.payload.response.entities) {
+    return merge({}, state, action.payload.response.entities);
+  }
+
   // only modify repos if action is one of REPO_ types
   if (action.payload && action.payload.id && RepoActionTypes[action.type]) {
     return {
