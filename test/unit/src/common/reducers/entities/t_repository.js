@@ -12,9 +12,7 @@ describe('repository entities', function() {
     beforeEach(function() {
       state = repository(undefined, {
         type: 'REPO_ADD',
-        payload: {
-          id: 1001
-        }
+        payload: fixtures.repoPayload
       });
     });
 
@@ -25,9 +23,7 @@ describe('repository entities', function() {
     it('should update state on REPO_SUCCESS', function() {
       expect(repository(state, {
         type: 'REPO_SUCCESS',
-        payload: {
-          id: 1001
-        }
+        payload: fixtures.repoPayload
       })).toEqual(fixtures.repoSuccessState);
     });
 
@@ -35,7 +31,7 @@ describe('repository entities', function() {
       expect(repository(state, {
         type: 'REPO_FAILURE',
         payload: {
-          id: 1001,
+          ...fixtures.repoPayload,
           error: {
             json: fixtures.repoFailureState.error
           }
@@ -46,18 +42,14 @@ describe('repository entities', function() {
     it('should reset state on REPO_RESET', function() {
       expect(repository(state, {
         type: 'REPO_RESET',
-        payload: {
-          id: 1001
-        }
+        payload: fixtures.repoPayload
       })).toEqual(fixtures.repoResetState);
     });
 
     it('should toggle selected on REPO_TOGGLE_SELECT', function() {
       const state = repository(fixtures.initialState, {
         type: 'REPO_TOGGLE_SELECT',
-        payload: {
-          id: 1001
-        }
+        payload: fixtures.repoPayload
       });
 
       expect(state.isSelected).toBe(true);
