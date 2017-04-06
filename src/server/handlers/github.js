@@ -11,7 +11,6 @@ import { internalGetSnapcraftYaml } from './launchpad';
 import { parseGitHubRepoUrl } from '../../common/helpers/github-url';
 import { getGitHubRootSecret, makeWebhookSecret } from './webhook';
 
-
 const logger = logging.getLogger('express');
 const REPO_ENDPOINT = '/user/repos';
 const SNAPCRAFT_INFO_WHITELIST = ['name'];
