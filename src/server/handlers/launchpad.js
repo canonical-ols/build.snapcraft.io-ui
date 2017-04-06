@@ -1,17 +1,18 @@
 import { createHash } from 'crypto';
 
 import yaml from 'js-yaml';
-import parseGitHubUrl from 'parse-github-url';
 import { normalize } from 'normalizr';
 
+import { parseGitHubRepoUrl } from '../../common/helpers/github-url';
 import db from '../db';
 import { conf } from '../helpers/config';
 import { getMemcached } from '../helpers/memcached';
 import requestGitHub from '../helpers/github';
 import getLaunchpad from '../launchpad';
-import { getSnapcraftData } from './github';
 import logging from '../logging';
 import { snapList } from './schema.js';
+import { getSnapcraftData } from './github';
+import { getLaunchpadRootSecret, makeWebhookSecret } from './webhook';
 
 const logger = logging.getLogger('express');
 
@@ -101,6 +102,7 @@ export const getRepoUrlPrefix = (owner) => `https://github.com/${owner}/`;
 // memcached cache id helpers
 export const getUrlPrefixCacheId = (urlPrefix) => `url_prefix:${urlPrefix}`;
 export const getRepositoryUrlCacheId = (repositoryUrl) => `url:${repositoryUrl}`;
+export const getHasWebhookCacheId = (snapUrl) => `has_webhook:${snapUrl}`;
 
 // Wrap errors in a promise chain so that they always end up as a
 // PreparedError.
@@ -169,8 +171,8 @@ const checkAdminPermissions = async (session, repositoryUrl) => {
   }
   const token = session.token;
 
-  const parsed = parseGitHubUrl(repositoryUrl);
-  if (parsed === null || parsed.owner === null || parsed.name === null) {
+  const parsed = parseGitHubRepoUrl(repositoryUrl);
+  if (parsed === null) {
     logger.info(`Cannot parse "${repositoryUrl}"`);
     throw new PreparedError(400, RESPONSE_GITHUB_BAD_URL);
   }
@@ -278,6 +280,57 @@ const requestNewSnap = (repositoryUrl) => {
   });
 };
 
+const ensureWebhook = async (snap) => {
+  const cacheId = getHasWebhookCacheId(snap.self_link);
+  const { owner, name } = parseGitHubRepoUrl(snap.git_repository_url);
+  const notifyUrl = `${conf.get('BASE_URL')}/${owner}/${name}/webhook/notify`;
+  const lpClient = getLaunchpad();
+
+  try {
+    const result = await getMemcached().get(cacheId);
+    if (result !== undefined) {
+      return;
+    }
+  } catch (error) {
+    logger.error(`Error getting ${cacheId} from memcached: ${error}`);
+  }
+
+  try {
+    const webhooks = await lpClient.get(snap.webhooks_collection_link);
+    if (webhooks.entries.some(
+          (webhook) => webhook.delivery_url === notifyUrl)) {
+      return;
+    }
+
+    let secret;
+    try {
+      secret = makeWebhookSecret(getLaunchpadRootSecret(), owner, name);
+    } catch (error) {
+      throw new PreparedError(500, {
+        status: 'error',
+        payload: {
+          code: 'lp-unconfigured',
+          message: error.message
+        }
+      });
+    }
+    await lpClient.named_post(snap.self_link, 'newWebhook', {
+      parameters: {
+        delivery_url: notifyUrl,
+        event_types: ['snap:build:0.1'],
+        active: true,
+        secret
+      }
+    });
+    await getMemcached().set(cacheId, true, 3600);
+    logger.info(`Created webhook on ${snap.self_link}`);
+  } catch (error) {
+    // This is unfortunate, but it can be non-fatal at the moment as we only
+    // use this for metrics.  We'll try again later.
+    logger.error(`Error creating webhook on ${snap.self_link}: ${error}`);
+  }
+};
+
 export const newSnap = async (req, res) => {
   const repositoryUrl = req.body.repository_url;
 
@@ -300,6 +353,7 @@ export const newSnap = async (req, res) => {
       await getMemcached().del(cacheId);
       const snapUrl = result.self_link;
       logger.info(`Created ${snapUrl}`);
+      await ensureWebhook(result);
       return res.status(201).send({
         status: 'success',
         payload: {
@@ -381,6 +435,9 @@ const internalFindSnapsByPrefix = async (urlPrefix) => {
       }
     });
     await getMemcached().set(cacheId, result.entries, 3600);
+    for (const snap of result.entries) {
+      await ensureWebhook(snap);
+    }
     return result.entries;
   } catch (error) {
     // At least for the moment, we just wrap the error we get from
@@ -491,7 +548,7 @@ export const findSnap = async (req, res) => {
 };
 
 const clearSnapCache = (repositoryUrl) => {
-  const repository = parseGitHubUrl(repositoryUrl);
+  const repository = parseGitHubRepoUrl(repositoryUrl);
   const enabledReposCacheId = getUrlPrefixCacheId(getRepoUrlPrefix(repository.owner));
   const snapCacheId = getRepositoryUrlCacheId(repositoryUrl);
   const snapNameCacheId = getSnapcraftYamlCacheId(repositoryUrl);

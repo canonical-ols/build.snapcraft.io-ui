@@ -14,6 +14,13 @@ export function entities(state = {
     return merge({}, state, action.payload.entities);
   }
 
+  // XXX
+  // some action that don't use CALL_API middleware pass entities in payload directly
+  // while CALL_API middleware does it in response prop
+  if (action.payload && action.payload.response && action.payload.response.entities) {
+    return merge({}, state, action.payload.response.entities);
+  }
+
   // only modify repos if action is one of REPO_ types
   if (RepoActionTypes[action.type]) {
     return reduceRepoEntity(state, action);

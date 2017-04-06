@@ -1,3 +1,4 @@
+import { createHmac } from 'crypto';
 import Express from 'express';
 import nock from 'nock';
 import supertest from 'supertest';
@@ -19,7 +20,7 @@ import { conf } from '../../../../../src/server/helpers/config.js';
 
 describe('The Launchpad API endpoint', () => {
   const app = Express();
-  const session = { token: 'secret', user: { id: 123, login: 'anowner' } };
+  const session = { token: 'secret', user: { id: 123, login: 'anowner' }, 'csrfTokens': ['blah'] };
   app.use((req, res, next) => {
     req.session = session;
     next();
@@ -134,11 +135,13 @@ describe('The Launchpad API endpoint', () => {
 
       context('when snap does not exist', () => {
         let snapUrl;
+        let lpApi;
 
         beforeEach(() => {
           const lp_api_url = conf.get('LP_API_URL');
           snapUrl = `${lp_api_url}/devel/~test-user/+snap/${snapName}`;
-          nock(lp_api_url)
+          lpApi = nock(lp_api_url);
+          lpApi
             .post('/devel/+snaps', {
               'ws.op': 'new',
               git_repository_url: 'https://github.com/anowner/aname',
@@ -146,12 +149,37 @@ describe('The Launchpad API endpoint', () => {
               processors: ['/+processors/amd64', '/+processors/armhf']
             })
             .reply(201, 'Created', { Location: snapUrl });
-          nock(lp_api_url)
-            .get(`/devel/~test-user/+snap/${snapName}`)
+          lpApi.get(`/devel/~test-user/+snap/${snapName}`)
             .reply(200, {
               resource_type_link: `${lp_api_url}/devel/#snap`,
-              self_link: snapUrl
+              self_link: snapUrl,
+              git_repository_url: 'https://github.com/anowner/aname',
+              webhooks_collection_link: `${snapUrl}/webhooks`,
             });
+          lpApi.get(`/devel/~test-user/+snap/${snapName}/webhooks`)
+            .reply(200, { total_size: 0, entries: [] });
+          const hmac = createHmac('sha1', conf.get('LP_WEBHOOK_SECRET'));
+          hmac.update('anowner');
+          hmac.update('aname');
+          lpApi
+            .post(`/devel/~test-user/+snap/${snapName}`, {
+              'ws.op': 'newWebhook',
+              delivery_url: `${conf.get('BASE_URL')}/anowner/aname/` +
+                            'webhook/notify',
+              event_types: 'snap:build:0.1',
+              active: 'true',
+              secret: hmac.digest('hex')
+            })
+            .reply(201, 'Created', { Location: `${snapUrl}/+webhook/1` });
+          lpApi.get(`/devel/~test-user/+snap/${snapName}/+webhook/1`)
+            .reply(200, {
+              resource_type_link: `${lp_api_url}/devel/#webhook`,
+              self_link: `${snapUrl}/+webhook/1`
+            });
+        });
+
+        afterEach(() => {
+          lpApi.done();
         });
 
         it('should return a 201 Created response', (done) => {
@@ -376,6 +404,8 @@ describe('The Launchpad API endpoint', () => {
             git_repository_url: 'https://github.com/another-user/test-snap',
             builds_collection_link: `${lp_api_base}/~another-user/+snap/` +
                                     'test-snap/builds',
+            webhooks_collection_link: `${lp_api_base}/~another-user/+snap/` +
+                                      'test-snap/webhooks',
             store_name: 'snap1'
           },
           {
@@ -384,7 +414,9 @@ describe('The Launchpad API endpoint', () => {
             owner_link: `${lp_api_base}/~test-user`,
             git_repository_url: 'https://github.com/test-user/test-snap',
             builds_collection_link: `${lp_api_base}/~test-user/+snap/` +
-                                    'test-snap/builds'
+                                    'test-snap/builds',
+            webhooks_collection_link: `${lp_api_base}/~test-user/+snap/` +
+                                      'test-snap/webhooks'
           }
         ];
 
@@ -426,6 +458,43 @@ describe('The Launchpad API endpoint', () => {
             });
         });
 
+        lpApi.get('/devel/~another-user/+snap/test-snap/webhooks')
+          .reply(200, { total_size: 0, entries: [] });
+        const hmac = createHmac('sha1', conf.get('LP_WEBHOOK_SECRET'));
+        hmac.update('another-user');
+        hmac.update('test-snap');
+        lpApi
+          .post('/devel/~another-user/+snap/test-snap', {
+            'ws.op': 'newWebhook',
+            delivery_url: `${conf.get('BASE_URL')}/another-user/test-snap/` +
+                          'webhook/notify',
+            event_types: 'snap:build:0.1',
+            active: 'true',
+            secret: hmac.digest('hex')
+          })
+          .reply(201, 'Created', {
+            Location: `${lp_api_url}/devel/~another-user/+snap/test-snap/` +
+                      '+webhook/1'
+          });
+        lpApi.get('/devel/~another-user/+snap/test-snap/+webhook/1')
+          .reply(200, {
+            resource_type_link: `${lp_api_url}/devel/#webhook`,
+            self_link: `${lp_api_url}/devel/~another-user/+snap/test-snap/` +
+                       '+webhook/1'
+          });
+        lpApi.get('/devel/~test-user/+snap/test-snap/webhooks')
+          .reply(200, {
+            total_size: 1,
+            entries: [
+              {
+                resource_type_link: `${lp_api_url}/devel/#webhook`,
+                self_link: `${lp_api_url}/~test-user/+snap/test-snap/` +
+                           '+webhook/1',
+                delivery_url: `${conf.get('BASE_URL')}/` +
+                              'test-user/test-snap/webhook/notify',
+              }
+            ]
+          });
       });
 
       afterEach(() => {
@@ -1904,6 +1973,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns a 200 response', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(200, done);
       });
@@ -1911,6 +1981,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns a "success" status', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasStatus('success'))
           .end(done);
@@ -1919,6 +1990,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns body with a "snap-deleted" message', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasMessage('snap-deleted'))
           .end(done);
@@ -1927,6 +1999,7 @@ describe('The Launchpad API endpoint', () => {
       it('removes stale entries from memcached', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .end((err) => {
             if (err) {
@@ -1957,9 +2030,25 @@ describe('The Launchpad API endpoint', () => {
         await dbUser.save({ snaps_removed: 1 });
         await supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl });
         await dbUser.refresh();
         expect(dbUser.get('snaps_removed')).toEqual(2);
+      });
+
+      it('returns a 401 unauthorized response when X-CSRF-Token header not sent', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/delete')
+          .send({ repository_url: repositoryUrl })
+          .expect(401, done);
+      });
+
+      it('returns a 401 unauthorized response when unrecognised X-CSRF-Token header sent', (done) => {
+        supertest(app)
+          .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'foo')
+          .send({ repository_url: repositoryUrl })
+          .expect(401, done);
       });
     });
 
@@ -1996,6 +2085,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns a 200 response', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(200, done);
       });
@@ -2003,6 +2093,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns a "success" status', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasStatus('success'))
           .end(done);
@@ -2011,6 +2102,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns body with a "snap-deleted" message', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasMessage('snap-deleted'))
           .end(done);
@@ -2019,6 +2111,7 @@ describe('The Launchpad API endpoint', () => {
       it('removes stale entries from memcached', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .end((err) => {
             if (err) {
@@ -2063,6 +2156,7 @@ describe('The Launchpad API endpoint', () => {
          'message', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasMessage('github-no-admin-permissions'))
           .end(done);
@@ -2083,6 +2177,7 @@ describe('The Launchpad API endpoint', () => {
       it('should return a 404 Not Found response', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(404, done);
       });
@@ -2099,6 +2194,7 @@ describe('The Launchpad API endpoint', () => {
          'message', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasMessage('github-snapcraft-yaml-not-found'))
           .end(done);
@@ -2131,6 +2227,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns a 404 response', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(404, done);
       });
@@ -2138,6 +2235,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns an "error" status', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasStatus('error'))
           .end(done);
@@ -2146,6 +2244,7 @@ describe('The Launchpad API endpoint', () => {
       it('returns body with a "snap-not-found" message', (done) => {
         supertest(app)
           .post('/launchpad/snaps/delete')
+          .set('X-CSRF-Token', 'blah')
           .send({ repository_url: repositoryUrl })
           .expect(hasMessage('snap-not-found'))
           .end(done);
