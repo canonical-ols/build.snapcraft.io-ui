@@ -1,5 +1,3 @@
-import union from 'lodash/union';
-
 import * as ActionTypes from '../actions/snaps';
 import * as RegisterNameActionTypes from '../actions/register-name';
 import { getGitHubRepoUrl } from '../helpers/github-url';
@@ -53,7 +51,7 @@ export function snaps(state = {
         snaps: [
           ...action.payload.response.payload.snaps
         ],
-        ids: union(state.ids, action.payload.response.result),
+        ids: action.payload.response.result,
         error: null
       };
     case ActionTypes.FETCH_SNAPS_ERROR:
