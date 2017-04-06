@@ -45,7 +45,7 @@ export const repoAddState = {
 };
 
 export const repoSuccessState = {
-  isSelected: false,
+  isSelected: true,
   isFetching: false,
   error: null
 };

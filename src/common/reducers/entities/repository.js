@@ -23,7 +23,13 @@ export default function repository(state={
         isSelected: true
       };
     }
-    case ActionTypes.REPO_SUCCESS:
+    case ActionTypes.REPO_SUCCESS: {
+      return {
+        ...state,
+        isFetching: false,
+        error: null
+      };
+    }
     case ActionTypes.REPO_RESET: {
       return {
         ...state,
