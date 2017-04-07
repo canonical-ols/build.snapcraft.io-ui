@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
-import HelpInstallSnap from '../components/help/help-install-snap';
+import { HelpInstallSnapBox } from '../components/help';
 import { HeadingOne } from '../components/vanilla/heading';
 import Breadcrumbs from '../components/vanilla/breadcrumbs';
 import BetaNotification from '../components/beta-notification';
@@ -46,7 +46,7 @@ class Builds extends Component {
           <Message status='error'>{ error.message || error }</Message>
         }
         { snap && snap.store_name &&
-          <HelpInstallSnap
+          <HelpInstallSnapBox
             headline='To test this snap on your PC or cloud instance:'
             name={ snap.store_name }
           />
