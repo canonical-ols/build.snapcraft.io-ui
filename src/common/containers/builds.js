@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import BuildHistory from '../components/build-history';
 import { Message } from '../components/forms';
 import Spinner from '../components/spinner';
-import HelpInstallSnap from '../components/help/install-snap';
+import HelpInstallSnap from '../components/help/help-install-snap';
 import { HeadingOne } from '../components/vanilla/heading';
 import Breadcrumbs from '../components/vanilla/breadcrumbs';
 import BetaNotification from '../components/beta-notification';

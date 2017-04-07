@@ -2,7 +2,7 @@ import React from 'react';
 import expect from 'expect';
 import { shallow } from 'enzyme';
 
-import HelpInstallSnap from '../../../../../../src/common/components/help/install-snap';
+import HelpInstallSnap from '../../../../../../src/common/components/help/help-install-snap';
 
 describe('<HelpInstallSnap />', function() {
 

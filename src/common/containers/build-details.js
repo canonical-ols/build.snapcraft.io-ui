@@ -7,7 +7,7 @@ import BuildRow from '../components/build-row';
 import { Table, Head, Body, Row, Header } from '../components/vanilla/table-interactive';
 import BuildLog from '../components/build-log';
 import { Message } from '../components/forms';
-import HelpInstallSnap from '../components/help/install-snap';
+import HelpInstallSnap from '../components/help/help-install-snap';
 import { HeadingOne, HeadingThree } from '../components/vanilla/heading';
 import Spinner from '../components/spinner';
 import Breadcrumbs from '../components/vanilla/breadcrumbs';

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import { HeadingThree } from '../../vanilla/heading/';
+import { HeadingThree } from '../vanilla/heading/';
 import styles from './help-install-snap.css';
 
 const HELP_INSTALL_URL = 'https://snapcraft.io/docs/core/install';
