@@ -9,9 +9,9 @@ export default class HelpPromoteSnap extends Component {
   render() {
     const { headline, name, revision, confinement } = this.props;
 
-    const heading = headline || confinement !== 'devmode'
+    const heading = headline || (confinement !== 'devmode'
       ? 'Ready to publish to beta, candidate or stable?'
-      : 'Ready to publish to beta?';
+      : 'Ready to publish to beta?');
 
     return (
       <div className={styles.helpWrapper}>
