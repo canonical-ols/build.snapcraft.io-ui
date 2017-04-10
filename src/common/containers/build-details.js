@@ -10,7 +10,6 @@ import { Message } from '../components/forms';
 import {
   HelpBox,
   HelpInstallSnap,
-  HelpInstallSnapBox,
   HelpPromoteSnap
 } from '../components/help';
 import { HeadingOne, HeadingThree } from '../components/vanilla/heading';
@@ -34,14 +33,16 @@ class BuildDetails extends Component {
     if (buildFailed) {
       // if build has failed show snapcraft debug instruction
       helpBox = (
-        <HelpInstallSnapBox headline='To debug this build:'>
-          sudo snap install lxd # if you don’t have LXD already<br/>
-          sudo snap install --classic --edge snapcraft # if you don’t have snapcraft already<br/>
-          <br/>
-          git clone {repository.url}<br/>
-          cd {repository.name}<br/>
-          snapcraft cleanbuild --debug
-        </HelpInstallSnapBox>
+        <HelpBox>
+          <HelpInstallSnap headline='To debug this build:'>
+            sudo snap install lxd # if you don’t have LXD already<br/>
+            sudo snap install --classic --edge snapcraft # if you don’t have snapcraft already<br/>
+            <br/>
+            git clone {repository.url}<br/>
+            cd {repository.name}<br/>
+            snapcraft cleanbuild --debug
+          </HelpInstallSnap>
+        </HelpBox>
       );
     } else if (snap && snap.store_name && build.storeRevision) {
       // otherwise if we have snap name and revision show install instructions
