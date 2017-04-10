@@ -31,12 +31,13 @@ class SelectRepositoriesPage extends Component {
 
   render() {
     // TODO: bartaz refactor
-    // does it need snaps (ids) or entities?
     // XXX this should fetch snaps and repos and pass to children ?
-    const { snaps, snapBuilds } = this.props;
+    // should it fetch data for first time heading (or others?)
+    // move it to HOC?
+
     return (
       <div>
-        <FirstTimeHeading snaps={snaps} snapBuilds={snapBuilds} />
+        <FirstTimeHeading />
         <CardHighlighted>
           <HeadingThree className={ styles.heading }>
             Choose repos to add
@@ -63,7 +64,6 @@ SelectRepositoriesPage.propTypes = {
   auth: PropTypes.object.isRequired,
   user: PropTypes.object,
   snaps: PropTypes.object.isRequired,
-  snapBuilds: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 };
 
@@ -71,15 +71,13 @@ function mapStateToProps(state) {
   const {
     auth,
     user,
-    snaps,
-    snapBuilds
+    snaps
   } = state;
 
   return {
     auth,
     user,
-    snaps,
-    snapBuilds
+    snaps
   };
 }
 

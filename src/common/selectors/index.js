@@ -54,6 +54,17 @@ export const hasNoConfiguredSnaps = createSelector(
 );
 
 /**
+ * @returns {Boolean} true if snaps were successfully fetched
+ */
+export const hasLoadedSnaps = createSelector(
+  [getSnaps],
+  // TODO bartaz refactor
+  // don't rely on success? but if not on that then on what?
+  // TODO add tests
+  (snaps) => snaps.success
+);
+
+/**
  * TODO merge with reposToAdd?
  * @returns {Array} get selected repositories
  */

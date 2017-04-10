@@ -65,12 +65,12 @@ class RepositoriesHome extends Component {
 
   renderRepositoriesList() {
     // TODO: bartaz refactor
-    // does it need snaps (ids) or entities?
-    const { snaps, snapBuilds } = this.props;
+    // should it fetch data for first time heading (it already does need it anyway probably)
+    // move it to HOC?
 
     return (
       <div>
-        <FirstTimeHeading snaps={snaps} snapBuilds={snapBuilds} isOnMyRepos={true} />
+        <FirstTimeHeading isOnMyRepos={true} />
         <div className={ styles['button-container'] }>
           <HeadingThree>Repos to build and publish</HeadingThree>
           <div>
