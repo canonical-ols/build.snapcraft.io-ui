@@ -192,6 +192,8 @@ SelectRepositoryListComponent.propTypes = {
   user: PropTypes.object,
   repositoriesStatus: PropTypes.object,
   router: PropTypes.object.isRequired,
+  // TODO: bartaz refactor
+  // are snaps used at all in here?
   snaps: PropTypes.object,
   selectedRepositories: PropTypes.array,
   reposToAdd: PropTypes.array,

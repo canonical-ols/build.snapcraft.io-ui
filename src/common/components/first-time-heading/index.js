@@ -91,6 +91,8 @@ FirstTimeHeading.propTypes = {
 
 function mapStateToProps(state) {
   return {
+    // TODO: bartaz refactor
+    // use snaps from entities
     snapsLoaded: !!state.snaps,
     hasNoRegisteredNames: hasNoRegisteredNames(state),
     hasNoSnapsWithRegisteredNameAndSnapcraftData: snapsWithRegisteredNameAndSnapcraftData(state).length === 0,

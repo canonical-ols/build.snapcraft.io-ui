@@ -30,6 +30,8 @@ class SelectRepositoriesPage extends Component {
   }
 
   render() {
+    // TODO: bartaz refactor
+    // does it need snaps (ids) or entities?
     // XXX this should fetch snaps and repos and pass to children ?
     const { snaps, snapBuilds } = this.props;
     return (

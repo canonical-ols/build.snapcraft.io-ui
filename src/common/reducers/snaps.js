@@ -49,6 +49,8 @@ export function snaps(state = {
         ...state,
         isFetching: false,
         success: true,
+        // TODO bartaz refactor
+        // snaps object should only be in entities
         snaps: [
           ...action.payload.response.payload.snaps
         ],
@@ -62,6 +64,8 @@ export function snaps(state = {
         success: false,
         error: action.payload.error
       };
+    // TODO bartaz refactor
+    // make sure registered name is updated in entities
     case RegisterNameActionTypes.REGISTER_NAME_SUCCESS:
       return {
         ...state,
@@ -77,6 +81,8 @@ export function snaps(state = {
         ...state,
         isFetching: false,
         success: true,
+        // TODO bartaz refactor
+        // make sure ids are up to date after remove, also remove from entities?
         snaps: (
           state.snaps !== null ?
           state.snaps.filter((snap) => {

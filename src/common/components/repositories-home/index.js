@@ -64,6 +64,8 @@ class RepositoriesHome extends Component {
   }
 
   renderRepositoriesList() {
+    // TODO: bartaz refactor
+    // does it need snaps (ids) or entities?
     const { snaps, snapBuilds } = this.props;
 
     return (

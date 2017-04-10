@@ -6,6 +6,8 @@ import { parseGitHubRepoUrl } from '../helpers/github-url';
 const getRepositoriesIndex = state => state.repositories.ids;
 const getRepositories = state => state.entities.repos;
 const getRepositoryOwners = state => state.entities.owners;
+// TODO: bartaz refactor
+// replace old selectors with new ones
 const getSnaps = state => state.snaps;
 const _getSnapsIndex = state => state.snaps.ids;
 const _getSnaps = state => state.entities.snaps;

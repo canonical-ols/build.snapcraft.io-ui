@@ -104,6 +104,9 @@ export class RepositoriesListView extends Component {
   }
 
   render() {
+    // TODO bartaz refactor
+    // selector to as has snaps?
+    // selector to get snaps for listing
     const { snaps } = this.props.snaps;
     const hasSnaps = (snaps && Object.keys(snaps).length > 0);
 
