@@ -53,8 +53,8 @@ class SelectRepositoriesPage extends Component {
     const { snaps } = props;
 
     if (snaps.success) {
-      // TODO: bartaz refactor
-      snaps.snaps.forEach((snap) => {
+      snaps.ids.forEach((id) => {
+        const snap = props.entities.snaps[id];
         this.props.dispatch(fetchBuilds(snap.git_repository_url, snap.self_link));
       });
     }
@@ -63,6 +63,7 @@ class SelectRepositoriesPage extends Component {
 
 SelectRepositoriesPage.propTypes = {
   auth: PropTypes.object.isRequired,
+  entities: PropTypes.object.isRequired,
   user: PropTypes.object,
   snaps: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
@@ -71,12 +72,14 @@ SelectRepositoriesPage.propTypes = {
 function mapStateToProps(state) {
   const {
     auth,
+    entities,
     user,
     snaps
   } = state;
 
   return {
     auth,
+    entities,
     user,
     snaps
   };
