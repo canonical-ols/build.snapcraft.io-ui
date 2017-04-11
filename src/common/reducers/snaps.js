@@ -38,9 +38,7 @@ export function snaps(state = {
     case ActionTypes.FETCH_SNAPS:
       return {
         ...state,
-        isFetching: true,
-        success: false,
-        error: null
+        isFetching: true
       };
       // XXX a little confusing because we're not refactoring this yet, just
       // making do for the repositories refactor

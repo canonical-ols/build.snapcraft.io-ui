@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
+import { hasSnaps } from '../../selectors';
 import { fetchUserSnaps } from '../../actions/snaps';
 import { fetchBuilds } from '../../actions/snap-builds';
 import { LinkButton } from '../vanilla/button';
@@ -19,18 +20,19 @@ const SNAP_POLL_PERIOD = (15 * 1000);
 
 class RepositoriesHome extends Component {
   fetchData(props) {
-    const { snaps } = props;
+    const { hasSnaps, snaps, entities } = props;
 
-    if (snaps.success) {
+    // check both success and fetching to avoid redirecting
+    // based on previous success
+    if (snaps.success && !snaps.isFetching) {
       // if user doesn't have enabled repos open add repositories view
-      // TODO: bartaz refactor
-      if (snaps.snaps.length === 0) {
+      if (!hasSnaps) {
         this.props.router.replace('/select-repositories');
         return;
       }
 
-      // TODO: bartaz refactor
-      snaps.snaps.forEach((snap) => {
+      snaps.ids.forEach((id) => {
+        const snap = entities.snaps[id];
         this.props.fetchBuilds(snap.git_repository_url, snap.self_link);
       });
     }
@@ -57,7 +59,7 @@ class RepositoriesHome extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const snapsLength = nextProps.snaps.snaps && nextProps.snaps.snaps.length;
+    const snapsLength = nextProps.snaps.ids.length;
 
     if ((this.props.snaps.success !== nextProps.snaps.success)
         || (snapsLength === 0)) {
@@ -95,16 +97,12 @@ class RepositoriesHome extends Component {
   }
 
   render() {
-    // TODO: bartaz refactor
-    const { snaps } = this.props;
-    const hasSnaps = (snaps.snaps && snaps.snaps.length > 0);
-
     // show spinner if snaps data was not yet fetched (snaps list is empty)
     // (to avoid spinner during polling we are not checking `success` or `isFetching`
     //
     // when snaps are loaded and user doesn't have any, they will be redirected
     // to select repositories (so spinner won't be showing endlessly)
-    return !hasSnaps
+    return !this.props.hasSnaps
       ? this.renderSpinner()
       : this.renderRepositoriesList();
   }
@@ -113,8 +111,10 @@ class RepositoriesHome extends Component {
 RepositoriesHome.propTypes = {
   auth: PropTypes.object.isRequired,
   user: PropTypes.object,
+  entities: PropTypes.object,
   snaps: PropTypes.object.isRequired,
   snapBuilds: PropTypes.object.isRequired,
+  hasSnaps: PropTypes.bool,
   router: PropTypes.object.isRequired,
   updateSnaps: PropTypes.func.isRequired,
   fetchBuilds: PropTypes.func.isRequired
@@ -124,6 +124,7 @@ function mapStateToProps(state) {
   const {
     auth,
     user,
+    entities,
     snaps,
     snapBuilds
   } = state;
@@ -131,8 +132,10 @@ function mapStateToProps(state) {
   return {
     auth,
     user,
+    entities,
     snaps,
-    snapBuilds
+    snapBuilds,
+    hasSnaps: hasSnaps(state)
   };
 }
 
