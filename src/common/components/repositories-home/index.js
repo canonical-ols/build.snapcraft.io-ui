@@ -23,11 +23,13 @@ class RepositoriesHome extends Component {
 
     if (snaps.success) {
       // if user doesn't have enabled repos open add repositories view
+      // TODO: bartaz refactor
       if (snaps.snaps.length === 0) {
         this.props.router.replace('/select-repositories');
         return;
       }
 
+      // TODO: bartaz refactor
       snaps.snaps.forEach((snap) => {
         this.props.fetchBuilds(snap.git_repository_url, snap.self_link);
       });
@@ -93,6 +95,7 @@ class RepositoriesHome extends Component {
   }
 
   render() {
+    // TODO: bartaz refactor
     const { snaps } = this.props;
     const hasSnaps = (snaps.snaps && snaps.snaps.length > 0);
 

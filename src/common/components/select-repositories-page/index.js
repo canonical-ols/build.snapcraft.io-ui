@@ -53,6 +53,7 @@ class SelectRepositoriesPage extends Component {
     const { snaps } = props;
 
     if (snaps.success) {
+      // TODO: bartaz refactor
       snaps.snaps.forEach((snap) => {
         this.props.dispatch(fetchBuilds(snap.git_repository_url, snap.self_link));
       });
