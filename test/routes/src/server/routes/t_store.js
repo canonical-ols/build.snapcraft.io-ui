@@ -250,5 +250,4 @@ describe('The store API endpoint', () => {
         .end(done);
     });
   });
-
 });
