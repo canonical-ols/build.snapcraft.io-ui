@@ -5,7 +5,8 @@ import {
   getAccount,
   patchAccount,
   registerName,
-  signAgreement
+  signAgreement,
+  nameOwnership
 } from '../handlers/store';
 
 const router = Router();
@@ -19,5 +20,8 @@ router.patch('/store/account', patchAccount);
 
 router.use('/store/agreement', json());
 router.post('/store/agreement', signAgreement);
+
+router.use('/store/name-ownership', json());
+router.get('/store/name-ownership', nameOwnership);
 
 export default router;
