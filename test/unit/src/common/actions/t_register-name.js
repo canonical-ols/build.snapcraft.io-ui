@@ -36,7 +36,7 @@ const {
   registerNameError,
   registerNameClear,
   internalNameOwnership,
-//  checkNameOwnership, // TODO
+  checkNameOwnership,
 
   NAME_OWNERSHIP_NOT_REGISTERED,
   NAME_OWNERSHIP_ALREADY_OWNED,
@@ -468,7 +468,6 @@ describe('register name actions', () => {
     });
   });
 
-
   context('internalNameOwnership', () => {
 
     context('when snap_name is not specified', () => {
@@ -606,6 +605,92 @@ describe('register name actions', () => {
           });
         }
       });
+    });
+  });
+
+  context('checkNameOwnership', () => {
+    const snapName = 'test-snap';
+    let api;
+
+    beforeEach(() => {
+      localForageStub.store['package_upload_request'] = { root, discharge };
+    });
+
+    context('when name ownership successfully verified', () => {
+      beforeEach(() => {
+        api = nock(conf.get('STORE_API_URL'))
+          .post('/acl/', {
+            packages: [{ name: snapName }],
+            permissions: ['package_upload']
+          })
+          .reply(404, {
+            status: 404,
+            error_code: 'resource-not-found'
+          });
+      });
+
+      afterEach(() => {
+        api.done();
+        nock.cleanAll();
+      });
+
+      it('should store CHECK_NAME_OWNERSHIP action', async() => {
+        const expectedAction = {
+          type: ActionTypes.CHECK_NAME_OWNERSHIP,
+          payload: { id: repository.url, snapName: 'test-snap' }
+        };
+        await store.dispatch(checkNameOwnership(repository, 'test-snap'));
+        expect(store.getActions()).toInclude(expectedAction);
+      });
+
+
+      it('should store CHECK_NAME_OWNERSHIP_SUCCESS action', async() => {
+        const expectedAction = {
+          type: ActionTypes.CHECK_NAME_OWNERSHIP_SUCCESS,
+          payload: {
+            id: repository.url,
+            snapName: 'test-snap',
+            status: NAME_OWNERSHIP_NOT_REGISTERED
+          }
+        };
+        await store.dispatch(checkNameOwnership(repository, 'test-snap'));
+        expect(store.getActions()).toInclude(expectedAction);
+      });
+
+    });
+
+    context('when name ownership thrown an error', () => {
+      beforeEach(() => {
+        api = nock(conf.get('STORE_API_URL'))
+          .post('/acl/', {
+            packages: [{ name: snapName }],
+            permissions: ['package_upload']
+          })
+          .reply(500, '<html>ERROR!</html>');
+      });
+
+      afterEach(() => {
+        api.done();
+        nock.cleanAll();
+      });
+
+      it('should store CHECK_NAME_OWNERSHIP action', async() => {
+        const expectedAction = {
+          type: ActionTypes.CHECK_NAME_OWNERSHIP,
+          payload: { id: repository.url, snapName: 'test-snap' }
+        };
+        await store.dispatch(checkNameOwnership(repository, 'test-snap'));
+        expect(store.getActions()).toInclude(expectedAction);
+      });
+
+      it('should store CHECK_NAME_OWNERSHIP_ERROR action', async() => {
+        await store.dispatch(checkNameOwnership(repository, 'test-snap'));
+        expect(store.getActions()).toHaveActionsMatching((action) => {
+          return action.type === ActionTypes.CHECK_NAME_OWNERSHIP_ERROR &&
+            action.payload.id === repository.url;
+        });
+      });
+
     });
   });
 });
