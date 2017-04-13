@@ -34,7 +34,13 @@ const {
   registerName,
   registerNameSuccess,
   registerNameError,
-  registerNameClear
+  registerNameClear,
+  internalNameOwnership,
+//  checkNameOwnership, // TODO
+
+  NAME_OWNERSHIP_NOT_REGISTERED,
+  NAME_OWNERSHIP_ALREADY_OWNED,
+  NAME_OWNERSHIP_REGISTERED_BY_OTHER_USER
 } = registerNameModule;
 const ActionTypes = registerNameModule;
 
@@ -459,6 +465,147 @@ describe('register name actions', () => {
 
     it('creates a valid flux standard action', () => {
       expect(isFSA(action)).toBe(true);
+    });
+  });
+
+
+  context('internalNameOwnership', () => {
+
+    context('when snap_name is not specified', () => {
+      it('should throw an error with "snap-name-not-specified" code', async () => {
+        try {
+          await internalNameOwnership(root, discharge, '');
+          throw new Error('unexpected success');
+        } catch (error) {
+          expect(error.json.payload).toEqual({
+            code: 'snap-name-not-specified',
+            message: 'snap_name is required'
+          });
+        }
+      });
+    });
+
+    context('when given snap name is not registered in the store', () => {
+      let api;
+      const snapName = 'test-snap';
+
+      beforeEach(() => {
+        api = nock(conf.get('STORE_API_URL'))
+          .post('/acl/', {
+            packages: [{ name: snapName }],
+            permissions: ['package_upload']
+          })
+          .reply(400, { status: 'error' });
+      });
+
+      afterEach(() => {
+        api.done();
+        nock.cleanAll();
+      });
+
+      it('should return NAME_OWNERSHIP_NOT_REGISTERED status code', async () => {
+        const status = await internalNameOwnership(root, discharge, snapName);
+
+        expect(status).toBe(NAME_OWNERSHIP_NOT_REGISTERED);
+      });
+    });
+
+    context('when given snap name is registered by current user', () => {
+      let storeApi;
+      let bsiApi;
+
+      const snapName = 'test-snap';
+
+      beforeEach(() => {
+        storeApi = nock(conf.get('STORE_API_URL'))
+          .post('/acl/', {
+            packages: [{ name: snapName }],
+            permissions: ['package_upload']
+          })
+          .reply(200, { macaroon: 'test-macaroon' });
+        bsiApi = nock(BASE_URL)
+          .post('/api/store/register-name', { snap_name: snapName })
+          .reply(409, { code: 'already_owned' });
+      });
+
+      afterEach(() => {
+        storeApi.done();
+        bsiApi.done();
+        nock.cleanAll();
+      });
+
+      it('should return NAME_OWNERSHIP_ALREADY_OWNED status code', async () => {
+        const status = await internalNameOwnership(root, discharge, snapName);
+
+        expect(status).toBe(NAME_OWNERSHIP_ALREADY_OWNED);
+      });
+    });
+
+    context('when given snap name is registered by another user', () => {
+      let storeApi;
+      let bsiApi;
+
+      const snapName = 'test-snap';
+
+      beforeEach(() => {
+        storeApi = nock(conf.get('STORE_API_URL'))
+          .post('/acl/', {
+            packages: [{ name: snapName }],
+            permissions: ['package_upload']
+          })
+          .reply(200, { macaroon: 'test-macaroon' });
+        bsiApi = nock(BASE_URL)
+          .post('/api/store/register-name', { snap_name: snapName })
+          .reply(409, { code: 'already_registered' });
+      });
+
+      afterEach(() => {
+        storeApi.done();
+        bsiApi.done();
+        nock.cleanAll();
+      });
+
+      it('should return NAME_OWNERSHIP_REGISTERED_BY_OTHER_USER status code', async () => {
+        const status = await internalNameOwnership(root, discharge, snapName);
+
+        expect(status).toBe(NAME_OWNERSHIP_REGISTERED_BY_OTHER_USER);
+      });
+    });
+
+    context('when given snap name is registered by another user', () => {
+      let storeApi;
+      let bsiApi;
+
+      const snapName = 'test-snap';
+
+      beforeEach(() => {
+        storeApi = nock(conf.get('STORE_API_URL'))
+          .post('/acl/', {
+            packages: [{ name: snapName }],
+            permissions: ['package_upload']
+          })
+          .reply(200, { macaroon: 'test-macaroon' });
+        bsiApi = nock(BASE_URL)
+          .post('/api/store/register-name', { snap_name: snapName })
+          .reply(200, { status: 'success' });
+      });
+
+      afterEach(() => {
+        storeApi.done();
+        bsiApi.done();
+        nock.cleanAll();
+      });
+
+      it('should throw an error with "unexpected-register-response" code', async () => {
+        try {
+          await internalNameOwnership(root, discharge, snapName);
+          throw new Error('Unexpected success.');
+        } catch (error) {
+          expect(error.json).toInclude({
+            code: 'unexpected-register-response'
+          });
+        }
+      });
     });
   });
 });

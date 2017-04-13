@@ -212,7 +212,7 @@ export function registerNameClear(id) {
   };
 }
 
-async function internalNameOwnership(root, discharge, snapName) {
+export async function internalNameOwnership(root, discharge, snapName) {
   if (!snapName) {
     throw new APICompatibleError({
       code: 'snap-name-not-specified',
@@ -250,7 +250,11 @@ async function internalNameOwnership(root, discharge, snapName) {
           : NAME_OWNERSHIP_REGISTERED_BY_OTHER_USER;
     } else {
       // unexpected response from name register api
-      throw getError(registerResponse, { status: 'error', payload: registerResponse });
+      throw getError(registerResponse, {
+        status: 'error',
+        code: 'unexpected-register-response',
+        payload: registerJson
+      });
     }
   } else {
     return NAME_OWNERSHIP_NOT_REGISTERED;
