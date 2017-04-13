@@ -470,20 +470,6 @@ describe('register name actions', () => {
 
   context('internalNameOwnership', () => {
 
-    context('when snap_name is not specified', () => {
-      it('should throw an error with "snap-name-not-specified" code', async () => {
-        try {
-          await internalNameOwnership(root, discharge, '');
-          throw new Error('unexpected success');
-        } catch (error) {
-          expect(error.json.payload).toEqual({
-            code: 'snap-name-not-specified',
-            message: 'snap_name is required'
-          });
-        }
-      });
-    });
-
     context('when given snap name is not registered in the store', () => {
       let api;
       const snapName = 'test-snap';
@@ -612,8 +598,20 @@ describe('register name actions', () => {
     const snapName = 'test-snap';
     let api;
 
+
     beforeEach(() => {
       localForageStub.store['package_upload_request'] = { root, discharge };
+    });
+
+    context('when snapName is not specified', () => {
+      it('should throw an error', async () => {
+        try {
+          await store.dispatch(checkNameOwnership(repository, ''));
+          throw new Error('Unexpected success');
+        } catch (error) {
+          expect(error.message).toContain('`repository` and `snapName` are required params');
+        }
+      });
     });
 
     context('when name ownership successfully verified', () => {

@@ -213,13 +213,6 @@ export function registerNameClear(id) {
 }
 
 export async function internalNameOwnership(root, discharge, snapName) {
-  if (!snapName) {
-    throw new APICompatibleError({
-      code: 'snap-name-not-specified',
-      message: 'snap_name is required'
-    });
-  }
-
   // first request package_upload macaroon to see if name is registered
   // in the store
   const url = `${conf.get('STORE_API_URL')}/acl/`;
@@ -262,6 +255,10 @@ export async function internalNameOwnership(root, discharge, snapName) {
 }
 
 export function checkNameOwnership(repository, snapName) {
+  if (!repository || !snapName) {
+    throw new Error('`repository` and `snapName` are required params of `checkNameOwnership`');
+  }
+
   return async (dispatch) => {
     const id = repository.url;
 
