@@ -634,9 +634,9 @@ describe('register name actions', () => {
         nock.cleanAll();
       });
 
-      it('should store CHECK_NAME_OWNERSHIP action', async() => {
+      it('should store CHECK_NAME_OWNERSHIP_REQUEST action', async() => {
         const expectedAction = {
-          type: ActionTypes.CHECK_NAME_OWNERSHIP,
+          type: ActionTypes.CHECK_NAME_OWNERSHIP_REQUEST,
           payload: { id: repository.url, snapName: 'test-snap' }
         };
         await store.dispatch(checkNameOwnership(repository, 'test-snap'));
@@ -674,9 +674,9 @@ describe('register name actions', () => {
         nock.cleanAll();
       });
 
-      it('should store CHECK_NAME_OWNERSHIP action', async() => {
+      it('should store CHECK_NAME_OWNERSHIP_REQUEST action', async() => {
         const expectedAction = {
-          type: ActionTypes.CHECK_NAME_OWNERSHIP,
+          type: ActionTypes.CHECK_NAME_OWNERSHIP_REQUEST,
           payload: { id: repository.url, snapName: 'test-snap' }
         };
         await store.dispatch(checkNameOwnership(repository, 'test-snap'));

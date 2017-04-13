@@ -15,7 +15,7 @@ export const REGISTER_NAME_SUCCESS = 'REGISTER_NAME_SUCCESS';
 export const REGISTER_NAME_ERROR = 'REGISTER_NAME_ERROR';
 export const REGISTER_NAME_CLEAR = 'REGISTER_NAME_CLEAR';
 
-export const CHECK_NAME_OWNERSHIP = 'CHECK_NAME_OWNERSHIP';
+export const CHECK_NAME_OWNERSHIP_REQUEST = 'CHECK_NAME_OWNERSHIP_REQUEST';
 export const CHECK_NAME_OWNERSHIP_SUCCESS = 'CHECK_NAME_OWNERSHIP_SUCCESS';
 export const CHECK_NAME_OWNERSHIP_ERROR = 'CHECK_NAME_OWNERSHIP_ERROR';
 
@@ -86,7 +86,7 @@ async function signAgreement(root, discharge) {
 }
 
 async function requestRegisterName(root, discharge, snapName) {
-  return await await fetch(`${BASE_URL}/api/store/register-name`, {
+  return await fetch(`${BASE_URL}/api/store/register-name`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ export function checkNameOwnership(repository, snapName) {
     const id = repository.url;
 
     dispatch({
-      type: CHECK_NAME_OWNERSHIP,
+      type: CHECK_NAME_OWNERSHIP_REQUEST,
       payload: { id, snapName }
     });
 
