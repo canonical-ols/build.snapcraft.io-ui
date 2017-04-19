@@ -518,13 +518,7 @@ export const findSnaps = async (req, res) => {
     }
     return res.status(200).send({
       status: 'success',
-      payload: {
-        code: 'snaps-found',
-        snaps: snaps
-      },
-      // TODO finish refactoring state: this has been added in a temporary way
-      // until snaps state is refactored, but it's needed for repository refactor
-      // to calculate enabled state in /select-repository
+      code: 'snaps-found',
       ...normalize(snaps, snapList)
     });
   } catch (error) {

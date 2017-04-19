@@ -511,18 +511,22 @@ describe('The Launchpad API endpoint', () => {
         await apiResponse.expect(hasStatus('success'));
       });
 
-      it('should return "snaps-found" message with the correct snaps', async () => {
-        const response = await apiResponse.expect(hasMessage('snaps-found'));
-        const responseSnaps = response.body.payload.snaps;
+      it('should return "snaps-found" code', async () => {
+        await apiResponse.expect(hasBodyCode('snaps-found'));
+      });
+
+      it('should return result with snap ids', async () => {
+        const response = await apiResponse;
+        const responseSnaps = response.body.result;
 
         expect(responseSnaps.length).toEqual(testSnaps.length);
-        expect(responseSnaps[0]).toContain(testSnaps[0]);
-        expect(responseSnaps[1]).toContain(testSnaps[1]);
+        expect(responseSnaps[0]).toEqual(testSnaps[0].git_repository_url);
+        expect(responseSnaps[1]).toEqual(testSnaps[1].git_repository_url);
       });
 
       it('should return snaps with snapcraft_data', async () => {
         const response = await apiResponse;
-        const snap = response.body.payload.snaps[0];
+        const snap = response.body.entities.snaps[testSnaps[0].git_repository_url];
 
         expect(snap).toContain({
           snapcraft_data: contents[snap.git_repository_url]
@@ -624,7 +628,7 @@ describe('The Launchpad API endpoint', () => {
 
       it('should return "snaps-found" message with empty list', async () => {
         const response = await apiResponse;
-        const responseSnaps = response.body.payload.snaps;
+        const responseSnaps = response.body.result;
 
         expect(responseSnaps.length).toEqual(0);
       });
@@ -740,13 +744,17 @@ describe('The Launchpad API endpoint', () => {
         await apiResponse.expect(hasStatus('success'));
       });
 
-      it('should return "snaps-found" message with the correct snaps', async () => {
+      it('should return "snaps-found" code', async () => {
+        await apiResponse.expect(hasBodyCode('snaps-found'));
+      });
+
+      it('should return snaps code', async () => {
         const response = await apiResponse;
-        const responseSnaps = response.body.payload.snaps;
+        const responseSnaps = response.body.result;
 
         expect(responseSnaps.length).toEqual(testSnaps.length);
-        expect(responseSnaps[0]).toContain(testSnaps[0]);
-        expect(responseSnaps[1]).toContain(testSnaps[1]);
+        expect(responseSnaps[0]).toEqual(testSnaps[0].git_repository_url);
+        expect(responseSnaps[1]).toEqual(testSnaps[1].git_repository_url);
       });
 
       it('should leave metrics unmodified if already set', async () => {
@@ -2293,6 +2301,16 @@ const hasStatus = (expected) => {
   return (actual) => {
     if (typeof actual.body.status === 'undefined' || actual.body.status !== expected) {
       throw new Error('Response does not have status ' + expected);
+    }
+  };
+};
+
+const hasBodyCode = (code) => {
+  return (actual) => {
+    if (typeof actual.body === 'undefined'
+        || typeof actual.body.code === 'undefined'
+        || actual.body.code !== code) {
+      throw new Error('Response does not have code ' + code);
     }
   };
 };
