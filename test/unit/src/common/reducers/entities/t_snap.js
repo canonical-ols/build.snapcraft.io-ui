@@ -7,7 +7,7 @@ import * as ActionTypes from '../../../../../../src/common/actions/register-name
 describe('snaps entities', function() {
 
   let state = {
-    store_name: 'test-name'
+    storeName: 'test-name'
   };
 
   context('name ownership actions', () => {
@@ -107,7 +107,7 @@ describe('snaps entities', function() {
         payload: {
           snapName: 'test-name-changed'
         }
-      }).store_name).toEqual('test-name-changed');
+      }).storeName).toEqual('test-name-changed');
     });
 
     it('should store fetching status on REGISTER_NAME_ERROR', () => {

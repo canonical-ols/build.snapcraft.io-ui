@@ -47,7 +47,7 @@ export default function snap(state={}, action) {
     case RegisterNameActionTypes.REGISTER_NAME_SUCCESS:
       return {
         ...state,
-        store_name: action.payload.snapName,
+        storeName: action.payload.snapName,
         registerNameStatus: {
           ...state.registerNameStatus,
           isFetching: false,

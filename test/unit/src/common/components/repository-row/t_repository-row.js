@@ -15,7 +15,7 @@ describe('<RepositoryRowView />', () => {
   const props = {
     snap: {
       gitRepoUrl: 'https://github.com/anowner/aname',
-      store_name: 'test-snap',
+      storeName: 'test-snap',
       snapcraft_data: { name: 'test-snap' }
     },
     latestBuild: {

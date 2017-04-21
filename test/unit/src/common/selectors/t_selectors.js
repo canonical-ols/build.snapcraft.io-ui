@@ -46,7 +46,7 @@ describe('selectors', function() {
     entities: {
       snaps: {
         'https:github.com/anowner/aname': {
-          store_name: 'bsi-test-ii',
+          storeName: 'bsi-test-ii',
           gitRepoUrl: 'https:github.com/anowner/aname'
         }
       }
@@ -60,7 +60,7 @@ describe('selectors', function() {
     entities: {
       snaps: {
         'https:github.com/anowner/aname': {
-          store_name: 'bsi-test-ii',
+          storeName: 'bsi-test-ii',
           snapcraft_data: { name: 'bsi-test-ii' },
           gitRepoUrl: 'https:github.com/anowner/aname'
         }
@@ -152,7 +152,7 @@ describe('selectors', function() {
       entities: {
         snaps: {
           'https:github.com/anowner/aname': {
-            store_name: 'bsi-test-ii',
+            storeName: 'bsi-test-ii',
             snapcraft_data: { name: 'bsi-test-ii' }
           },
           'https:github.com/anowner/aname-i': {}
@@ -168,7 +168,7 @@ describe('selectors', function() {
       const snaps = snapsWithRegisteredNameAndSnapcraftData(stateWithNameAndSnapcraftData);
       expect(snaps.length).toBe(1);
       expect(snaps).toInclude({
-        store_name: 'bsi-test-ii',
+        storeName: 'bsi-test-ii',
         snapcraft_data: { name: 'bsi-test-ii' }
       });
     });
@@ -185,11 +185,11 @@ describe('selectors', function() {
       entities: {
         snaps: {
           'https:github.com/anowner/aname': {
-            store_name: 'bsi-test-ii',
+            storeName: 'bsi-test-ii',
             snapcraft_data: { name: 'bsi-test-ii' }
           },
           'https:github.com/anowner/aname-i': {
-            store_name: 'bsi-test-iii'
+            storeName: 'bsi-test-iii'
           }
         }
       }
@@ -203,7 +203,7 @@ describe('selectors', function() {
       const snaps = snapsWithRegisteredNameAndNoSnapcraftData(stateWithNameAndNoSnapcraftData);
       expect(snaps.length).toBe(1);
       expect(snaps).toInclude({
-        store_name: 'bsi-test-iii'
+        storeName: 'bsi-test-iii'
       });
     });
   });
@@ -219,12 +219,12 @@ describe('selectors', function() {
       entities: {
         snaps: {
           'https://github.com/test/bsi-test': {
-            store_name: 'bsi-test-ii',
+            storeName: 'bsi-test-ii',
             gitRepoUrl: 'https://github.com/test/bsi-test',
             snapcraft_data: { name: 'bsi-test-ii' }
           },
           'https://github.com/test/bsi-test-iii': {
-            store_name: 'bsi-test-iii',
+            storeName: 'bsi-test-iii',
             gitRepoUrl: 'https://github.com/test/bsi-test-iii',
             snapcraft_data: { name: 'bsi-test-iii' }
           }
@@ -250,7 +250,7 @@ describe('selectors', function() {
       const snaps = snapsWithNoBuilds(stateWithBuilds);
       expect(snaps.length).toBe(1);
       expect(snaps).toInclude({
-        store_name: 'bsi-test-iii',
+        storeName: 'bsi-test-iii',
         gitRepoUrl: 'https://github.com/test/bsi-test-iii',
         snapcraft_data: { name: 'bsi-test-iii' }
       });

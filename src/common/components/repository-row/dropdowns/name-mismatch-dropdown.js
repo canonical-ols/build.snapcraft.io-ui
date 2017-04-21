@@ -11,7 +11,7 @@ import {
 import styles from './dropdowns.css';
 
 const NameMismatchDropdown = (props) => {
-  const { snapcraft_data, store_name } = props.snap;
+  const { snapcraft_data, storeName } = props.snap;
 
   let helpText;
 
@@ -31,7 +31,7 @@ const NameMismatchDropdown = (props) => {
         <Data col="100">
           <p>
             The snapcraft.yaml uses the snap name “{snapcraft_data.name}”,
-            but you’ve registered the name “{store_name}”.
+            but you’ve registered the name “{storeName}”.
           </p>
           { helpText }
         </Data>
@@ -41,7 +41,7 @@ const NameMismatchDropdown = (props) => {
 };
 
 function getNameRegisteredByOtherUserHelpText(snap) {
-  const { snapcraft_data, store_name, gitRepoUrl } = snap;
+  const { snapcraft_data, storeName, gitRepoUrl } = snap;
 
   return (
     <p>
@@ -53,13 +53,13 @@ function getNameRegisteredByOtherUserHelpText(snap) {
         href={getTemplateUrl(gitRepoUrl, snapcraft_data.path)}
       >
         change snapcraft.yaml
-      </a> to use “{store_name}” instead.
+      </a> to use “{storeName}” instead.
     </p>
   );
 }
 
 function getNameMismatchHelpText(snap, onOpenRegisterNameClick) {
-  const { snapcraft_data, store_name, gitRepoUrl } = snap;
+  const { snapcraft_data, storeName, gitRepoUrl } = snap;
 
   return (
     <div className={styles.caption}>
@@ -72,7 +72,7 @@ function getNameMismatchHelpText(snap, onOpenRegisterNameClick) {
             href={getTemplateUrl(gitRepoUrl, snapcraft_data.path)}
           >
             Change snapcraft.yaml
-          </a> to use “{store_name}”
+          </a> to use “{storeName}”
         </li>
         <li>
           <a onClick={onOpenRegisterNameClick}>Register the name</a> “{snapcraft_data.name}”
@@ -84,7 +84,7 @@ function getNameMismatchHelpText(snap, onOpenRegisterNameClick) {
 
 NameMismatchDropdown.propTypes = {
   snap: PropTypes.shape({
-    store_name: PropTypes.string,
+    storeName: PropTypes.string,
     snapcraft_data: PropTypes.shape({
       name: PropTypes.string
     })

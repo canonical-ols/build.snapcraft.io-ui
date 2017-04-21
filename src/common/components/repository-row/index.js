@@ -255,7 +255,7 @@ export class RepositoryRowView extends Component {
       showUnregisteredDropdown && authStore.authenticated
     );
 
-    const registeredName = snap.store_name;
+    const registeredName = snap.storeName;
 
     const hasBuilt = !!(latestBuild && snap.snapcraft_data);
 
@@ -425,9 +425,9 @@ export class RepositoryRowView extends Component {
 }
 
 const snapNameIsMismatched = (snap) => {
-  const { snapcraft_data, store_name } = snap;
+  const { snapcraft_data, storeName } = snap;
 
-  return snapcraft_data && store_name && snapcraft_data.name !== store_name;
+  return snapcraft_data && storeName && snapcraft_data.name !== storeName;
 };
 
 const snapIsConfigured = (snap) => !!snap.snapcraft_data;
@@ -435,7 +435,7 @@ const snapIsConfigured = (snap) => !!snap.snapcraft_data;
 RepositoryRowView.propTypes = {
   snap: PropTypes.shape({
     gitRepoUrl: PropTypes.string,
-    store_name: PropTypes.string,
+    storeName: PropTypes.string,
     snapcraft_data: PropTypes.object
   }),
   latestBuild: PropTypes.shape({

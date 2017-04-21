@@ -45,11 +45,11 @@ class Builds extends Component {
         { error &&
           <Message status='error'>{ error.message || error }</Message>
         }
-        { snap && snap.store_name &&
+        { snap && snap.storeName &&
           <HelpBox>
             <HelpInstallSnap
               headline='To test this snap on your PC or cloud instance:'
-              name={ snap.store_name }
+              name={ snap.storeName }
             />
           </HelpBox>
         }
@@ -73,7 +73,7 @@ Builds.propTypes = {
     isFetching: PropTypes.bool,
     snap: PropTypes.shape({
       selfLink: PropTypes.string.isRequired,
-      store_name: PropTypes.string.isRequired
+      storeName: PropTypes.string.isRequired
     }),
     success: PropTypes.bool,
     error: PropTypes.object

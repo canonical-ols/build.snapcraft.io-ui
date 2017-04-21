@@ -14,12 +14,12 @@ describe('snaps reducers', () => {
   const SNAPS = [{
     gitRepoUrl: 'https://github.com/anowner/aname',
     selfLink: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial',
-    store_name: 'test-snap-store-name'
+    storeName: 'test-snap-store-name'
   },
   {
     gitRepoUrl: 'https://github.com/anowner/anothername',
     selfLink: 'https://api.launchpad.net/devel/~anowner/+snap/blahblahtest-xenial',
-    store_name: 'test-snap-store-another-name'
+    storeName: 'test-snap-store-another-name'
   }];
 
   const IDS = SNAPS.map((snap) => snap.gitRepoUrl);

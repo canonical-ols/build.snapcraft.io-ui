@@ -25,7 +25,7 @@ export const snap = new schema.Entity('snaps', {}, {
       gitRepoUrl: entity.git_repository_url,
       selfLink: entity.self_link,
       snapcraft_data: entity.snapcraft_data,
-      store_name: entity.store_name
+      storeName: entity.store_name
     };
   }
 });

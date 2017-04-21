@@ -87,7 +87,7 @@ describe('snapBuilds reducers', () => {
     const SNAP = {
       gitRepoUrl: 'https://github.com/anowner/aname',
       selfLink: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial',
-      store_name: 'test-snap-store-name'
+      storeName: 'test-snap-store-name'
     };
 
     const state = {
