@@ -355,8 +355,8 @@ describe('register name actions', () => {
                   .get('/api/store/account')
                   .query(true)
                   .reply(403, { error_list: [error] });
-                scope
-                  .patch('/api/store/account', {
+                storeScope
+                  .patch('/account', {
                     short_namespace: 'test-user'
                   })
                   .reply(204);

@@ -66,64 +66,6 @@ describe('The store API endpoint', () => {
     });
   });
 
-  describe('PATCH account route', () => {
-    afterEach(() => {
-      nock.cleanAll();
-    });
-
-    it('passes request through to store', (done) => {
-      const scope = nock(conf.get('STORE_API_URL'))
-        .patch('/account', { short_namespace: 'test-namespace' })
-        .matchHeader(
-          'Authorization',
-          'Macaroon root="dummy-root", discharge="dummy-discharge"'
-        )
-        .reply(204);
-
-      supertest(app)
-        .patch('/store/account')
-        .send({
-          short_namespace: 'test-namespace',
-          root: 'dummy-root',
-          discharge: 'dummy-discharge'
-        })
-        .expect((res) => {
-          scope.done();
-          expect(res.status).toBe(204);
-          expect(res.body).toEqual({});
-        })
-        .end(done);
-    });
-
-    it('handles error responses reasonably', (done) => {
-      const error = {
-        code: 'user-not-ready',
-        message: 'Developer has not signed agreement.'
-      };
-      const scope = nock(conf.get('STORE_API_URL'))
-        .patch('/account', { short_namespace: 'test-namespace' })
-        .matchHeader(
-          'Authorization',
-          'Macaroon root="dummy-root", discharge="dummy-discharge"'
-        )
-        .reply(403, { error_list: [error] });
-
-      supertest(app)
-        .patch('/store/account')
-        .send({
-          short_namespace: 'test-namespace',
-          root: 'dummy-root',
-          discharge: 'dummy-discharge'
-        })
-        .expect((res) => {
-          scope.done();
-          expect(res.status).toBe(403);
-          expect(res.body).toEqual({ error_list: [error] });
-        })
-        .end(done);
-    });
-  });
-
   describe('sign agreement route', () => {
     afterEach(() => {
       nock.cleanAll();

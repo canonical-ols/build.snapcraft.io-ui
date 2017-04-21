@@ -16,29 +16,7 @@ export const getAccount = async (req, res) => {
   return res.status(response.status).send(json);
 };
 
-export const patchAccount = async (req, res) => {
-  const shortNamespace = req.body.short_namespace;
-  const root = req.body.root;
-  const discharge = req.body.discharge;
-
-  const response = await fetch(`${conf.get('STORE_API_URL')}/account`, {
-    method: 'PATCH',
-    headers: {
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ short_namespace: shortNamespace })
-  });
-  const text = await response.text();
-  let json;
-  if (text === '') {
-    json = null;
-  } else {
-    json = JSON.parse(text);
-  }
-  return res.status(response.status).send(json);
-};
-
+// XXX: Client can go straight to SCA for this now
 export const signAgreement = async (req, res) => {
   const latestTosAccepted = req.body.latest_tos_accepted;
   const root = req.body.root;
