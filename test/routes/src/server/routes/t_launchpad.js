@@ -869,7 +869,8 @@ describe('The Launchpad API endpoint', () => {
           .expect(hasMessage('snap-found'))
           .expect((res) => {
             expect(res.body.payload.snap).toContain({
-              ...testSnaps[1],
+              git_repository_url: testSnaps[1].git_repository_url,
+              self_link: testSnaps[1].self_link,
               snapcraft_data: snapcraftData
             });
           })

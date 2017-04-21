@@ -10,7 +10,7 @@ import { getMemcached } from '../helpers/memcached';
 import requestGitHub from '../helpers/github';
 import getLaunchpad from '../launchpad';
 import logging from '../logging';
-import { snapList } from './schema.js';
+import * as schema from './schema.js';
 import { getSnapcraftData } from './github';
 import { getLaunchpadRootSecret, makeWebhookSecret } from './webhook';
 
@@ -519,7 +519,7 @@ export const findSnaps = async (req, res) => {
     return res.status(200).send({
       status: 'success',
       code: 'snaps-found',
-      ...normalize(snaps, snapList)
+      ...normalize(snaps, schema.snapList)
     });
   } catch (error) {
     return sendError(res, error);
@@ -533,15 +533,24 @@ export const findSnap = async (req, res) => {
       snap.git_repository_url, req.session.token
     );
 
+    snap.snapcraft_data = snapcraftData;
+
+    const normalizedSnap = normalize(snap, schema.snap);
+
     return res.status(200).send({
       status: 'success',
       payload: {
         code: 'snap-found',
         snap: {
-          ...snap,
-          snapcraft_data: snapcraftData
+          // TODO
+          // temporary solution until snap builds store and actions
+          // are properly refactored
+          ...normalizedSnap.entities.snaps[normalizedSnap.result],
         }
       }
+      // TODO
+      // after refactoring of snapBuilds should only return normalized snap
+      // without payload
     });
   } catch (error) {
     return sendError(res, error);
