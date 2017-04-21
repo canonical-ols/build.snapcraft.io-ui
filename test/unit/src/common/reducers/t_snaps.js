@@ -12,17 +12,13 @@ describe('snaps reducers', () => {
   };
 
   const SNAPS = [{
-    builds_collection_link: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial/builds',
     gitRepoUrl: 'https://github.com/anowner/aname',
-    resource_type_link: 'https://api.launchpad.net/devel/#snap',
-    self_link: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial',
+    selfLink: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial',
     store_name: 'test-snap-store-name'
   },
   {
-    builds_collection_link: 'https://api.launchpad.net/devel/~anowner/+snap/blahblahtest-xenial/builds',
     gitRepoUrl: 'https://github.com/anowner/anothername',
-    resource_type_link: 'https://api.launchpad.net/devel/#snap',
-    self_link: 'https://api.launchpad.net/devel/~anowner/+snap/blahblahtest-xenial',
+    selfLink: 'https://api.launchpad.net/devel/~anowner/+snap/blahblahtest-xenial',
     store_name: 'test-snap-store-another-name'
   }];
 

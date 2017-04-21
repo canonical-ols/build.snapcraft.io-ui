@@ -870,7 +870,7 @@ describe('The Launchpad API endpoint', () => {
           .expect((res) => {
             expect(res.body.payload.snap).toContain({
               gitRepoUrl: testSnaps[1].git_repository_url,
-              self_link: testSnaps[1].self_link,
+              selfLink: testSnaps[1].self_link,
               snapcraft_data: snapcraftData
             });
           })
@@ -1003,7 +1003,7 @@ describe('The Launchpad API endpoint', () => {
           .expect((res) => {
             expect(res.body.payload.snap).toInclude({
               gitRepoUrl: snap.git_repository_url,
-              self_link: snap.self_link
+              selfLink: snap.self_link
             });
           })
           .end(done);

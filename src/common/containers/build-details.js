@@ -125,7 +125,7 @@ BuildDetails.propTypes = {
   snapBuilds: PropTypes.shape({
     isFetching: PropTypes.bool,
     snap: PropTypes.shape({
-      self_link: PropTypes.string.isRequired,
+      selfLink: PropTypes.string.isRequired,
       store_name: PropTypes.string.isRequired
     }),
     error: PropTypes.object,
