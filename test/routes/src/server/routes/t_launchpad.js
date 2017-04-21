@@ -524,15 +524,15 @@ describe('The Launchpad API endpoint', () => {
         expect(responseSnaps[1]).toEqual(testSnaps[1].git_repository_url);
       });
 
-      it('should return snaps with snapcraft_data', async () => {
+      it('should return snaps with snapcraftData', async () => {
         const response = await apiResponse;
         const snap = response.body.entities.snaps[testSnaps[0].git_repository_url];
 
         expect(snap).toContain({
-          snapcraft_data: contents[snap.gitRepoUrl]
+          snapcraftData: contents[snap.gitRepoUrl]
         });
         expect(snap).toContain({
-          snapcraft_data: { path: 'snap/snapcraft.yaml' }
+          snapcraftData: { path: 'snap/snapcraft.yaml' }
         });
       });
 
@@ -871,7 +871,7 @@ describe('The Launchpad API endpoint', () => {
             expect(res.body.payload.snap).toContain({
               gitRepoUrl: testSnaps[1].git_repository_url,
               selfLink: testSnaps[1].self_link,
-              snapcraft_data: snapcraftData
+              snapcraftData: snapcraftData
             });
           })
           .end(done);

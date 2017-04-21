@@ -61,7 +61,7 @@ describe('selectors', function() {
       snaps: {
         'https:github.com/anowner/aname': {
           storeName: 'bsi-test-ii',
-          snapcraft_data: { name: 'bsi-test-ii' },
+          snapcraftData: { name: 'bsi-test-ii' },
           gitRepoUrl: 'https:github.com/anowner/aname'
         }
       }
@@ -153,7 +153,7 @@ describe('selectors', function() {
         snaps: {
           'https:github.com/anowner/aname': {
             storeName: 'bsi-test-ii',
-            snapcraft_data: { name: 'bsi-test-ii' }
+            snapcraftData: { name: 'bsi-test-ii' }
           },
           'https:github.com/anowner/aname-i': {}
         }
@@ -169,7 +169,7 @@ describe('selectors', function() {
       expect(snaps.length).toBe(1);
       expect(snaps).toInclude({
         storeName: 'bsi-test-ii',
-        snapcraft_data: { name: 'bsi-test-ii' }
+        snapcraftData: { name: 'bsi-test-ii' }
       });
     });
   });
@@ -186,7 +186,7 @@ describe('selectors', function() {
         snaps: {
           'https:github.com/anowner/aname': {
             storeName: 'bsi-test-ii',
-            snapcraft_data: { name: 'bsi-test-ii' }
+            snapcraftData: { name: 'bsi-test-ii' }
           },
           'https:github.com/anowner/aname-i': {
             storeName: 'bsi-test-iii'
@@ -221,12 +221,12 @@ describe('selectors', function() {
           'https://github.com/test/bsi-test': {
             storeName: 'bsi-test-ii',
             gitRepoUrl: 'https://github.com/test/bsi-test',
-            snapcraft_data: { name: 'bsi-test-ii' }
+            snapcraftData: { name: 'bsi-test-ii' }
           },
           'https://github.com/test/bsi-test-iii': {
             storeName: 'bsi-test-iii',
             gitRepoUrl: 'https://github.com/test/bsi-test-iii',
-            snapcraft_data: { name: 'bsi-test-iii' }
+            snapcraftData: { name: 'bsi-test-iii' }
           }
         }
       },
@@ -252,7 +252,7 @@ describe('selectors', function() {
       expect(snaps).toInclude({
         storeName: 'bsi-test-iii',
         gitRepoUrl: 'https://github.com/test/bsi-test-iii',
-        snapcraft_data: { name: 'bsi-test-iii' }
+        snapcraftData: { name: 'bsi-test-iii' }
       });
     });
   });

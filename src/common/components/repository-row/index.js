@@ -33,8 +33,8 @@ export class RepositoryRowView extends Component {
     super(props);
 
     let snapName;
-    if (props.snap.snapcraft_data && props.snap.snapcraft_data.name) {
-      snapName = props.snap.snapcraft_data.name;
+    if (props.snap.snapcraftData && props.snap.snapcraftData.name) {
+      snapName = props.snap.snapcraftData.name;
     } else {
       snapName = '';
     }
@@ -149,7 +149,7 @@ export class RepositoryRowView extends Component {
     const { authStore, snap } = this.props;
     const repository = parseGitHubRepoUrl(repositoryUrl);
     const { snapName, signAgreement } = this.state;
-    const requestBuilds = (!!snap.snapcraft_data);
+    const requestBuilds = (!!snap.snapcraftData);
 
     this.props.nameActions.registerName(repository, snapName, {
       signAgreement: signAgreement ? authStore.userName : null,
@@ -198,8 +198,8 @@ export class RepositoryRowView extends Component {
       });
     }
 
-    const nextSnapcraftData = nextProps.snap.snapcraft_data;
-    const currentSnapcraftData = this.props.snap.snapcraft_data;
+    const nextSnapcraftData = nextProps.snap.snapcraftData;
+    const currentSnapcraftData = this.props.snap.snapcraftData;
 
     // if there is a name mismatch we want to check who owns the name in the store
     if (snapNameIsMismatched(nextProps.snap)
@@ -257,7 +257,7 @@ export class RepositoryRowView extends Component {
 
     const registeredName = snap.storeName;
 
-    const hasBuilt = !!(latestBuild && snap.snapcraft_data);
+    const hasBuilt = !!(latestBuild && snap.snapcraftData);
 
     const isActive = (
       showNameMismatchDropdown ||
@@ -323,13 +323,13 @@ export class RepositoryRowView extends Component {
         { showEditConfigDropdown &&
           <EditConfigDropdown
             repositoryUrl={ snap.gitRepoUrl }
-            configFilePath={ snap.snapcraft_data.path }
+            configFilePath={ snap.snapcraftData.path }
           />
         }
         { showUnregisteredDropdown &&
           <RegisterNameDropdown
             registeredName={registeredName}
-            snapcraftData={snap.snapcraft_data}
+            snapcraftData={snap.snapcraftData}
             snapName={this.state.snapName}
             authStore={authStore}
             registerNameStatus={registerNameStatus}
@@ -375,9 +375,9 @@ export class RepositoryRowView extends Component {
   }
 
   renderConfiguredStatus(snap) {
-    const { snapcraft_data } = snap;
+    const { snapcraftData } = snap;
 
-    if (!snapcraft_data) {
+    if (!snapcraftData) {
       return (
         <a onClick={this.onNotConfiguredClick.bind(this)}>Not configured</a>
       );
@@ -425,18 +425,18 @@ export class RepositoryRowView extends Component {
 }
 
 const snapNameIsMismatched = (snap) => {
-  const { snapcraft_data, storeName } = snap;
+  const { snapcraftData, storeName } = snap;
 
-  return snapcraft_data && storeName && snapcraft_data.name !== storeName;
+  return snapcraftData && storeName && snapcraftData.name !== storeName;
 };
 
-const snapIsConfigured = (snap) => !!snap.snapcraft_data;
+const snapIsConfigured = (snap) => !!snap.snapcraftData;
 
 RepositoryRowView.propTypes = {
   snap: PropTypes.shape({
     gitRepoUrl: PropTypes.string,
     storeName: PropTypes.string,
-    snapcraft_data: PropTypes.object
+    snapcraftData: PropTypes.object
   }),
   latestBuild: PropTypes.shape({
     buildId: PropTypes.string,

@@ -53,11 +53,11 @@ class BuildDetails extends Component {
             name={ snap.storeName }
             revision={ build.storeRevision }
           />
-          { snap.snapcraft_data &&
+          { snap.snapcraftData &&
             <HelpPromoteSnap
               name={snap.storeName}
               revision={build.storeRevision}
-              confinement={snap.snapcraft_data.confinement}
+              confinement={snap.snapcraftData.confinement}
             />
           }
         </HelpBox>

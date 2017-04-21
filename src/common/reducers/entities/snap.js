@@ -13,16 +13,16 @@ export default function snap(state={}, action) {
     case RegisterNameActionTypes.CHECK_NAME_OWNERSHIP_REQUEST:
       return {
         ...state,
-        snapcraft_data: {
-          ...state.snapcraft_data,
+        snapcraftData: {
+          ...state.snapcraftData,
           isFetching: true
         }
       };
     case RegisterNameActionTypes.CHECK_NAME_OWNERSHIP_SUCCESS:
       return {
         ...state,
-        snapcraft_data: {
-          ...state.snapcraft_data,
+        snapcraftData: {
+          ...state.snapcraftData,
           isFetching: false,
           nameOwnershipStatus: action.payload.status
         }
@@ -30,8 +30,8 @@ export default function snap(state={}, action) {
     case RegisterNameActionTypes.CHECK_NAME_OWNERSHIP_ERROR:
       return {
         ...state,
-        snapcraft_data: {
-          ...state.snapcraft_data,
+        snapcraftData: {
+          ...state.snapcraftData,
           isFetching: false,
           nameOwnershipStatus: null
         }
