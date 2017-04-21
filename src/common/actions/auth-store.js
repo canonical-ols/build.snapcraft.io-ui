@@ -223,10 +223,11 @@ function checkSignedIntoStoreError(error) {
 }
 
 async function fetchAccountInfo(root, discharge) {
-  const query = { root, discharge };
-  const accountUrl = `${BASE_URL}/api/store/account?${qs.stringify(query)}`;
-  const response = await fetch(accountUrl, {
-    headers: { 'Accept': 'application/json' }
+  const response = await fetch(`${conf.get('STORE_API_URL')}/account`, {
+    headers: {
+      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
+      'Accept': 'application/json'
+    }
   });
   if (response.status >= 200 && response.status < 300) {
     return { signedAgreement: true, hasShortNamespace: true };
