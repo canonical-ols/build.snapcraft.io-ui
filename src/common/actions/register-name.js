@@ -86,16 +86,15 @@ async function signAgreement(root, discharge) {
 }
 
 async function requestRegisterName(root, discharge, snapName) {
-  return await fetch(`${BASE_URL}/api/store/register-name`, {
+  return await fetch(`${conf.get('STORE_API_URL')}/register-name`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
     },
     body: JSON.stringify({
       snap_name: snapName,
-      root,
-      discharge
     })
   });
 }
