@@ -1,24 +1,5 @@
 import 'isomorphic-fetch';
-import { MacaroonsBuilder } from 'macaroons.js';
-
-import { getCaveats } from '../../common/helpers/macaroons';
 import { conf } from '../helpers/config';
-import logging from '../logging';
-
-const logger = logging.getLogger('express');
-
-const dumpCaveats = (rawMacaroon) => {
-  const macaroon = MacaroonsBuilder.deserialize(rawMacaroon);
-  const caveats = [];
-  for (const caveat of getCaveats(macaroon)) {
-    if (caveat.verificationKeyId === '') {
-      caveats.push(caveat.caveatId);
-    } else {
-      caveats.push(`Discharge required from ${caveat.location}`);
-    }
-  }
-  return caveats;
-};
 
 // XXX: Client can go straight to SCA for this now
 export const getAccount = async (req, res) => {
