@@ -163,8 +163,8 @@ describe('register name actions', () => {
           code: 'internal-server-error',
           message: 'Internal server error'
         };
-        scope
-          .post('/api/store/agreement', { latest_tos_accepted: true })
+        storeApi
+          .post('/agreement', { latest_tos_accepted: true })
           .reply(500, { error_list: [error] });
         await store.dispatch(registerName(repository, 'test-snap', {
           signAgreement: 'test-user'
@@ -341,8 +341,8 @@ describe('register name actions', () => {
 
             context('if signing agreement and that succeeds', () => {
               beforeEach(() => {
-                scope
-                  .post('/api/store/agreement', { latest_tos_accepted: true })
+                storeScope
+                  .post('/agreement', { latest_tos_accepted: true })
                   .reply(200, { latest_tos_accepted: true });
               });
 
