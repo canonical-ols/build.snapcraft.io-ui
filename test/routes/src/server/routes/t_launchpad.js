@@ -529,7 +529,7 @@ describe('The Launchpad API endpoint', () => {
         const snap = response.body.entities.snaps[testSnaps[0].git_repository_url];
 
         expect(snap).toContain({
-          snapcraft_data: contents[snap.git_repository_url]
+          snapcraft_data: contents[snap.gitRepoUrl]
         });
         expect(snap).toContain({
           snapcraft_data: { path: 'snap/snapcraft.yaml' }
@@ -869,7 +869,7 @@ describe('The Launchpad API endpoint', () => {
           .expect(hasMessage('snap-found'))
           .expect((res) => {
             expect(res.body.payload.snap).toContain({
-              git_repository_url: testSnaps[1].git_repository_url,
+              gitRepoUrl: testSnaps[1].git_repository_url,
               self_link: testSnaps[1].self_link,
               snapcraft_data: snapcraftData
             });
@@ -1001,7 +1001,10 @@ describe('The Launchpad API endpoint', () => {
           .query({ repository_url: 'https://github.com/anowner/aname' })
           .expect(hasMessage('snap-found'))
           .expect((res) => {
-            expect(res.body.payload.snap).toInclude(snap);
+            expect(res.body.payload.snap).toInclude({
+              gitRepoUrl: snap.git_repository_url,
+              self_link: snap.self_link
+            });
           })
           .end(done);
       });

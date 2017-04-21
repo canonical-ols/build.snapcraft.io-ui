@@ -30,10 +30,10 @@ describe('selectors', function() {
     entities: {
       snaps: {
         'https:github.com/anowner/aname': {
-          git_repository_url: 'https:github.com/anowner/aname'
+          gitRepoUrl: 'https:github.com/anowner/aname'
         },
         'https:github.com/anowner/aname-i': {
-          git_repository_url: 'https:github.com/anowner/aname-i'
+          gitRepoUrl: 'https:github.com/anowner/aname-i'
         }
       }
     }
@@ -47,7 +47,7 @@ describe('selectors', function() {
       snaps: {
         'https:github.com/anowner/aname': {
           store_name: 'bsi-test-ii',
-          git_repository_url: 'https:github.com/anowner/aname'
+          gitRepoUrl: 'https:github.com/anowner/aname'
         }
       }
     }
@@ -62,7 +62,7 @@ describe('selectors', function() {
         'https:github.com/anowner/aname': {
           store_name: 'bsi-test-ii',
           snapcraft_data: { name: 'bsi-test-ii' },
-          git_repository_url: 'https:github.com/anowner/aname'
+          gitRepoUrl: 'https:github.com/anowner/aname'
         }
       }
     }
@@ -220,12 +220,12 @@ describe('selectors', function() {
         snaps: {
           'https://github.com/test/bsi-test': {
             store_name: 'bsi-test-ii',
-            git_repository_url: 'https://github.com/test/bsi-test',
+            gitRepoUrl: 'https://github.com/test/bsi-test',
             snapcraft_data: { name: 'bsi-test-ii' }
           },
           'https://github.com/test/bsi-test-iii': {
             store_name: 'bsi-test-iii',
-            git_repository_url: 'https://github.com/test/bsi-test-iii',
+            gitRepoUrl: 'https://github.com/test/bsi-test-iii',
             snapcraft_data: { name: 'bsi-test-iii' }
           }
         }
@@ -251,7 +251,7 @@ describe('selectors', function() {
       expect(snaps.length).toBe(1);
       expect(snaps).toInclude({
         store_name: 'bsi-test-iii',
-        git_repository_url: 'https://github.com/test/bsi-test-iii',
+        gitRepoUrl: 'https://github.com/test/bsi-test-iii',
         snapcraft_data: { name: 'bsi-test-iii' }
       });
     });

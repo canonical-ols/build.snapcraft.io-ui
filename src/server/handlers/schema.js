@@ -22,7 +22,7 @@ export const snap = new schema.Entity('snaps', {}, {
   processStrategy: (entity) => {
     return {
       id: entity.git_repository_url,
-      git_repository_url: entity.git_repository_url,
+      gitRepoUrl: entity.git_repository_url,
       self_link: entity.self_link,
       snapcraft_data: entity.snapcraft_data,
       store_name: entity.store_name

@@ -101,7 +101,7 @@ export const hasFailedRepositories = createSelector(
 
 /**
  * @returns {Array} get repositories already enabled as builds
- * @todo consider case for multiple snapcraft.yaml's per git_repository_url
+ * @todo consider case for multiple snapcraft.yaml's per gitRepoUrl
  */
 export const getEnabledRepositories = createSelector(
   [getRepositories, getRepositoriesIndex, getSnaps, getSnapsIndex],
@@ -145,7 +145,7 @@ export const snapsWithNoBuilds = createSelector(
   [snapsWithRegisteredNameAndSnapcraftData, getSnapBuilds],
   (snaps, snapBuilds) => {
     return snaps && snaps.filter((snap) => {
-      const { fullName } = parseGitHubRepoUrl(snap.git_repository_url);
+      const { fullName } = parseGitHubRepoUrl(snap.gitRepoUrl);
       const repoBuilds = snapBuilds[fullName];
 
       if (repoBuilds && repoBuilds.success) {

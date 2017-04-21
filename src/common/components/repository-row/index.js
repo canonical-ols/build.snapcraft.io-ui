@@ -50,11 +50,11 @@ export class RepositoryRowView extends Component {
   }
 
   saveState() {
-    localforage.setItem(`repository_row_${this.props.snap.git_repository_url}`, this.state);
+    localforage.setItem(`repository_row_${this.props.snap.gitRepoUrl}`, this.state);
   }
 
   async loadState() {
-    const item = `repository_row_${this.props.snap.git_repository_url}`;
+    const item = `repository_row_${this.props.snap.gitRepoUrl}`;
     const state = await localforage.getItem(item);
     if (state) {
       this.setState(state);
@@ -62,7 +62,7 @@ export class RepositoryRowView extends Component {
   }
 
   clearState() {
-    localforage.removeItem(`repository_row_${this.props.snap.git_repository_url}`);
+    localforage.removeItem(`repository_row_${this.props.snap.gitRepoUrl}`);
   }
 
   componentDidMount() {
@@ -213,7 +213,7 @@ export class RepositoryRowView extends Component {
         )
         // and if we are not fetching this data already
         && !nextSnapcraftData.isFetching) {
-      this.props.nameActions.checkNameOwnership(nextProps.snap.git_repository_url, nextSnapcraftData.name);
+      this.props.nameActions.checkNameOwnership(nextProps.snap.gitRepoUrl, nextSnapcraftData.name);
     }
   }
 
@@ -322,7 +322,7 @@ export class RepositoryRowView extends Component {
         { showUnconfiguredDropdown && <UnconfiguredDropdown snap={snap} /> }
         { showEditConfigDropdown &&
           <EditConfigDropdown
-            repositoryUrl={ snap.git_repository_url }
+            repositoryUrl={ snap.gitRepoUrl }
             configFilePath={ snap.snapcraft_data.path }
           />
         }
@@ -334,7 +334,7 @@ export class RepositoryRowView extends Component {
             authStore={authStore}
             registerNameStatus={registerNameStatus}
             onSignAgreementChange={this.onSignAgreementChange.bind(this)}
-            onRegisterSubmit={this.onRegisterSubmit.bind(this, snap.git_repository_url)}
+            onRegisterSubmit={this.onRegisterSubmit.bind(this, snap.gitRepoUrl)}
             onSignInClick={this.onSignInClick.bind(this)}
             onCancelClick={this.onUnregisteredClick.bind(this)}
             onSnapNameChange={this.onSnapNameChange.bind(this)}
@@ -343,7 +343,7 @@ export class RepositoryRowView extends Component {
         { showRemoveDropdown &&
           <RemoveRepoDropdown
             message={this.getRemoveWarningMessage(latestBuild, registeredName)}
-            onRemoveClick={this.onRemoveClick.bind(this, snap.git_repository_url)}
+            onRemoveClick={this.onRemoveClick.bind(this, snap.gitRepoUrl)}
             onCancelClick={this.onToggleRemoveClick.bind(this)}
           />
         }
@@ -405,7 +405,7 @@ export class RepositoryRowView extends Component {
       );
     } else if (showRegisterNameInput) {
       return (
-        <form onSubmit={this.onRegisterSubmit.bind(this, snap.git_repository_url)}>
+        <form onSubmit={this.onRegisterSubmit.bind(this, snap.gitRepoUrl)}>
           <input
             type='text'
             className={ styles.snapNameInput }
@@ -434,7 +434,7 @@ const snapIsConfigured = (snap) => !!snap.snapcraft_data;
 
 RepositoryRowView.propTypes = {
   snap: PropTypes.shape({
-    git_repository_url: PropTypes.string,
+    gitRepoUrl: PropTypes.string,
     store_name: PropTypes.string,
     snapcraft_data: PropTypes.object
   }),

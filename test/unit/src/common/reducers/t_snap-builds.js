@@ -86,7 +86,7 @@ describe('snapBuilds reducers', () => {
   context('FETCH_SNAP_SUCCESS', () => {
     const SNAP = {
       builds_collection_link: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial/builds',
-      git_repository_url: 'https://github.com/anowner/aname',
+      gitRepoUrl: 'https://github.com/anowner/aname',
       resource_type_link: 'https://api.launchpad.net/devel/#snap',
       self_link: 'https://api.launchpad.net/devel/~anowner/+snap/blahblah-xenial',
       store_name: 'test-snap-store-name'
