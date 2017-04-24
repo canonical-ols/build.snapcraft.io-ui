@@ -90,8 +90,7 @@ describe('register name actions', () => {
 
   context('internalRegisterName', () => {
     it('throws an error on failure to register snap name', async () => {
-      storeApi = nock(conf.get('STORE_API_URL'))
-        .post('/register-name', { snap_name: 'test-snap' })
+      storeApi.post('/register-name', { snap_name: 'test-snap' })
         .reply(409, {
           status: 409,
           code: 'already_registered',
@@ -110,8 +109,7 @@ describe('register name actions', () => {
     });
 
     it('succeeds if registering snap name says already owned', async () => {
-      storeApi = nock(conf.get('STORE_API_URL'))
-        .post('/register-name', { snap_name: 'test-snap' })
+      storeApi.post('/register-name', { snap_name: 'test-snap' })
         .reply(409, {
           status: 409,
           code: 'already_owned',
@@ -122,8 +120,7 @@ describe('register name actions', () => {
 
     it('succeeds if registering snap name succeeds', async () => {
       // XXX check Authorization header
-      storeApi = nock(conf.get('STORE_API_URL'))
-        .post('/register-name', { snap_name: 'test-snap' })
+      storeApi.post('/register-name', { snap_name: 'test-snap' })
         .reply(201, { snap_id: 'test-snap-id' });
       await internalRegisterName(root, discharge, 'test-snap');
     });
