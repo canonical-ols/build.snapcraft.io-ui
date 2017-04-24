@@ -15,7 +15,6 @@ export const getAccount = async (req, res) => {
   return res.status(response.status).send(json);
 };
 
-// XXX: Client can go straight to SCA for this now
 export const signAgreement = async (req, res) => {
   const latestTosAccepted = req.body.latest_tos_accepted;
   const root = req.body.root;
