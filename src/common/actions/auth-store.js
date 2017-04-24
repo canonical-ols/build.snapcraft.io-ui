@@ -11,6 +11,7 @@ import { getCaveats } from '../helpers/macaroons';
 import { getPackageUploadRequestMacaroon } from './register-name';
 
 const BASE_URL = conf.get('BASE_URL');
+const STORE_API_URL = conf.get('STORE_API_URL');
 
 export const SIGN_INTO_STORE = 'SIGN_INTO_STORE';
 export const SIGN_INTO_STORE_SUCCESS = 'SIGN_INTO_STORE_SUCCESS';
@@ -28,7 +29,7 @@ export const SIGN_AGREEMENT_SUCCESS = 'SIGN_AGREEMENT_SUCCESS';
 export const SIGN_OUT_OF_STORE_ERROR = 'SIGN_OUT_OF_STORE_ERROR';
 
 export function extractExpiresCaveat(macaroon) {
-  const storeLocation = url.parse(conf.get('STORE_API_URL')).host;
+  const storeLocation = url.parse(STORE_API_URL).host;
   for (const caveat of getCaveats(macaroon)) {
     if (caveat.verificationKeyId === '') {
       const parts = caveat.caveatId.split('|');
@@ -58,7 +59,7 @@ export function extractSSOCaveat(macaroon) {
 async function getPackageUploadRequestPermission() {
   const lifetime = conf.get('STORE_PACKAGE_UPLOAD_REQUEST_LIFETIME');
 
-  const response = await fetch(`${conf.get('STORE_API_URL')}/acl/`, {
+  const response = await fetch(`${STORE_API_URL}/acl/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -223,7 +224,7 @@ function checkSignedIntoStoreError(error) {
 }
 
 async function fetchAccountInfo(root, discharge) {
-  const response = await fetch(`${conf.get('STORE_API_URL')}/account`, {
+  const response = await fetch(`${STORE_API_URL}/account`, {
     headers: {
       'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
       'Accept': 'application/json'
@@ -252,7 +253,7 @@ async function fetchAccountInfo(root, discharge) {
 async function setShortNamespace(root, discharge, userName) {
   // Try setting the short namespace to the SSO username.  This may not
   // work, but it's the best we can do automatically.
-  const response = await fetch(`${conf.get('STORE_API_URL')}/account`, {
+  const response = await fetch(`${STORE_API_URL}/account`, {
     method: 'PATCH',
     headers: {
       'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
