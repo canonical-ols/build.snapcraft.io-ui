@@ -197,22 +197,20 @@ describe('register name actions', () => {
       });
 
       context('if registering snap name succeeds', () => {
-        let storeScope;
-
         beforeEach(() => {
           // XXX check Authorization header
-          storeScope = nock(conf.get('STORE_API_URL'))
+          storeApi = nock(conf.get('STORE_API_URL'))
             .post('/register-name', { snap_name: 'test-snap' })
             .reply(201, { snap_id: 'test-snap-id' });
         });
 
         afterEach(() => {
-          storeScope.done();
+          storeApi.done();
         });
 
         it('stores an error on failure to get package upload ' +
            'macaroon', async () => {
-          storeScope
+          storeApi
             .post('/acl/', {
               packages: [{ name: 'test-snap', series: '16' }],
               permissions: ['package_upload'],
@@ -238,7 +236,7 @@ describe('register name actions', () => {
         context('if getting package upload macaroon succeeds', () => {
           beforeEach(() => {
             // XXX check headers and body
-            storeScope.post('/acl/')
+            storeApi.post('/acl/')
               .reply(200, { macaroon: 'dummy-package-upload-macaroon' });
           });
 
@@ -498,8 +496,6 @@ describe('register name actions', () => {
     });
 
     context('when given snap name is registered by current user', () => {
-      let storeApi;
-
       const snapName = 'test-snap';
 
       beforeEach(() => {
@@ -526,8 +522,6 @@ describe('register name actions', () => {
     });
 
     context('when given snap name is registered by another user', () => {
-      let storeApi;
-
       const snapName = 'test-snap';
 
       beforeEach(() => {
@@ -554,8 +548,6 @@ describe('register name actions', () => {
     });
 
     context('when given snap name is registered by another user', () => {
-      let storeApi;
-
       const snapName = 'test-snap';
 
       beforeEach(() => {
