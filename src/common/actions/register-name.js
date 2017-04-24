@@ -8,6 +8,7 @@ import { checkPackageUploadRequest, getAccountInfo } from './auth-store';
 import { requestBuilds } from './snap-builds';
 
 const BASE_URL = conf.get('BASE_URL');
+const STORE_API_URL = conf.get('STORE_API_URL');
 
 // action types
 export const REGISTER_NAME = 'REGISTER_NAME';
@@ -85,7 +86,7 @@ async function signAgreement(root, discharge) {
 }
 
 async function requestRegisterName(root, discharge, snapName) {
-  return await fetch(`${conf.get('STORE_API_URL')}/register-name`, {
+  return await fetch(`${STORE_API_URL}/register-name`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -114,7 +115,7 @@ export async function internalRegisterName(root, discharge, snapName) {
 }
 
 async function getPackageUploadMacaroon(root, discharge, snapName) {
-  const response = await fetch(`${conf.get('STORE_API_URL')}/acl/`, {
+  const response = await fetch(`${STORE_API_URL}/acl/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -213,7 +214,7 @@ export function registerNameClear(id) {
 export async function internalNameOwnership(root, discharge, snapName) {
   // first request package_upload macaroon to see if name is registered
   // in the store
-  const url = `${conf.get('STORE_API_URL')}/acl/`;
+  const url = `${STORE_API_URL}/acl/`;
   const aclResponse = await fetch(url, {
     method: 'POST',
     headers: {
