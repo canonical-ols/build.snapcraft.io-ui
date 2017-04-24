@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 import { conf } from '../helpers/config';
 
-// XXX: Client can go straight to SCA for this now
 export const getAccount = async (req, res) => {
   const root = req.query.root;
   const discharge = req.query.discharge;
