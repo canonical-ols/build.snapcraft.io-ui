@@ -1,20 +1,6 @@
 import 'isomorphic-fetch';
 import { conf } from '../helpers/config';
 
-export const getAccount = async (req, res) => {
-  const root = req.query.root;
-  const discharge = req.query.discharge;
-
-  const response = await fetch(`${conf.get('STORE_API_URL')}/account`, {
-    headers: {
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
-      'Accept': 'application/json'
-    }
-  });
-  const json = await response.json();
-  return res.status(response.status).send(json);
-};
-
 export const signAgreement = async (req, res) => {
   const latestTosAccepted = req.body.latest_tos_accepted;
   const root = req.body.root;
