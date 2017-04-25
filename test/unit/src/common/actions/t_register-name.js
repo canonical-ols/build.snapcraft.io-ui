@@ -163,8 +163,8 @@ describe('register name actions', () => {
           code: 'internal-server-error',
           message: 'Internal server error'
         };
-        scope
-          .post('/api/store/agreement', { latest_tos_accepted: true })
+        storeApi
+          .post('/agreement', { latest_tos_accepted: true })
           .reply(500, { error_list: [error] });
         await store.dispatch(registerName(repository, 'test-snap', {
           signAgreement: 'test-user'
@@ -199,7 +199,7 @@ describe('register name actions', () => {
       context('if registering snap name succeeds', () => {
         beforeEach(() => {
           // XXX check Authorization header
-          storeApi = nock(conf.get('STORE_API_URL'))
+          storeApi
             .post('/register-name', { snap_name: 'test-snap' })
             .reply(201, { snap_id: 'test-snap-id' });
         });
@@ -339,8 +339,8 @@ describe('register name actions', () => {
 
             context('if signing agreement and that succeeds', () => {
               beforeEach(() => {
-                scope
-                  .post('/api/store/agreement', { latest_tos_accepted: true })
+                storeApi
+                  .post('/agreement', { latest_tos_accepted: true })
                   .reply(200, { latest_tos_accepted: true });
               });
 
@@ -349,17 +349,16 @@ describe('register name actions', () => {
                   code: 'user-not-ready',
                   message: 'Developer profile is missing short namespace.'
                 };
-                scope
-                  .get('/api/store/account')
+                storeApi
+                  .get('/account')
                   .query(true)
-                  .reply(403, { error_list: [error] });
-                scope
-                  .patch('/api/store/account', {
+                  .reply(403, { error_list: [error] })
+                  .patch('/account', {
                     short_namespace: 'test-user'
                   })
                   .reply(204);
-                scope
-                  .get('/api/store/account')
+                storeApi
+                  .get('/account')
                   .query(true)
                   .reply(200, {});
 
@@ -376,8 +375,8 @@ describe('register name actions', () => {
               });
 
               it('leaves short namespace alone if already set', async () => {
-                scope
-                  .get('/api/store/account')
+                storeApi
+                  .get('/account')
                   .query(true)
                   .reply(200, {});
 
@@ -471,11 +470,10 @@ describe('register name actions', () => {
   context('internalNameOwnership', () => {
 
     context('when given snap name is not registered in the store', () => {
-      let api;
       const snapName = 'test-snap';
 
       beforeEach(() => {
-        api = nock(conf.get('STORE_API_URL'))
+        storeApi
           .post('/acl/', {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
@@ -484,7 +482,7 @@ describe('register name actions', () => {
       });
 
       afterEach(() => {
-        api.done();
+        storeApi.done();
         nock.cleanAll();
       });
 
@@ -499,7 +497,7 @@ describe('register name actions', () => {
       const snapName = 'test-snap';
 
       beforeEach(() => {
-        storeApi = nock(conf.get('STORE_API_URL'))
+        storeApi
           .post('/acl/', {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
@@ -525,7 +523,7 @@ describe('register name actions', () => {
       const snapName = 'test-snap';
 
       beforeEach(() => {
-        storeApi = nock(conf.get('STORE_API_URL'))
+        storeApi
           .post('/acl/', {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
@@ -551,7 +549,7 @@ describe('register name actions', () => {
       const snapName = 'test-snap';
 
       beforeEach(() => {
-        storeApi = nock(conf.get('STORE_API_URL'))
+        storeApi
           .post('/acl/', {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
@@ -582,7 +580,6 @@ describe('register name actions', () => {
   context('checkNameOwnership', () => {
     const snapName = 'test-snap';
     const id = repository.url;
-    let api;
 
 
     beforeEach(() => {
@@ -602,7 +599,7 @@ describe('register name actions', () => {
 
     context('when name ownership successfully verified', () => {
       beforeEach(() => {
-        api = nock(conf.get('STORE_API_URL'))
+        storeApi
           .post('/acl/', {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
@@ -614,7 +611,7 @@ describe('register name actions', () => {
       });
 
       afterEach(() => {
-        api.done();
+        storeApi.done();
         nock.cleanAll();
       });
 
@@ -645,7 +642,7 @@ describe('register name actions', () => {
 
     context('when name ownership thrown an error', () => {
       beforeEach(() => {
-        api = nock(conf.get('STORE_API_URL'))
+        storeApi
           .post('/acl/', {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
@@ -654,7 +651,7 @@ describe('register name actions', () => {
       });
 
       afterEach(() => {
-        api.done();
+        storeApi.done();
         nock.cleanAll();
       });
 

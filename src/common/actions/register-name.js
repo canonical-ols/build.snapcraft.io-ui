@@ -65,16 +65,15 @@ export async function getPackageUploadRequestMacaroon() {
 }
 
 async function signAgreement(root, discharge) {
-  const response = await fetch(`${BASE_URL}/api/store/agreement`, {
+  const response = await fetch(`${STORE_API_URL}/agreement`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
     },
     body: JSON.stringify({
       latest_tos_accepted: true,
-      root,
-      discharge
     })
   });
   if (response.status >= 200 && response.status < 300) {
