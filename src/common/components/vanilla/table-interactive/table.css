@@ -45,6 +45,17 @@ $table-dropdown-background: $light-grey;
   float: left;
 }
 
+.dataLink {
+  composes: data;
+  color: $cool-grey;
+}
+
+.dataLink:hover,
+.dataLink:focus,
+.dataLink.active {
+  color: $link-blue;
+}
+
 .header {
   padding: 10px;
 }
@@ -66,6 +77,7 @@ $table-dropdown-background: $light-grey;
 .expandable.active {
   background: $table-dropdown-background;
   border-color: $table-row-border-color;
+  text-decoration: none;
 }
 
 /* hide border between dropdown and cell that opened it */

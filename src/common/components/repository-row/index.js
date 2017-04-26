@@ -375,7 +375,7 @@ export class RepositoryRowView extends Component {
       content = <span>Not configured</span>;
     } else if (snapNameIsMismatched(snap)){
       onClick = this.onNameMismatchClick.bind(this);
-      content = <span><ErrorIcon />Doesn’t match</span>;
+      content = <span><ErrorIcon /> Doesn’t match</span>;
     } else {
       onClick = this.onConfiguredClick.bind(this);
       content = <TickIcon />;
@@ -399,7 +399,7 @@ export class RepositoryRowView extends Component {
 
     if (registeredName !== null) {
       onClick = this.onUnregisteredClick.bind(this);
-      content = <span><TickIcon />{ registeredName }</span>;
+      content = <span><TickIcon /> { registeredName }</span>;
     } else if (showRegisterNameInput) {
       content = (
         <form onSubmit={this.onRegisterSubmit.bind(this, snap.gitRepoUrl)}>

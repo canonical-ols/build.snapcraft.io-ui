@@ -8,7 +8,7 @@ export default function DataLink(props) {
   const Wrapper = (props.to || props.onClick) ? Link : 'div';
 
   const className = classNames({
-    [styles.data]: true,
+    [styles.dataLink]: true,
     [styles.expandable]: props.expandable,
     [styles.active]: props.active,
     [styles.centered]: props.centered
