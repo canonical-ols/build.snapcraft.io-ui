@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import localforage from 'localforage';
 import { bindActionCreators } from 'redux';
 
-import { Row, Data } from '../vanilla/table-interactive';
+import { Row, DataLink } from '../vanilla/table-interactive';
 import BuildStatus from '../build-status';
 
 import {
@@ -15,6 +14,7 @@ import {
   RegisterNameDropdown
 } from './dropdowns';
 import {
+  DeleteIcon,
   TickIcon,
   ErrorIcon
 } from './icons';
@@ -25,7 +25,6 @@ import * as snapActionCreators from '../../actions/snaps';
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
 
 import styles from './repositoryRow.css';
-import iconStyles from './icons/icons.css';
 
 export class RepositoryRowView extends Component {
 
@@ -276,27 +275,15 @@ export class RepositoryRowView extends Component {
 
     return (
       <Row isActive={isActive}>
-        <Data col="27">
-          { hasBuilt
-            ? (
-              <Link to={ `/user/${fullName}` }>{ fullName }</Link>
-            )
-            : (
-              <span>{ fullName }</span>
-            )
-          }
-        </Data>
-        <Data col="15">
-          { this.renderConfiguredStatus(snap) }
-        </Data>
-        <Data col="25">
-          { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
-        </Data>
-        <Data col="30">
+        <DataLink col="27" to={ hasBuilt ? `/user/${fullName}` : null }>
+          { fullName }
+        </DataLink>
+        { this.renderConfiguredStatus(snap) }
+        { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
+        <DataLink col="29" to={ hasBuilt ? `/user/${fullName}` : null }>
           { hasBuilt
             ? (
               <BuildStatus
-                link={ `/user/${fullName}` }
                 colour={ latestBuild.colour }
                 statusMessage={ latestBuild.statusMessage }
                 dateStarted={ latestBuild.dateStarted }
@@ -309,13 +296,13 @@ export class RepositoryRowView extends Component {
               />
             )
           }
-        </Data>
-        <Data col="3">
-          <a
-            className={ iconStyles.deleteIcon }
-            onClick={ this.onToggleRemoveClick.bind(this) }
-          />
-        </Data>
+        </DataLink>
+        <DataLink col="4"
+          expandable={true}
+          onClick={ this.onToggleRemoveClick.bind(this) }
+        >
+          <DeleteIcon />
+        </DataLink>
         { showNameMismatchDropdown &&
           <NameMismatchDropdown
             snap={snap}
@@ -379,35 +366,34 @@ export class RepositoryRowView extends Component {
 
   renderConfiguredStatus(snap) {
     const { snapcraftData } = snap;
+    let onClick, content;
 
     if (!snapcraftData) {
-      return (
-        <a onClick={this.onNotConfiguredClick.bind(this)}>Not configured</a>
-      );
+      onClick = this.onNotConfiguredClick.bind(this);
+      content = <span>Not configured</span>;
     } else if (snapNameIsMismatched(snap)){
-      return (
-        <span onClick={this.onNameMismatchClick.bind(this)}>
-          <ErrorIcon /> <a>Doesn’t match</a>
-        </span>
-      );
+      onClick = this.onNameMismatchClick.bind(this);
+      content = <span><ErrorIcon />Doesn’t match</span>;
+    } else {
+      onClick = this.onConfiguredClick.bind(this);
+      content = <TickIcon />;
     }
 
     return (
-      <span onClick={this.onConfiguredClick.bind(this)}>
-        <a><TickIcon /></a>
-      </span>
+      <DataLink col="15" expandable={true} onClick={onClick}>
+        { content }
+      </DataLink>
     );
   }
 
   renderSnapName(registeredName, showRegisterNameInput, snap) {
+    let onClick, content;
+
     if (registeredName !== null) {
-      return (
-        <span onClick={this.onUnregisteredClick.bind(this)}>
-          <TickIcon /> <a>{ registeredName }</a>
-        </span>
-      );
+      onClick = this.onUnregisteredClick.bind(this);
+      content = <span><TickIcon />{ registeredName }</span>;
     } else if (showRegisterNameInput) {
-      return (
+      content = (
         <form onSubmit={this.onRegisterSubmit.bind(this, snap.gitRepoUrl)}>
           <input
             autoFocus={true}
@@ -419,12 +405,15 @@ export class RepositoryRowView extends Component {
         </form>
       );
     } else {
-      return (
-        <a onClick={this.onUnregisteredClick.bind(this)}>
-          Not registered
-        </a>
-      );
+      onClick = this.onUnregisteredClick.bind(this);
+      content = <span>Not registered</span>;
     }
+
+    return (
+      <DataLink col="25" expandable={true} onClick={onClick}>
+        { content }
+      </DataLink>
+    );
   }
 }
 

@@ -1,6 +1,7 @@
 $table-border-color: $dark-grey;
 $table-header-color: $dark-grey;
-$table-row-border-color: $dark-grey;
+$table-row-border-color: $mid-grey;
+$table-dropdown-background: $light-grey;
 
 .table {
   display: table;
@@ -13,7 +14,8 @@ $table-row-border-color: $dark-grey;
 }
 
 .cell {
-  padding: 10px;
+  box-sizing: border-box;
+  padding: 20px 10px;
   box-sizing: border-box;
   min-height: 21px;
   background: none;
@@ -23,6 +25,14 @@ $table-row-border-color: $dark-grey;
   vertical-align: top;
   backface-visibility: hidden;
   position: relative;
+  border: 1px solid transparent;
+  border-width: 0 1px 0 1px;
+}
+
+.data {
+  font-weight: 300;
+  text-align: left;
+  vertical-align: middle;
 }
 
 .header, .data {
@@ -31,10 +41,8 @@ $table-row-border-color: $dark-grey;
   float: left;
 }
 
-.data {
-  font-weight: 300;
-  text-align: left;
-  vertical-align: middle;
+.header {
+  padding: 10px;
 }
 
 .head {
@@ -49,12 +57,19 @@ $table-row-border-color: $dark-grey;
   display: table-cell;
 }
 
+.expandable:hover,
+.expandable:focus,
+.expandable.active {
+  background: $table-dropdown-background;
+  border-color: $table-row-border-color;
+}
+
 .row {
   display: table-row;
   float: left;
   width: 100%;
-  border-color: rgb(178, 178, 178);
-  border-bottom-style: dotted;
+  border-color: $table-row-border-color;
+  border-bottom-style: solid;
   border-bottom-width: 1px;
 }
 
@@ -63,7 +78,7 @@ $table-row-border-color: $dark-grey;
 }
 
 .head .row {
-  border-bottom: 1px solid;
+  border-bottom: 1px solid $table-header-color;
 }
 
 .body {
@@ -74,21 +89,14 @@ $table-row-border-color: $dark-grey;
 
 .dropdown {
   width: 100%;
+
+  display: table;
+  background: $table-dropdown-background;
+  border: 1px solid $table-row-border-color;
+  border-width: 1px 1px 0 1px;
 }
 
 .dropdown .row {
   position: relative;
   border: 0;
-}
-
-.dropdown .row:before {
-  display: block;
-  margin: 0 auto;
-  width: calc(100% - 20px);
-  border-top: 1px dotted #d2d2d2;
-  position: absolute;
-  height: 1px;
-  content: "";
-  top: 0;
-  left: 10px;
 }
