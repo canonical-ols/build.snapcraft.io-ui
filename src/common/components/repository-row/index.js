@@ -276,7 +276,7 @@ export class RepositoryRowView extends Component {
     return (
       <Row isActive={isActive}>
         <DataLink col="27" to={ hasBuilt ? `/user/${fullName}` : null }>
-          { fullName }
+          <strong>{ fullName }</strong>
         </DataLink>
         { this.renderConfiguredStatus(snap) }
         { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
@@ -299,6 +299,7 @@ export class RepositoryRowView extends Component {
         </DataLink>
         <DataLink col="4"
           expandable={true}
+          centered={true}
           active={ this.state.removeDropdownExpanded }
           onClick={ this.onToggleRemoveClick.bind(this) }
         >

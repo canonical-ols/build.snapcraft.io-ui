@@ -29,6 +29,10 @@ $table-dropdown-background: $light-grey;
   border-width: 0 1px 0 1px;
 }
 
+.cell.centered {
+  text-align: center;
+}
+
 .data {
   font-weight: 300;
   text-align: left;
