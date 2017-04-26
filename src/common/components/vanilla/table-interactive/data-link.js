@@ -9,7 +9,8 @@ export default function DataLink(props) {
 
   const className = classNames({
     [styles.data]: true,
-    [styles.expandable]: props.expandable
+    [styles.expandable]: props.expandable,
+    [styles.active]: props.active
   });
 
   let to = props.to;
@@ -41,5 +42,6 @@ DataLink.propTypes = {
   col: PropTypes.string,
   to: PropTypes.string,
   onClick: PropTypes.func,
-  expandable: PropTypes.bool
+  expandable: PropTypes.bool,
+  active: PropTypes.bool
 };

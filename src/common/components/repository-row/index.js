@@ -299,6 +299,7 @@ export class RepositoryRowView extends Component {
         </DataLink>
         <DataLink col="4"
           expandable={true}
+          active={ this.state.removeDropdownExpanded }
           onClick={ this.onToggleRemoveClick.bind(this) }
         >
           <DeleteIcon />
@@ -379,8 +380,14 @@ export class RepositoryRowView extends Component {
       content = <TickIcon />;
     }
 
+    const active = (
+      this.state.nameMismatchDropdownExpanded ||
+      this.state.unconfiguredDropdownExpanded ||
+      this.state.editConfigDropdownExpanded
+    );
+
     return (
-      <DataLink col="15" expandable={true} onClick={onClick}>
+      <DataLink col="15" expandable={true} onClick={onClick} active={active}>
         { content }
       </DataLink>
     );
@@ -409,8 +416,10 @@ export class RepositoryRowView extends Component {
       content = <span>Not registered</span>;
     }
 
+    const active = this.state.unregisteredDropdownExpanded;
+
     return (
-      <DataLink col="25" expandable={true} onClick={onClick}>
+      <DataLink col="25" expandable={true} onClick={onClick} active={active}>
         { content }
       </DataLink>
     );

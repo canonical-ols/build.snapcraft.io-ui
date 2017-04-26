@@ -64,6 +64,17 @@ $table-dropdown-background: $light-grey;
   border-color: $table-row-border-color;
 }
 
+/* hide border between dropdown and cell that opened it */
+.expandable.active::after {
+  content: ' ';
+  position: absolute;
+  width: 100%;
+  border: 1px solid $table-dropdown-background;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+}
+
 .row {
   display: table-row;
   float: left;
