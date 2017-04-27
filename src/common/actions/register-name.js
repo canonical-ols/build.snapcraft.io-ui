@@ -2,7 +2,7 @@ import 'isomorphic-fetch';
 import localforage from 'localforage';
 import { MacaroonsBuilder } from 'macaroons.js';
 
-import { APICompatibleError, checkStatus, getError } from '../helpers/api';
+import { APICompatibleError, checkStatus, getError, getAuthHeader } from '../helpers/api';
 import { conf } from '../helpers/config';
 import { checkPackageUploadRequest, getAccountInfo } from './auth-store';
 import { requestBuilds } from './snap-builds';
@@ -65,12 +65,13 @@ export async function getPackageUploadRequestMacaroon() {
 }
 
 async function signAgreement(root, discharge) {
+  const authHeader = getAuthHeader(root, discharge);
   const response = await fetch(`${STORE_API_URL}/agreement`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
+      'Authorization': authHeader,
     },
     body: JSON.stringify({
       latest_tos_accepted: true,
@@ -86,12 +87,13 @@ async function signAgreement(root, discharge) {
 }
 
 async function requestRegisterName(root, discharge, snapName) {
+  const authHeader = getAuthHeader(root, discharge);
   return await fetch(`${STORE_API_URL}/register-name`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
+      'Authorization': authHeader,
     },
     body: JSON.stringify({
       snap_name: snapName,
@@ -115,12 +117,13 @@ export async function internalRegisterName(root, discharge, snapName) {
 }
 
 async function getPackageUploadMacaroon(root, discharge, snapName) {
+  const authHeader = getAuthHeader(root, discharge);
   const response = await fetch(`${STORE_API_URL}/acl/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`
+      'Authorization': authHeader,
     },
     body: JSON.stringify({
       packages: [{ name: snapName, series: STORE_SERIES }],
