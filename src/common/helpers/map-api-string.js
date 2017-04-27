@@ -1,4 +1,4 @@
-export const STRINGS = {
+const STRINGS = {
   'Successfully built': 'Built and published',
   'Needs building': 'Building soon'
 };
