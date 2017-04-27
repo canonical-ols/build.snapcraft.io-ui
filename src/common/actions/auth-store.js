@@ -272,13 +272,7 @@ async function setShortNamespace(root, discharge, userName) {
     }
     return data;
   } else {
-    const text = await response.text();
-    let json;
-    if (text === '') {
-      json = null;
-    } else {
-      json = JSON.parse(text);
-    }
+    const json = await response.json();
     const payload = json.error_list ? json.error_list[0] : json;
     if (response.status === 403 && payload.code === 'user-not-ready' &&
         payload.message.indexOf('has not signed agreement') !== -1) {
