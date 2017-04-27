@@ -424,18 +424,26 @@ const internalFindSnaps = async (owner, token) => {
   let remainingPrefixes;
 
   try {
-    snaps = await Promise.all(
+    // For each prefix, check for snaps in memcached.
+    const snapsByPrefix = await Promise.all(
       cacheIds.map((cacheId) => memcached.get(cacheId))
     );
-    remainingPrefixes = zip(urlPrefixes, snaps)
-      .filter(([, snap]) => snap === undefined)
+    // Flatten the results from memcached into a single list of all the
+    // snaps we know about so far.
+    snaps = [].concat(
+      ...(snapsByPrefix.filter((snaps) => snaps !== undefined))
+    );
+    // Work out which prefixes have no entries in memcached and thus need to
+    // be checked with Launchpad.
+    remainingPrefixes = zip(urlPrefixes, snapsByPrefix)
+      .filter(([, snaps]) => snaps === undefined)
       .map(([urlPrefix, ]) => urlPrefix);
+
     if (!remainingPrefixes.length) {
-      return [].concat(...snaps).map((entry) => {
+      return snaps.map((entry) => {
         return lpClient.wrap_resource(entry.self_link, entry);
       });
     }
-    snaps = snaps.filter((snap) => snap !== undefined);
   } catch (error) {
     logger.error(`Error getting one of ${cacheIds} from memcached: ${error}`);
     snaps = [];
@@ -450,18 +458,18 @@ const internalFindSnaps = async (owner, token) => {
       }
     });
     // Split up results into separate cache entries so that they can help
-    // speed things up for other users.
-    const newSnaps = remainingPrefixes.map((urlPrefix) => {
+    // speed things up for other users in the same organizations.
+    const newSnapsByPrefix = remainingPrefixes.map((urlPrefix) => {
       return result.entries.filter(
         (snap) => snap.git_repository_url.startsWith(urlPrefix)
       );
     });
-    await Promise.all(zip(remainingPrefixes, newSnaps).map(
-      ([urlPrefix, snap]) => memcached.set(
-        getUrlPrefixCacheId(urlPrefix), snap, 3600
+    await Promise.all(zip(remainingPrefixes, newSnapsByPrefix).map(
+      ([urlPrefix, newSnaps]) => memcached.set(
+        getUrlPrefixCacheId(urlPrefix), newSnaps, 3600
       )
     ));
-    snaps = snaps.concat(...newSnaps);
+    snaps = snaps.concat(result.entries);
     for (const snap of snaps) {
       await ensureWebhook(snap);
     }
