@@ -72,12 +72,26 @@ $table-dropdown-background: $light-grey;
   display: table-cell;
 }
 
+.expandable {
+  background-image: url(https://assets.ubuntu.com/v1/04d2075a-chevron-down.svg);
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+}
+
 .expandable:hover,
-.expandable:focus,
 .expandable.active {
-  background: $table-dropdown-background;
+  background-color: $table-dropdown-background;
   border-color: $table-row-border-color;
   text-decoration: none;
+}
+
+.expandable.active {
+  background-image: url(https://assets.ubuntu.com/v1/f3f43376-chevron-up.svg);
+}
+
+/* assuming centered cell contains icon only, so shouldn't have the arrow */
+.expandable.centered {
+  background-image: none;
 }
 
 /* hide border between dropdown and cell that opened it */
