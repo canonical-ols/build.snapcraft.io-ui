@@ -73,6 +73,7 @@ async function getPackageUploadRequestPermission() {
         .format('YYYY-MM-DD[T]HH:mm:ss.SSS')
     })
   });
+  // TODO: This needs better error handling see #691
   const json = await response.json();
   if (response.status !== 200 || !json.macaroon) {
     throw new Error('The store did not return a valid macaroon.');
@@ -233,6 +234,7 @@ async function fetchAccountInfo(root, discharge) {
   if (response.status >= 200 && response.status < 300) {
     return { signedAgreement: true, hasShortNamespace: true };
   } else {
+    // TODO: This needs better error handling see #691
     const json = await response.json();
     const payload = json.error_list ? json.error_list[0] : json;
     if (response.status === 403 && payload.code === 'user-not-ready') {
@@ -272,6 +274,7 @@ async function setShortNamespace(root, discharge, userName) {
     }
     return data;
   } else {
+    // TODO: This needs better error handling see #691
     const json = await response.json();
     const payload = json.error_list ? json.error_list[0] : json;
     if (response.status === 403 && payload.code === 'user-not-ready' &&
