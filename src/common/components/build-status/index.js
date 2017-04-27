@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import moment from 'moment';
 
+import mapApiString from '../../helpers/map-api-string.js';
 import styles from './buildStatus.css';
 
 const BuildStatus = (props) => {
@@ -12,6 +13,7 @@ const BuildStatus = (props) => {
     statusMessage,
     dateStarted
   } = props;
+  const mappedStatusMessage = mapApiString(statusMessage);
 
   let humanDateStarted;
 
@@ -29,8 +31,8 @@ const BuildStatus = (props) => {
   return (
     <div className={ `${styles.buildStatus} ${styles[colour]}` }>
       { link
-        ? <Link to={link}>{statusMessage}</Link>
-        : <span>{statusMessage}</span>
+        ? <Link to={link}>{mappedStatusMessage}</Link>
+        : <span>{mappedStatusMessage}</span>
       }
       { humanDateStarted }
     </div>
