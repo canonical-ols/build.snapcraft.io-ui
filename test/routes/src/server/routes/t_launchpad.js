@@ -186,10 +186,12 @@ describe('The Launchpad API endpoint', () => {
               resource_type_link: `${lp_api_url}/devel/#webhook`,
               self_link: `${snapUrl}/+webhook/1`
             });
+          setupInMemoryMemcached();
         });
 
         afterEach(() => {
           lpApi.done();
+          resetMemcached();
         });
 
         it('should return a 201 Created response', (done) => {
@@ -240,6 +242,17 @@ describe('The Launchpad API endpoint', () => {
             .send({ repository_url: 'https://github.com/anowner/aname' });
           await dbUser.refresh();
           expect(dbUser.get('snaps_added')).toEqual(2);
+        });
+
+        it('should clear appropriate url_prefix entry from ' +
+           'memcached', async () => {
+          const cacheId = getUrlPrefixCacheId('https://github.com/anowner/');
+          getMemcached().cache[cacheId] = [];
+          await supertest(app)
+            .post('/launchpad/snaps')
+            .set('X-CSRF-Token', 'blah')
+            .send({ repository_url: 'https://github.com/anowner/aname' });
+          expect(getMemcached().cache).toExcludeKey(cacheId);
         });
       });
     });

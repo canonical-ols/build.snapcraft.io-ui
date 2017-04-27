@@ -337,7 +337,7 @@ export const newSnap = async (req, res) => {
 
   // We need admin permissions in order to be able to install a webhook later.
   try {
-    const { owner } = await checkAdminPermissions(req.session, repositoryUrl);
+    await checkAdminPermissions(req.session, repositoryUrl);
     await db.transaction(async (trx) => {
       if (req.session.user) {
         await db.model('GitHubUser').incrementMetric(
@@ -348,10 +348,8 @@ export const newSnap = async (req, res) => {
 
       const result = await requestNewSnap(repositoryUrl);
       // as new snap is created we need to clear list of snaps from cache
-      const urlPrefix = getRepoUrlPrefix(owner);
-      const cacheId = getUrlPrefixCacheId(urlPrefix);
+      await clearSnapCache(repositoryUrl);
 
-      await getMemcached().del(cacheId);
       const snapUrl = result.self_link;
       logger.info(`Created ${snapUrl}`);
       await ensureWebhook(result);
