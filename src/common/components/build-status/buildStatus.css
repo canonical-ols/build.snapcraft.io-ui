@@ -1,7 +1,3 @@
-.buildStatus {
-  padding-left: 5px;
-}
-
 .buildStatus.green,
 .buildStatus.green a {
   color: $success;

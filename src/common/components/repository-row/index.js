@@ -275,12 +275,12 @@ export class RepositoryRowView extends Component {
 
     return (
       <Row isActive={isActive}>
-        <DataLink col="27" to={ hasBuilt ? `/user/${fullName}` : null }>
+        <DataLink col="28" to={ hasBuilt ? `/user/${fullName}` : null }>
           <strong>{ fullName }</strong>
         </DataLink>
         { this.renderConfiguredStatus(snap) }
         { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
-        <DataLink col="29" to={ hasBuilt ? `/user/${fullName}` : null }>
+        <DataLink col="24" to={ hasBuilt ? `/user/${fullName}` : null }>
           { hasBuilt
             ? (
               <BuildStatus
@@ -297,7 +297,7 @@ export class RepositoryRowView extends Component {
             )
           }
         </DataLink>
-        <DataLink col="4"
+        <DataLink col="6"
           expandable={true}
           centered={true}
           active={ this.state.removeDropdownExpanded }
@@ -388,7 +388,7 @@ export class RepositoryRowView extends Component {
     );
 
     return (
-      <DataLink col="15" expandable={true} onClick={onClick} active={active}>
+      <DataLink col="21" expandable={true} onClick={onClick} active={active}>
         { content }
       </DataLink>
     );
@@ -420,7 +420,7 @@ export class RepositoryRowView extends Component {
     const active = this.state.unregisteredDropdownExpanded;
 
     return (
-      <DataLink col="25" expandable={true} onClick={onClick} active={active}>
+      <DataLink col="21" expandable={true} onClick={onClick} active={active}>
         { content }
       </DataLink>
     );
