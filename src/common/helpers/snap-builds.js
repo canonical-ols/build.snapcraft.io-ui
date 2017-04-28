@@ -57,14 +57,14 @@ function createState(message, colour, icon, priority) {
 // https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
 //
 const LaunchpadBuildStates = {
-  'NEEDS': 'Needs building',
-  'SUCCESS': 'Successfully built',
-  'FAILED': 'Failed to build',
-  'WAIT': 'Dependency wait',
-  'CHROOT': 'Chroot problem',
+  'NEEDSBUILT': 'Needs building',
+  'FULLYBUILT': 'Successfully built',
+  'FAILEDTOBUILD': 'Failed to build',
+  'MANUALDEPWAIT': 'Dependency wait',
+  'CHROOTWAIT': 'Chroot problem',
   'SUPERSEDED': 'Build for superseded Source',
   'BUILDING': 'Currently building',
-  'UPLOAD_FAIL': 'Failed to upload',
+  'FAILEDTOUPLOAD': 'Failed to upload',
   'UPLOADING': 'Uploading build',
   'CANCELLING': 'Cancelling build',
   'CANCELLED': 'Cancelled build'
@@ -79,42 +79,33 @@ const LaunchpadStoreUploadStates = {
 };
 
 function mapBuildAndPublishedStates(buildState, publishState) {
-
-  if (buildState === LaunchpadBuildStates.SUCCESS) {
-    switch (publishState) {
-      case LaunchpadStoreUploadStates.UNSCHEDULED:
-        return BuildAndPubState.WONT_PUBLISH;
-
-      case LaunchpadStoreUploadStates.PENDING:
-        return BuildAndPubState.PUBLISHING_SOON;
-
-      case LaunchpadStoreUploadStates.FAILED_UPLOAD:
-      case LaunchpadStoreUploadStates.FAILED_RELEASE:
-        return BuildAndPubState.PUBLISHING_FAILED;
-
-      case LaunchpadStoreUploadStates.UPLOADED:
-        return BuildAndPubState.BUILT;
-    }
+  switch (buildState) {
+    case LaunchpadBuildStates.NEEDSBUILT:
+      return BuildAndPubState.NEVER_BUILT;
+    case LaunchpadBuildStates.FULLYBUILT:
+      return internalMapPublishState(publishState);
+    case LaunchpadBuildStates.FAILEDTOBUILD:
+      return BuildAndPubState.FAILED;
+    case LaunchpadBuildStates.MANUALDEPWAIT:
+      return BuildAndPubState.SOON;
+    case LaunchpadBuildStates.BUILDING:
+      return BuildAndPubState.IN_PROGRESS;
+    case LaunchpadBuildStates.UPLOADING:
+      return BuildAndPubState.PUBLISHING_NOW;
   }
+}
 
-  if (buildState === LaunchpadBuildStates.NEEDS) {
-    return BuildAndPubState.NEVER_BUILT;
-  }
-
-  if (buildState === LaunchpadBuildStates.FAILED) {
-    return BuildAndPubState.FAILED;
-  }
-
-  if (buildState === LaunchpadBuildStates.WAIT) {
-    return BuildAndPubState.SOON;
-  }
-
-  if (buildState === LaunchpadBuildStates.BUILDING) {
-    return BuildAndPubState.IN_PROGRESS;
-  }
-
-  if (buildState === LaunchpadBuildStates.UPLOADING) {
-    return BuildAndPubState.PUBLISHING_NOW;
+function internalMapPublishState(publishState) {
+  switch (publishState) {
+    case LaunchpadStoreUploadStates.UNSCHEDULED:
+      return BuildAndPubState.WONT_PUBLISH;
+    case LaunchpadStoreUploadStates.PENDING:
+      return BuildAndPubState.PUBLISHING_SOON;
+    case LaunchpadStoreUploadStates.FAILED_UPLOAD:
+    case LaunchpadStoreUploadStates.FAILED_RELEASE:
+      return BuildAndPubState.PUBLISHING_FAILED;
+    case LaunchpadStoreUploadStates.UPLOADED:
+      return BuildAndPubState.BUILT;
   }
 }
 
