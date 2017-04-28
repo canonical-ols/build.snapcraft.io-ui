@@ -5,7 +5,7 @@ import moment from 'moment';
 import qs from 'qs';
 import url from 'url';
 
-import { checkStatus, getError, getAuthHeader } from '../helpers/api';
+import { checkStatus, getError, getMacaroonAuthHeader } from '../helpers/api';
 import { conf } from '../helpers/config';
 import { getCaveats } from '../helpers/macaroons';
 import { getPackageUploadRequestMacaroon } from './register-name';
@@ -225,7 +225,7 @@ function checkSignedIntoStoreError(error) {
 }
 
 async function fetchAccountInfo(root, discharge) {
-  const authHeader = getAuthHeader(root, discharge);
+  const authHeader = getMacaroonAuthHeader(root, discharge);
   const response = await fetch(`${STORE_API_URL}/account`, {
     headers: {
       'Authorization': authHeader,
@@ -254,7 +254,7 @@ async function fetchAccountInfo(root, discharge) {
 }
 
 async function setShortNamespace(root, discharge, userName) {
-  const authHeader = getAuthHeader(root, discharge);
+  const authHeader = getMacaroonAuthHeader(root, discharge);
   // Try setting the short namespace to the SSO username.  This may not
   // work, but it's the best we can do automatically.
   const response = await fetch(`${STORE_API_URL}/account`, {

@@ -29,6 +29,6 @@ export class APICompatibleError extends Error {
 }
 
 // Format for Authorization header using macaroons
-export function getAuthHeader(root, discharge) {
+export function getMacaroonAuthHeader(root, discharge) {
   return `Macaroon root="${root}", discharge="${discharge}"`;
 }

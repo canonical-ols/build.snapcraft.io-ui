@@ -1,11 +1,11 @@
 import expect from 'expect';
 
-import { getAuthHeader } from '../../../../../src/common/helpers/api';
+import { getMacaroonAuthHeader } from '../../../../../src/common/helpers/api';
 
 describe('api helpers', () => {
-  context('getAuthHeader', () => {
+  context('getMacaroonAuthHeader', () => {
     it('is a Macaroon with root and discharge', () => {
-      const header = getAuthHeader('root', 'discharge');
+      const header = getMacaroonAuthHeader('root', 'discharge');
       expect(header).toEqual('Macaroon root="root", discharge="discharge"');
     });
   });

@@ -2,7 +2,7 @@ import 'isomorphic-fetch';
 import localforage from 'localforage';
 import { MacaroonsBuilder } from 'macaroons.js';
 
-import { APICompatibleError, checkStatus, getError, getAuthHeader } from '../helpers/api';
+import { APICompatibleError, checkStatus, getError, getMacaroonAuthHeader } from '../helpers/api';
 import { conf } from '../helpers/config';
 import { checkPackageUploadRequest, getAccountInfo } from './auth-store';
 import { requestBuilds } from './snap-builds';
@@ -65,7 +65,7 @@ export async function getPackageUploadRequestMacaroon() {
 }
 
 async function signAgreement(root, discharge) {
-  const authHeader = getAuthHeader(root, discharge);
+  const authHeader = getMacaroonAuthHeader(root, discharge);
   const response = await fetch(`${STORE_API_URL}/agreement`, {
     method: 'POST',
     headers: {
@@ -87,7 +87,7 @@ async function signAgreement(root, discharge) {
 }
 
 async function requestRegisterName(root, discharge, snapName) {
-  const authHeader = getAuthHeader(root, discharge);
+  const authHeader = getMacaroonAuthHeader(root, discharge);
   return await fetch(`${STORE_API_URL}/register-name`, {
     method: 'POST',
     headers: {
@@ -117,7 +117,7 @@ export async function internalRegisterName(root, discharge, snapName) {
 }
 
 async function getPackageUploadMacaroon(root, discharge, snapName) {
-  const authHeader = getAuthHeader(root, discharge);
+  const authHeader = getMacaroonAuthHeader(root, discharge);
   const response = await fetch(`${STORE_API_URL}/acl/`, {
     method: 'POST',
     headers: {
