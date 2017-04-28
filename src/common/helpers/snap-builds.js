@@ -62,7 +62,7 @@ const LaunchpadBuildStates = {
   'FAILED': 'Failed to build',
   'WAIT': 'Dependency wait',
   'CHROOT': 'Chroot problem',
-  'SUPERCEDED': 'Build for superseded Source',
+  'SUPERSEDED': 'Build for superseded Source',
   'BUILDING': 'Currently building',
   'UPLOAD_FAIL': 'Failed to upload',
   'UPLOADING': 'Uploading build',
