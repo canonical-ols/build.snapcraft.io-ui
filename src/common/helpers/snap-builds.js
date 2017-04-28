@@ -73,8 +73,8 @@ const LaunchpadBuildStates = {
 const LaunchpadStoreUploadStates = {
   'UNSCHEDULED': 'Unscheduled',
   'PENDING': 'Pending',
-  'FAILED_UPLOAD': 'Failed to upload',
-  'FAILED_RELEASE': 'Failed to release to channels',
+  'FAILEDTOUPLOAD': 'Failed to upload',
+  'FAILEDTORELEASE': 'Failed to release to channels',
   'UPLOADED': 'Uploaded'
 };
 
@@ -83,15 +83,18 @@ function mapBuildAndPublishedStates(buildState, publishState) {
     case LaunchpadBuildStates.NEEDSBUILT:
       return BuildAndPubState.NEVER_BUILT;
     case LaunchpadBuildStates.FULLYBUILT:
+    case LaunchpadBuildStates.FAILEDTOUPLOAD:
       return internalMapPublishState(publishState);
-    case LaunchpadBuildStates.FAILEDTOBUILD:
-      return BuildAndPubState.FAILED;
-    case LaunchpadBuildStates.MANUALDEPWAIT:
-      return BuildAndPubState.SOON;
     case LaunchpadBuildStates.BUILDING:
       return BuildAndPubState.IN_PROGRESS;
     case LaunchpadBuildStates.UPLOADING:
-      return BuildAndPubState.PUBLISHING_NOW;
+      return BuildAndPubState.IN_PROGRESS;
+    case LaunchpadBuildStates.FAILEDTOBUILD:
+    case LaunchpadBuildStates.MANUALDEPWAIT:
+    case LaunchpadBuildStates.CHROOTWAIT:
+    case LaunchpadBuildStates.CANCELLING:
+    case LaunchpadBuildStates.CANCELLED:
+      return BuildAndPubState.FAILED;
   }
 }
 
@@ -101,8 +104,8 @@ function internalMapPublishState(publishState) {
       return BuildAndPubState.WONT_PUBLISH;
     case LaunchpadStoreUploadStates.PENDING:
       return BuildAndPubState.PUBLISHING_SOON;
-    case LaunchpadStoreUploadStates.FAILED_UPLOAD:
-    case LaunchpadStoreUploadStates.FAILED_RELEASE:
+    case LaunchpadStoreUploadStates.FAILEDTOUPLOAD:
+    case LaunchpadStoreUploadStates.FAILEDTORELEASE:
       return BuildAndPubState.PUBLISHING_FAILED;
     case LaunchpadStoreUploadStates.UPLOADED:
       return BuildAndPubState.BUILT;
