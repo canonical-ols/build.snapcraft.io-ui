@@ -25,43 +25,116 @@
 // };
 
 export const BuildStatusColours = {
+  BLUE: 'blue',
   GREEN: 'green',
   YELLOW: 'yellow',
   RED: 'red',
   GREY: 'grey'
 };
 
+const BuildAndPubState = {
+  'NEVER_BUILT':     createState('Never built', BuildStatusColours.GREY, false, 8),
+  'BUILDING_SOON':   createState('Building soon', BuildStatusColours.GREY, 'ellipsis', 7),
+  'IN_PROGRESS':     createState('In progress', BuildStatusColours.BLUE, 'spinner', 2),
+  'FAILED_TO_BUILD': createState('Failed to build', BuildStatusColours.RED, 'cross', 1),
+  'WONT_PUBLISH':    createState('Built, won\'t be published', BuildStatusColours.GREEN, 'tick_outlined', 6),
+  'PUBLISH_SOON':    createState('Built, publishing soon', BuildStatusColours.GREY, 'tick', 2),
+  'PUBLISH_NOW':     createState('Built, publishing now', BuildStatusColours.BLUE, 'tick', 3),
+  'PUBLISH_FAILED':  createState('Built, failed to publish', BuildStatusColours.RED, 'tick', 4),
+  'PUBLISHED':       createState('Built and published', BuildStatusColours.GREEN, 'tick_filled', 5)
+};
+
+function createState(message, colour, icon, priority) {
+  return {
+    message,
+    colour,
+    icon,
+    priority
+  };
+}
+
 // Based on BuildStatusConstants from LP API
 // https://git.launchpad.net/launchpad/tree/lib/lp/buildmaster/enums.py#n22
 //
-// mapping between build status from LP and red, yellow, green, grey status colours
-const BuildStatusMapping = {
-  'Needs building': BuildStatusColours.YELLOW,
-  'Successfully built': BuildStatusColours.GREEN,
-  'Failed to build': BuildStatusColours.RED,
-  'Dependency wait': BuildStatusColours.RED,
-  'Chroot problem': BuildStatusColours.RED,
-  'Build for superseded Source': BuildStatusColours.RED,
-  'Currently building': BuildStatusColours.YELLOW,
-  'Failed to upload': BuildStatusColours.RED,
-  'Uploading build': BuildStatusColours.YELLOW,
-  'Cancelling build': BuildStatusColours.RED,
-  'Cancelled build': BuildStatusColours.RED
+const LaunchpadBuildStates = {
+  'NEEDS': 'Needs building',
+  'SUCCESS': 'Successfully built',
+  'FAILED': 'Failed to build',
+  'WAIT': 'Dependency wait',
+  'CHROOT': 'Chroot problem',
+  'SUPERCEDED': 'Build for superseded Source',
+  'BUILDING': 'Currently building',
+  'UPLOAD_FAIL': 'Failed to upload',
+  'UPLOADING': 'Uploading build',
+  'CANCELLING': 'Cancelling build',
+  'CANCELLED': 'Cancelled build'
 };
+
+const LaunchpadStoreUploadStates = {
+  'UNSCHEDULED': 'Unscheduled',
+  'PENDING': 'Pending',
+  'FAILED_UPLOAD': 'Failed to upload',
+  'FAILED_RELEASE': 'Failed to release to channels',
+  'UPLOADED': 'Uploaded'
+};
+
+function mapBuildAndPublishedStates(buildState, publishState) {
+
+  if (buildState === LaunchpadBuildStates.SUCCESS) {
+    switch (publishState) {
+      case LaunchpadStoreUploadStates.UNSCHEDULED:
+        return BuildAndPubState.WONT_PUBLISH;
+
+      case LaunchpadStoreUploadStates.PENDING:
+        return BuildAndPubState.PUBLISH_SOON;
+
+      case LaunchpadStoreUploadStates.FAILED_UPLOAD:
+      case LaunchpadStoreUploadStates.FAILED_RELEASE:
+        return BuildAndPubState.PUBLISH_FAILED;
+
+      case LaunchpadStoreUploadStates.UPLOADED:
+        return BuildAndPubState.BUILT;
+    }
+  }
+
+  if (buildState === LaunchpadBuildStates.NEEDS) {
+    return BuildAndPubState.NEVER_BUILT;
+  }
+
+  if (buildState === LaunchpadBuildStates.FAILED) {
+    return BuildAndPubState.FAILED;
+  }
+
+  if (buildState === LaunchpadBuildStates.WAIT) {
+    return BuildAndPubState.SOON;
+  }
+
+  if (buildState === LaunchpadBuildStates.BUILDING) {
+    return BuildAndPubState.IN_PROGRESS;
+  }
+
+  if (buildState === LaunchpadBuildStates.UPLOADING) {
+    return BuildAndPubState.PUBLISH_NOW;
+  }
+}
+
 
 function getLastPartOfUrl(url) {
   return url ? url.substr(url.lastIndexOf('/') + 1) : null;
 }
 
 export function snapBuildFromAPI(entry) {
+
+  const [ colour, statusMessage ] = mapBuildAndPublishedStates(entry.buildstate, entry.store_upload_status);
+
   return entry ? {
     buildId: getLastPartOfUrl(entry.self_link),
     buildLogUrl: entry.build_log_url,
 
     architecture: entry.arch_tag,
 
-    colour: BuildStatusMapping[entry.buildstate],
-    statusMessage: entry.buildstate,
+    colour: colour,
+    statusMessage: statusMessage,
 
     dateCreated: entry.datecreated,
     dateStarted: entry.date_started,
