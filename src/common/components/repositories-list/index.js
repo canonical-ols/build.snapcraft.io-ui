@@ -23,9 +23,11 @@ const SNAP_NAME_NOT_REGISTERED_ERROR_CODE = 'snap-name-not-registered';
 export class RepositoriesListView extends Component {
 
   fetchAuthData(authStore) {
-    if (authStore.authenticated === null) {
+    // check if authenticated and hasShortNamespace haven't been set yet,
+    // so are null or undefined
+    if (authStore.authenticated == null) {
       this.props.dispatch(checkSignedIntoStore());
-    } else if (authStore.hasShortNamespace === null) {
+    } else if (authStore.hasShortNamespace == null) {
       this.props.dispatch(getAccountInfo(authStore.userName));
     }
   }
