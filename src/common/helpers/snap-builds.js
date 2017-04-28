@@ -38,9 +38,9 @@ const BuildAndPubState = {
   'IN_PROGRESS':     createState('In progress', BuildStatusColours.BLUE, 'spinner', 2),
   'FAILED_TO_BUILD': createState('Failed to build', BuildStatusColours.RED, 'cross', 1),
   'WONT_PUBLISH':    createState('Built, won\'t be published', BuildStatusColours.GREEN, 'tick_outlined', 6),
-  'PUBLISH_SOON':    createState('Built, publishing soon', BuildStatusColours.GREY, 'tick', 2),
-  'PUBLISH_NOW':     createState('Built, publishing now', BuildStatusColours.BLUE, 'tick', 3),
-  'PUBLISH_FAILED':  createState('Built, failed to publish', BuildStatusColours.RED, 'tick', 4),
+  'PUBLISHING_SOON':    createState('Built, publishing soon', BuildStatusColours.GREY, 'tick', 2),
+  'PUBLISHING_NOW':     createState('Built, publishing now', BuildStatusColours.BLUE, 'tick', 3),
+  'PUBLISHING_FAILED':  createState('Built, failed to publish', BuildStatusColours.RED, 'tick', 4),
   'PUBLISHED':       createState('Built and published', BuildStatusColours.GREEN, 'tick_filled', 5)
 };
 
@@ -86,11 +86,11 @@ function mapBuildAndPublishedStates(buildState, publishState) {
         return BuildAndPubState.WONT_PUBLISH;
 
       case LaunchpadStoreUploadStates.PENDING:
-        return BuildAndPubState.PUBLISH_SOON;
+        return BuildAndPubState.PUBLISHING_SOON;
 
       case LaunchpadStoreUploadStates.FAILED_UPLOAD:
       case LaunchpadStoreUploadStates.FAILED_RELEASE:
-        return BuildAndPubState.PUBLISH_FAILED;
+        return BuildAndPubState.PUBLISHING_FAILED;
 
       case LaunchpadStoreUploadStates.UPLOADED:
         return BuildAndPubState.BUILT;
@@ -114,7 +114,7 @@ function mapBuildAndPublishedStates(buildState, publishState) {
   }
 
   if (buildState === LaunchpadBuildStates.UPLOADING) {
-    return BuildAndPubState.PUBLISH_NOW;
+    return BuildAndPubState.PUBLISHING_NOW;
   }
 }
 
