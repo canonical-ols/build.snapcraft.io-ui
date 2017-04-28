@@ -50,9 +50,9 @@ $table-dropdown-background: $light-grey;
   color: $cool-grey;
 }
 
-.dataLink:hover,
-.dataLink:focus,
-.dataLink.active {
+a.dataLink:hover,
+a.dataLink:focus,
+a.dataLink.active {
   color: $link-blue;
 }
 
