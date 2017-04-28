@@ -1,51 +1,5 @@
 import 'isomorphic-fetch';
-import { MacaroonsBuilder } from 'macaroons.js';
-
-import { getCaveats } from '../../common/helpers/macaroons';
 import { conf } from '../helpers/config';
-import logging from '../logging';
-
-const logger = logging.getLogger('express');
-
-const dumpCaveats = (rawMacaroon) => {
-  const macaroon = MacaroonsBuilder.deserialize(rawMacaroon);
-  const caveats = [];
-  for (const caveat of getCaveats(macaroon)) {
-    if (caveat.verificationKeyId === '') {
-      caveats.push(caveat.caveatId);
-    } else {
-      caveats.push(`Discharge required from ${caveat.location}`);
-    }
-  }
-  return caveats;
-};
-
-export const registerName = async (req, res) => {
-  const snapName = req.body.snap_name;
-  const root = req.body.root;
-  const discharge = req.body.discharge;
-
-  const url = `${conf.get('STORE_API_URL')}/register-name/`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Macaroon root="${root}", discharge="${discharge}"`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ snap_name: snapName })
-  });
-  const json = await response.json();
-  if (response.status === 401) {
-    // Debug https://github.com/canonical-ols/build.snapcraft.io/issues/527
-    logger.info(`Failed to register name "${snapName}"`);
-    logger.info(`Root macaroon: ${dumpCaveats(root)}`);
-    logger.info(`Discharge macaroon: ${dumpCaveats(discharge)}`);
-    logger.info(
-      `WWW-Authenticate: ${response.headers.get('WWW-Authenticate')}`);
-  }
-  return res.status(response.status).send(json);
-};
 
 export const getAccount = async (req, res) => {
   const root = req.query.root;

@@ -60,6 +60,7 @@ describe('register name actions', () => {
   const BASE_URL = conf.get('BASE_URL');
 
   let store;
+  let storeApi;
   let action;
   let scope;
   let root;
@@ -67,6 +68,7 @@ describe('register name actions', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
+    storeApi = nock(conf.get('STORE_API_URL'));
     scope = nock(BASE_URL);
     const ssoLocation = url.parse(conf.get('UBUNTU_SSO_URL')).host;
     const rootMacaroon = new MacaroonsBuilder('location', 'key', 'id')
@@ -80,6 +82,7 @@ describe('register name actions', () => {
   });
 
   afterEach(() => {
+    storeApi.done();
     scope.done();
     nock.cleanAll();
     localForageStub.clear();
@@ -87,8 +90,8 @@ describe('register name actions', () => {
 
   context('internalRegisterName', () => {
     it('throws an error on failure to register snap name', async () => {
-      scope
-        .post('/api/store/register-name', { snap_name: 'test-snap' })
+      storeApi
+        .post('/register-name', { snap_name: 'test-snap' })
         .reply(409, {
           status: 409,
           code: 'already_registered',
@@ -107,8 +110,8 @@ describe('register name actions', () => {
     });
 
     it('succeeds if registering snap name says already owned', async () => {
-      scope
-        .post('/api/store/register-name', { snap_name: 'test-snap' })
+      storeApi
+        .post('/register-name', { snap_name: 'test-snap' })
         .reply(409, {
           status: 409,
           code: 'already_owned',
@@ -119,8 +122,8 @@ describe('register name actions', () => {
 
     it('succeeds if registering snap name succeeds', async () => {
       // XXX check Authorization header
-      scope
-        .post('/api/store/register-name', { snap_name: 'test-snap' })
+      storeApi
+        .post('/register-name', { snap_name: 'test-snap' })
         .reply(201, { snap_id: 'test-snap-id' });
       await internalRegisterName(root, discharge, 'test-snap');
     });
@@ -174,8 +177,8 @@ describe('register name actions', () => {
       });
 
       it('stores an error on failure to register snap name', async () => {
-        scope
-          .post('/api/store/register-name', { snap_name: 'test-snap' })
+        storeApi
+          .post('/register-name', { snap_name: 'test-snap' })
           .reply(409, {
             status: 409,
             code: 'already_registered',
@@ -194,23 +197,20 @@ describe('register name actions', () => {
       });
 
       context('if registering snap name succeeds', () => {
-        let storeScope;
-
         beforeEach(() => {
           // XXX check Authorization header
-          scope
-            .post('/api/store/register-name', { snap_name: 'test-snap' })
+          storeApi = nock(conf.get('STORE_API_URL'))
+            .post('/register-name', { snap_name: 'test-snap' })
             .reply(201, { snap_id: 'test-snap-id' });
-          storeScope = nock(conf.get('STORE_API_URL'));
         });
 
         afterEach(() => {
-          storeScope.done();
+          storeApi.done();
         });
 
         it('stores an error on failure to get package upload ' +
            'macaroon', async () => {
-          storeScope
+          storeApi
             .post('/acl/', {
               packages: [{ name: 'test-snap', series: '16' }],
               permissions: ['package_upload'],
@@ -236,7 +236,7 @@ describe('register name actions', () => {
         context('if getting package upload macaroon succeeds', () => {
           beforeEach(() => {
             // XXX check headers and body
-            storeScope.post('/acl/')
+            storeApi.post('/acl/')
               .reply(200, { macaroon: 'dummy-package-upload-macaroon' });
           });
 
@@ -496,9 +496,6 @@ describe('register name actions', () => {
     });
 
     context('when given snap name is registered by current user', () => {
-      let storeApi;
-      let bsiApi;
-
       const snapName = 'test-snap';
 
       beforeEach(() => {
@@ -507,15 +504,13 @@ describe('register name actions', () => {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
           })
-          .reply(200, { macaroon: 'test-macaroon' });
-        bsiApi = nock(BASE_URL)
-          .post('/api/store/register-name', { snap_name: snapName })
+          .reply(200, { macaroon: 'test-macaroon' })
+          .post('/register-name', { snap_name: snapName })
           .reply(409, { code: 'already_owned' });
       });
 
       afterEach(() => {
         storeApi.done();
-        bsiApi.done();
         nock.cleanAll();
       });
 
@@ -527,9 +522,6 @@ describe('register name actions', () => {
     });
 
     context('when given snap name is registered by another user', () => {
-      let storeApi;
-      let bsiApi;
-
       const snapName = 'test-snap';
 
       beforeEach(() => {
@@ -538,15 +530,13 @@ describe('register name actions', () => {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
           })
-          .reply(200, { macaroon: 'test-macaroon' });
-        bsiApi = nock(BASE_URL)
-          .post('/api/store/register-name', { snap_name: snapName })
+          .reply(200, { macaroon: 'test-macaroon' })
+          .post('/register-name', { snap_name: snapName })
           .reply(409, { code: 'already_registered' });
       });
 
       afterEach(() => {
         storeApi.done();
-        bsiApi.done();
         nock.cleanAll();
       });
 
@@ -558,9 +548,6 @@ describe('register name actions', () => {
     });
 
     context('when given snap name is registered by another user', () => {
-      let storeApi;
-      let bsiApi;
-
       const snapName = 'test-snap';
 
       beforeEach(() => {
@@ -569,15 +556,13 @@ describe('register name actions', () => {
             packages: [{ name: snapName }],
             permissions: ['package_upload']
           })
-          .reply(200, { macaroon: 'test-macaroon' });
-        bsiApi = nock(BASE_URL)
-          .post('/api/store/register-name', { snap_name: snapName })
+          .reply(200, { macaroon: 'test-macaroon' })
+          .post('/register-name', { snap_name: snapName })
           .reply(200, { status: 'success' });
       });
 
       afterEach(() => {
         storeApi.done();
-        bsiApi.done();
         nock.cleanAll();
       });
 
