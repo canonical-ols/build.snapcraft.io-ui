@@ -275,36 +275,15 @@ export class RepositoryRowView extends Component {
 
     return (
       <Row isActive={isActive}>
-        <DataLink col="28" to={ hasBuilt ? `/user/${fullName}` : null }>
-          <strong>{ fullName }</strong>
-        </DataLink>
+
+        {/* cells */}
+        { this.renderRepoName(fullName, hasBuilt) }
         { this.renderConfiguredStatus(snap) }
         { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
-        <DataLink col="24" to={ hasBuilt ? `/user/${fullName}` : null }>
-          { hasBuilt
-            ? (
-              <BuildStatus
-                colour={ latestBuild.colour }
-                statusMessage={ latestBuild.statusMessage }
-                dateStarted={ latestBuild.dateStarted }
-              />
-            )
-            : (
-              <BuildStatus
-                colour="grey"
-                statusMessage="Never built"
-              />
-            )
-          }
-        </DataLink>
-        <DataLink col="6"
-          expandable={true}
-          centered={true}
-          active={ this.state.removeDropdownExpanded }
-          onClick={ this.onToggleRemoveClick.bind(this) }
-        >
-          <DeleteIcon />
-        </DataLink>
+        { this.renderBuildStatus(fullName, hasBuilt, latestBuild) }
+        { this.renderDelete() }
+
+        {/* dropdowns */}
         { showNameMismatchDropdown &&
           <NameMismatchDropdown
             snap={snap}
@@ -366,6 +345,14 @@ export class RepositoryRowView extends Component {
     return warningText;
   }
 
+  renderRepoName(fullName, isLinked) {
+    return (
+      <DataLink col="28" to={ isLinked ? `/user/${fullName}` : null }>
+        <strong>{ fullName }</strong>
+      </DataLink>
+    );
+  }
+
   renderConfiguredStatus(snap) {
     const { snapcraftData } = snap;
     let onClick, content;
@@ -422,6 +409,41 @@ export class RepositoryRowView extends Component {
     return (
       <DataLink col="21" expandable={true} onClick={onClick} active={active}>
         { content }
+      </DataLink>
+    );
+  }
+
+  renderBuildStatus(fullName, hasBuilt, latestBuild) {
+    return (
+      <DataLink col="24" to={ hasBuilt ? `/user/${fullName}` : null }>
+        { hasBuilt
+          ? (
+            <BuildStatus
+              colour={ latestBuild.colour }
+              statusMessage={ latestBuild.statusMessage }
+              dateStarted={ latestBuild.dateStarted }
+            />
+          )
+          : (
+            <BuildStatus
+              colour="grey"
+              statusMessage="Never built"
+            />
+          )
+        }
+      </DataLink>
+    );
+  }
+
+  renderDelete() {
+    return (
+      <DataLink col="6"
+        expandable={true}
+        centered={true}
+        active={ this.state.removeDropdownExpanded  }
+        onClick={ this.onToggleRemoveClick.bind(this) }
+      >
+        <DeleteIcon />
       </DataLink>
     );
   }
