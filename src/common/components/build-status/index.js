@@ -40,7 +40,7 @@ const BuildStatus = (props) => {
 
 BuildStatus.propTypes = {
   link: PropTypes.string,
-  colour: PropTypes.oneOf(Object.keys(BuildStatusColours)),
+  colour: PropTypes.oneOf(Object.values(BuildStatusColours)),
   statusMessage: PropTypes.string,
   dateStarted: PropTypes.string
 };
