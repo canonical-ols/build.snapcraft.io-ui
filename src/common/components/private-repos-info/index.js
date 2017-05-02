@@ -4,7 +4,7 @@ import { conf } from '../../helpers/config';
 const BASE_URL = conf.get('BASE_URL');
 
 import Popover from '../popover';
-import Button from '../vanilla/button';
+import Button, { Anchor } from '../vanilla/button';
 
 import styles from './private-repos-info.css';
 
@@ -110,18 +110,29 @@ export default class PrivateReposInfo extends Component {
   render() {
     return (
       <div className={ styles.info }>
-        <p>Private repos not shown yet. (<a onClick={this.onHelpClick.bind(this)}>Why?</a>)</p>
+        <p>(<a onClick={this.onHelpClick.bind(this)}>Any repos missing from this list?</a>)</p>
         { this.state.showPopover &&
           <Popover
             left={this.state.popoverOffsetLeft}
             top={this.state.popoverOffsetTop}
             onClick={this.onPopoverClick.bind(this)}
           >
-            <p className={styles.infoMsg}>We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
-            { this.state.subscribeSuccess
-              ? <p className={styles.successMsg}>{ this.state.message }</p>
-              : this.renderSubsribeForm()
-            }
+            <ul>
+              <li>
+                <p className={styles.infoMsg}>Want to use a <strong>private repo</strong>? We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
+                { this.state.subscribeSuccess
+                  ? <p className={styles.successMsg}>{ this.state.message }</p>
+                  : <p className={styles.infoMsg}>{ this.renderSubsribeForm() }</p>
+                }
+              </li>
+              <li>
+                <p className={styles.infoMsg}>Don’t have <strong>admin permission</strong>? Ask a repo admin to add it instead, and it will show up in your repo list too.</p>
+              </li>
+              <li>
+                <p className={styles.infoMsg}>Using the <strong>wrong GitHub account</strong>? Sign out and try again with the right one.</p>
+                <Anchor appearance='neutral' flavour='smaller' href="https://github.com/logout">Change account…</Anchor>
+              </li>
+            </ul>
           </Popover>
         }
       </div>
