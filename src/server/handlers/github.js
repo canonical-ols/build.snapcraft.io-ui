@@ -125,7 +125,9 @@ export const refreshOrganizations = async (req, res) => {
   const orgs = await internalListOrganizations(owner, req.session.token);
 
   // update orgs in session
-  req.session.user.orgs = orgs;
+  if (req.session.user) {
+    req.session.user.orgs = orgs;
+  }
 
   return res.status(200).send({
     status: 'success',
