@@ -12,6 +12,14 @@ $background-color: #FFF;
   padding-left: 20px;
 }
 
+.info ul li {
+  margin-bottom: 12px;
+}
+
+.info ul li:last-child {
+  margin-bottom: 0;
+}
+
 .infoMsg {
   margin-bottom: 12px;
 }

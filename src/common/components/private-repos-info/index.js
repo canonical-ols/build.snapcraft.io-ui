@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 import { conf } from '../../helpers/config';
 const BASE_URL = conf.get('BASE_URL');
+const GITHUB_AUTH_CLIENT_ID = conf.get('GITHUB_AUTH_CLIENT_ID');
 
 import Popover from '../popover';
 import Button, { Anchor } from '../vanilla/button';
@@ -102,6 +103,24 @@ export default class PrivateReposInfo extends Component {
     );
   }
 
+  renderOrgsInfo() {
+    const { orgs } = this.props.user;
+
+    const number = orgs.length;
+    const plural = orgs.length > 1 ? 's' : '';
+    const orgsList = orgs.slice(0, 3).map((org) => org.login).join(', ');
+
+
+    return (
+      <p className={styles.infoMsg}>Missing an <strong>organization</strong>? {' '}
+        { number
+          ? `You’ve given Snapcraft access to ${number} organization${plural}: ${orgsList}${number > 3 ? '…' : '.'}`
+          : 'You haven’t given Snapcraft access to any organizations.'
+        }
+      </p>
+    );
+  }
+
   onPopoverClick(event) {
     // prevent popover from closing when it's clicked
     event.nativeEvent.stopImmediatePropagation();
@@ -122,11 +141,25 @@ export default class PrivateReposInfo extends Component {
                 <p className={styles.infoMsg}>Want to use a <strong>private repo</strong>? We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
                 { this.state.subscribeSuccess
                   ? <p className={styles.successMsg}>{ this.state.message }</p>
-                  : <p className={styles.infoMsg}>{ this.renderSubsribeForm() }</p>
+                  : this.renderSubsribeForm()
                 }
               </li>
               <li>
                 <p className={styles.infoMsg}>Don’t have <strong>admin permission</strong>? Ask a repo admin to add it instead, and it will show up in your repo list too.</p>
+              </li>
+              <li>
+                { this.renderOrgsInfo() }
+                <Anchor
+                  appearance='neutral' flavour='smaller'
+                  target="blank" rel="noreferrer noopener"
+                  href={`https://github.com/settings/connections/applications/${GITHUB_AUTH_CLIENT_ID}`}
+                >
+                  Review organization access…
+                </Anchor>
+                {/* TODO
+                {' '}
+                <Button appearance='neutral' flavour='smaller'>OK, I’ve added it</Button>
+                */}
               </li>
               <li>
                 <p className={styles.infoMsg}>Using the <strong>wrong GitHub account</strong>? Sign out and try again with the right one.</p>
@@ -139,3 +172,9 @@ export default class PrivateReposInfo extends Component {
     );
   }
 }
+
+PrivateReposInfo.propTypes = {
+  user: PropTypes.shape({
+    orgs: PropTypes.array
+  }).isRequired
+};

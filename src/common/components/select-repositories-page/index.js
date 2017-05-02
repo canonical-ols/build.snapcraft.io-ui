@@ -44,7 +44,7 @@ class SelectRepositoriesPage extends Component {
           <HeadingThree className={ styles.heading }>
             Choose repos to add
           </HeadingThree>
-          <PrivateReposInfo />
+          <PrivateReposInfo user={ this.props.user }/>
           <SelectRepositoryList/>
         </CardHighlighted>
       </div>
