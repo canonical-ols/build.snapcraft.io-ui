@@ -114,8 +114,8 @@ export default class PrivateReposInfo extends Component {
     return (
       <p className={styles.infoMsg}>Missing an <strong>organization</strong>? {' '}
         { number
-          ? `You’ve given Snapcraft access to ${number} organization${plural}: ${orgsList}${number > 3 ? '…' : '.'}`
-          : 'You haven’t given Snapcraft access to any organizations.'
+          ? `Snapcraft has access to ${number} organization${plural} you’re a member of: ${orgsList}${number > 3 ? '…' : '.'}`
+          : 'Snapcraft doesn’t have access to any organizations you’re a member of. The organization owner needs to grant access.'
         }
       </p>
     );
@@ -158,7 +158,7 @@ export default class PrivateReposInfo extends Component {
                 </Anchor>
                 {/* TODO
                 {' '}
-                <Button appearance='neutral' flavour='smaller'>OK, I’ve added it</Button>
+                <Button appearance='neutral' flavour='smaller'>OK, it’s added</Button>
                 */}
               </li>
               <li>
