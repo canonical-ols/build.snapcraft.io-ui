@@ -32,21 +32,76 @@ export const BuildStatusColours = {
   GREY: 'grey'
 };
 
-const BuildAndPubState = {
-  'NEVER_BUILT':     createState('Never built', BuildStatusColours.GREY, false, 8),
-  'BUILDING_SOON':   createState('Building soon', BuildStatusColours.GREY, 'ellipsis', 7),
-  'IN_PROGRESS':     createState('In progress', BuildStatusColours.BLUE, 'spinner', 2),
-  'FAILED_TO_BUILD': createState('Failed to build', BuildStatusColours.RED, 'cross', 1),
-  'WONT_PUBLISH':    createState('Built, won\'t be published', BuildStatusColours.GREEN, 'tick_outlined', 6),
-  'PUBLISHING_SOON':    createState('Built, publishing soon', BuildStatusColours.GREY, 'tick', 2),
-  'PUBLISHING_NOW':     createState('Built, publishing now', BuildStatusColours.BLUE, 'tick', 3),
-  'PUBLISHING_FAILED':  createState('Built, failed to publish', BuildStatusColours.RED, 'tick', 4),
-  'PUBLISHED':       createState('Built and published', BuildStatusColours.GREEN, 'tick_filled', 5)
+export const BuildStatusIcons = {
+  TICK: 'tick',
+  TICK_OUTLINED: 'outlined_tick',
+  TICK_SOLID: 'solid_tick',
+  ELLIPSES: 'ellipses',
+  SPINNER: 'spinner',
+  CROSS: 'cross'
 };
 
-function createState(message, colour, icon, priority) {
+export const UserFacingState = {
+  'NEVER_BUILT': createState(
+    'Never built',
+    BuildStatusColours.GREY,
+    false,
+    8
+  ),
+  'BUILDING_SOON': createState(
+    'Building soon',
+    BuildStatusColours.GREY,
+    BuildStatusIcons.ELLIPSES,
+    7
+  ),
+  'WONT_PUBLISH': createState(
+    'Built, won\'t be published',
+    BuildStatusColours.GREEN,
+    BuildStatusIcons.TICK_OUTLINED,
+    6
+  ),
+  'PUBLISHED': createState(
+    'Built and published',
+    BuildStatusColours.GREEN,
+    BuildStatusIcons.TICK_SOLID,
+    5
+  ),
+  'PUBLISHING_FAILED': createState(
+    'Built, failed to publish',
+    BuildStatusColours.RED,
+    BuildStatusIcons.TICK,
+    4
+  ),
+  'PUBLISHING_SOON': createState(
+    'Built, publishing soon',
+    BuildStatusColours.GREY,
+    BuildStatusIcons.TICK,
+    3
+  ),
+  'IN_PROGRESS': createState(
+    'In progress',
+    BuildStatusColours.BLUE,
+    BuildStatusIcons.SPINNER,
+    2
+  ),
+  'FAILED_TO_BUILD': createState(
+    'Failed to build',
+    BuildStatusColours.RED,
+    BuildStatusIcons.CROSS,
+    1
+  )
+};
+
+/**
+ * @param message {String} the message presented to the user when a snap is in this state.
+ * @param colour {String} colour of indicator associated with message.
+ * @param icon {String} icon type associated with message.
+ * @param priority {Number} value to determine which message should be shown in
+ * the case of multiple archs with differing states; lowest wins.
+ * **/
+function createState(statusMessage, colour, icon, priority) {
   return {
-    message,
+    statusMessage,
     colour,
     icon,
     priority
@@ -78,37 +133,44 @@ const LaunchpadStoreUploadStates = {
   'UPLOADED': 'Uploaded'
 };
 
-function mapBuildAndPublishedStates(buildState, publishState) {
+function mapBuildAndUploadStates(buildState, uploadState) {
   switch (buildState) {
     case LaunchpadBuildStates.NEEDSBUILT:
-      return BuildAndPubState.NEVER_BUILT;
+      return UserFacingState.NEVER_BUILT;
     case LaunchpadBuildStates.FULLYBUILT:
-    case LaunchpadBuildStates.FAILEDTOUPLOAD:
-      return internalMapPublishState(publishState);
+      return internalMapSnapBuildStoreUploadState(uploadState);
     case LaunchpadBuildStates.BUILDING:
-      return BuildAndPubState.IN_PROGRESS;
+      return UserFacingState.IN_PROGRESS;
     case LaunchpadBuildStates.UPLOADING:
-      return BuildAndPubState.IN_PROGRESS;
+      return UserFacingState.IN_PROGRESS;
     case LaunchpadBuildStates.FAILEDTOBUILD:
     case LaunchpadBuildStates.MANUALDEPWAIT:
     case LaunchpadBuildStates.CHROOTWAIT:
+    case LaunchpadBuildStates.SUPERSEDED:
+    case LaunchpadBuildStates.FAILEDTOUPLOAD:
     case LaunchpadBuildStates.CANCELLING:
     case LaunchpadBuildStates.CANCELLED:
-      return BuildAndPubState.FAILED;
+      return UserFacingState.FAILED_TO_BUILD;
+    default:
+      throw new RangeError('Unrecognised buildState in mapBuildAndUploadStates');
   }
 }
 
-function internalMapPublishState(publishState) {
-  switch (publishState) {
+// Map SnapBuildStoreUploadStatus to UI state
+// https://bazaar.launchpad.net/+branch/launchpad/view/head:/lib/lp/snappy/interfaces/snapbuild.py#L81
+function internalMapSnapBuildStoreUploadState(uploadState) {
+  switch (uploadState) {
     case LaunchpadStoreUploadStates.UNSCHEDULED:
-      return BuildAndPubState.WONT_PUBLISH;
+      return UserFacingState.WONT_PUBLISH;
     case LaunchpadStoreUploadStates.PENDING:
-      return BuildAndPubState.PUBLISHING_SOON;
+      return UserFacingState.PUBLISHING_SOON;
     case LaunchpadStoreUploadStates.FAILEDTOUPLOAD:
     case LaunchpadStoreUploadStates.FAILEDTORELEASE:
-      return BuildAndPubState.PUBLISHING_FAILED;
+      return UserFacingState.PUBLISHING_FAILED;
     case LaunchpadStoreUploadStates.UPLOADED:
-      return BuildAndPubState.BUILT;
+      return UserFacingState.PUBLISHED;
+    default:
+      throw new RangeError('Unrecognised publishState in internalMapSnapBuildStoreUploadState');
   }
 }
 
@@ -119,16 +181,27 @@ function getLastPartOfUrl(url) {
 
 export function snapBuildFromAPI(entry) {
 
-  const [ colour, statusMessage ] = mapBuildAndPublishedStates(entry.buildstate, entry.store_upload_status);
+  if (!entry) {
+    return null;
+  }
 
-  return entry ? {
+  const {
+    colour,
+    statusMessage,
+    icon, // TODO we don't use this yet
+    priority // TODO we don't use this yet
+  } = mapBuildAndUploadStates(entry.buildstate, entry.store_upload_status);
+
+  return {
     buildId: getLastPartOfUrl(entry.self_link),
     buildLogUrl: entry.build_log_url,
 
     architecture: entry.arch_tag,
 
-    colour: colour,
-    statusMessage: statusMessage,
+    statusMessage,
+    colour,
+    icon,
+    priority,
 
     dateCreated: entry.datecreated,
     dateStarted: entry.date_started,
@@ -136,5 +209,5 @@ export function snapBuildFromAPI(entry) {
     duration: entry.duration,
 
     storeRevision: entry.store_upload_revision
-  } : null;
+  };
 }

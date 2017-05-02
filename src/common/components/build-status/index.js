@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import moment from 'moment';
 
-import mapApiString from '../../helpers/map-api-string.js';
+import { BuildStatusColours } from '../../helpers/snap-builds.js';
 import styles from './buildStatus.css';
 
 const BuildStatus = (props) => {
@@ -13,7 +13,6 @@ const BuildStatus = (props) => {
     statusMessage,
     dateStarted
   } = props;
-  const mappedStatusMessage = mapApiString(statusMessage);
 
   let humanDateStarted;
 
@@ -31,8 +30,8 @@ const BuildStatus = (props) => {
   return (
     <div className={ `${styles.buildStatus} ${styles[colour]}` }>
       { link
-        ? <Link to={link}>{mappedStatusMessage}</Link>
-        : <span>{mappedStatusMessage}</span>
+        ? <Link to={link}>{statusMessage}</Link>
+        : <span>{statusMessage}</span>
       }
       { humanDateStarted }
     </div>
@@ -41,7 +40,7 @@ const BuildStatus = (props) => {
 
 BuildStatus.propTypes = {
   link: PropTypes.string,
-  colour: PropTypes.oneOf(['green', 'yellow', 'red', 'grey']),
+  colour: PropTypes.oneOf(Object.keys(BuildStatusColours)),
   statusMessage: PropTypes.string,
   dateStarted: PropTypes.string
 };
