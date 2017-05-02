@@ -26,10 +26,10 @@ export class RepositoriesListView extends Component {
     // check if authenticated and hasShortNamespace haven't been set yet,
     // so are null or undefined
     if (authStore.authenticated === null ||
-        typeof authStore.authenticated === 'undefined') {
+        authStore.authenticated === undefined) {
       this.props.dispatch(checkSignedIntoStore());
     } else if (authStore.hasShortNamespace === null ||
-               typeof authStore.hasShortNamespace === 'undefined') {
+               authStore.hasShortNamespace === undefined) {
       this.props.dispatch(getAccountInfo(authStore.userName));
     }
   }
