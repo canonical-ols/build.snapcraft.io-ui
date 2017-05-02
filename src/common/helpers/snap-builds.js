@@ -203,6 +203,7 @@ export function snapBuildFromAPI(entry) {
     icon,
     priority,
 
+    isPublished: entry.store_upload_status === 'Uploaded',
     dateCreated: entry.datecreated,
     dateStarted: entry.date_started,
     dateBuilt: entry.datebuilt,

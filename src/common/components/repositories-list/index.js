@@ -23,9 +23,13 @@ const SNAP_NAME_NOT_REGISTERED_ERROR_CODE = 'snap-name-not-registered';
 export class RepositoriesListView extends Component {
 
   fetchAuthData(authStore) {
-    if (authStore.authenticated === null) {
+    // check if authenticated and hasShortNamespace haven't been set yet,
+    // so are null or undefined
+    if (authStore.authenticated === null ||
+        authStore.authenticated === undefined) {
       this.props.dispatch(checkSignedIntoStore());
-    } else if (authStore.hasShortNamespace === null) {
+    } else if (authStore.hasShortNamespace === null ||
+               authStore.hasShortNamespace === undefined) {
       this.props.dispatch(getAccountInfo(authStore.userName));
     }
   }
@@ -86,10 +90,12 @@ export class RepositoriesListView extends Component {
     }
 
     let latestBuild = null;
+    let isPublished = false;
     const currentSnapBuilds = snapBuilds[fullName];
 
     if (currentSnapBuilds && currentSnapBuilds.success && currentSnapBuilds.builds.length) {
       latestBuild = currentSnapBuilds.builds[0];
+      isPublished = currentSnapBuilds.builds.some((build) => build.isPublished);
     }
 
     const registerNameStatus = snap.registerNameStatus || {};
@@ -99,6 +105,7 @@ export class RepositoriesListView extends Component {
         key={ `repo_${fullName}` }
         snap={ snap }
         latestBuild={ latestBuild }
+        isPublished={ isPublished }
         fullName={ fullName }
         authStore={ authStore }
         registerNameStatus={ registerNameStatus }
@@ -116,15 +123,15 @@ export class RepositoriesListView extends Component {
         <Table>
           <Head>
             <Row>
-              <Header col="27">Name</Header>
-              <Header col="15">Configured</Header>
-              <Header col="25">Registered for publishing</Header>
+              <Header col="28">Name</Header>
+              <Header col="21">Configured</Header>
+              <Header col="21">Registered for publishing</Header>
               <Header col="30">Latest build</Header>
             </Row>
           </Head>
           <Body>
             { this.props.hasSnaps &&
-              ids.map(this.renderRow.bind(this))
+              Array.from(ids).sort().map(this.renderRow.bind(this))
             }
           </Body>
         </Table>
