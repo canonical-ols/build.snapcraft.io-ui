@@ -5,12 +5,8 @@ import expect from 'expect';
 import url from 'url';
 
 import db from '../../../../../src/server/db';
-import {
-  listOrganizationsCacheId
-} from '../../../../../src/server/handlers/github';
 import { conf } from '../../../../../src/server/helpers/config';
 import {
-  getMemcached,
   resetMemcached,
   setupInMemoryMemcached
 } from '../../../../../src/server/helpers/memcached';
@@ -133,15 +129,20 @@ describe('The login route', () => {
       });
 
       context('when user data retrieved from GH', () => {
+        let ghApi;
+
         beforeEach(async () => {
-          nock(conf.get('GITHUB_API_ENDPOINT'))
+          ghApi = nock(conf.get('GITHUB_API_ENDPOINT'))
             .get('/user')
-            .reply(200, { id: 123, login: 'anowner' });
+            .reply(200, { id: 123, login: 'anowner' })
+            .get('/user/orgs')
+            .reply(200, [{ login: 'org1' }, { login: 'org2' }]);
           setupInMemoryMemcached();
           await db.model('GitHubUser').query('truncate').fetch();
         });
 
         afterEach(() => {
+          ghApi.done();
           resetMemcached();
         });
 
@@ -155,16 +156,6 @@ describe('The login route', () => {
               done(err);
             }
           );
-        });
-
-        it('should clear cached organization information', async () => {
-          const orgsCacheID = listOrganizationsCacheId('anowner');
-          getMemcached().cache[orgsCacheID] = [{ login: 'org1' }];
-          await supertest(app)
-            .get('/auth/verify')
-            .query({ code: 'foo', state: 'bar' })
-            .send();
-          expect(getMemcached().cache).toExcludeKey(orgsCacheID);
         });
 
         it('should save user data in database', async () => {
