@@ -349,7 +349,7 @@ export class RepositoryRowView extends Component {
 
   renderRepoName(fullName, isLinked) {
     return (
-      <DataLink col="26" to={ isLinked ? `/user/${fullName}` : null }>
+      <DataLink col="28" to={ isLinked ? `/user/${fullName}` : null }>
         <strong>{ fullName }</strong>
       </DataLink>
     );
@@ -377,7 +377,7 @@ export class RepositoryRowView extends Component {
     );
 
     return (
-      <DataLink col="20" expandable={true} onClick={onClick} active={active}>
+      <DataLink col="15" expandable={true} onClick={onClick} active={active}>
         { content }
       </DataLink>
     );
@@ -410,7 +410,7 @@ export class RepositoryRowView extends Component {
     const active = this.state.unregisteredDropdownExpanded;
 
     return (
-      <DataLink col="20" expandable={true} onClick={onClick} active={active}>
+      <DataLink col="21" expandable={true} onClick={onClick} active={active}>
         { content }
       </DataLink>
     );
@@ -418,7 +418,7 @@ export class RepositoryRowView extends Component {
 
   renderBuildStatus(fullName, hasBuilt, latestBuild) {
     return (
-      <DataLink col="28" to={ hasBuilt ? `/user/${fullName}` : null }>
+      <DataLink col="30" to={ hasBuilt ? `/user/${fullName}` : null }>
         { hasBuilt
           ? (
             <BuildStatus
