@@ -156,10 +156,13 @@ export default class PrivateReposInfo extends Component {
                 >
                   Review organization access…
                 </Anchor>
-                {/* TODO
                 {' '}
-                <Button appearance='neutral' flavour='smaller'>OK, it’s added</Button>
-                */}
+                <Button
+                  appearance='neutral' flavour='smaller'
+                  onClick={this.onRefreshClick.bind(this)}
+                >
+                  OK, it’s added
+                </Button>
               </li>
               <li>
                 <p className={styles.infoMsg}>Using the <strong>wrong GitHub account</strong>? Sign out and try again with the right one.</p>
@@ -171,10 +174,18 @@ export default class PrivateReposInfo extends Component {
       </div>
     );
   }
+
+  onRefreshClick() {
+    this.setState({
+      showPopover: false
+    });
+    this.props.onRefreshClick();
+  }
 }
 
 PrivateReposInfo.propTypes = {
   user: PropTypes.shape({
     orgs: PropTypes.array
-  }).isRequired
+  }).isRequired,
+  onRefreshClick: PropTypes.func
 };
