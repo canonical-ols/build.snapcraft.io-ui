@@ -299,12 +299,14 @@ describe('The GitHub API endpoint', () => {
       it('should return a 401 Unauthorized response', (done) => {
         supertest(app)
           .get('/github/orgs')
+          .set('X-CSRF-Token', 'blah')
           .expect(401, done);
       });
 
       it('should return a "error" status', (done) => {
         supertest(app)
           .get('/github/orgs')
+          .set('X-CSRF-Token', 'blah')
           .expect(hasStatus('error'))
           .end(done);
       });
@@ -312,6 +314,7 @@ describe('The GitHub API endpoint', () => {
       it('should return a body with a "github-authentication-failed" message', (done) => {
         supertest(app)
           .get('/github/orgs')
+          .set('X-CSRF-Token', 'blah')
           .expect(hasPayloadCode('github-authentication-failed'))
           .end(done);
       });
@@ -335,15 +338,23 @@ describe('The GitHub API endpoint', () => {
         });
 
         it('should return 200', async () => {
-          await supertest(app).get('/github/orgs').expect(200);
+          await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah')
+            .expect(200);
         });
 
         it('should return a "error" status', async () => {
-          await supertest(app).get('/github/orgs').expect(hasStatus('success'));
+          await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah')
+            .expect(hasStatus('success'));
         });
 
         it('should return a body with empty orgs', async () => {
-          const res = await supertest(app).get('/github/orgs');
+          const res = await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah');
 
           expect(res.body.orgs).toEqual([]);
         });
@@ -364,15 +375,23 @@ describe('The GitHub API endpoint', () => {
         });
 
         it('should return with 200', async () => {
-          await supertest(app).get('/github/orgs').expect(200);
+          await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah')
+            .expect(200);
         });
 
         it('should return a "success" status', async () => {
-          await supertest(app).get('/github/orgs').expect(hasStatus('success'));
+          await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah')
+            .expect(hasStatus('success'));
         });
 
         it('should return orgs', async () => {
-          const res = await supertest(app).get('/github/orgs');
+          const res = await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah');
 
           expect(res.body.orgs).toEqual(orgs);
         });
@@ -381,7 +400,9 @@ describe('The GitHub API endpoint', () => {
           session.user = {
             orgs: [{ login: 'oldOrg' }]
           };
-          await supertest(app).get('/github/orgs');
+          await supertest(app)
+            .get('/github/orgs')
+            .set('X-CSRF-Token', 'blah');
 
           expect(session.user.orgs).toEqual(orgs);
 
