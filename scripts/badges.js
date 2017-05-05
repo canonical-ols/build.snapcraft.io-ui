@@ -21,27 +21,36 @@ const colours = {
 
 const BADGES_PATH = path.join(__dirname, '../src/common/images/badges');
 
-for (const key in UserFacingState) {
-  const status = UserFacingState[key];
+badge.loadFont(path.join(__dirname, 'Verdana.ttf'), function(err) {
+  if (err) {
+    console.log('Cannot find `scripts/Verdana.ttf` font file. For proper width measurements font file is required.');
+    console.log('Please copy Verdana.ttf from your system fonts to project `scripts` folder.');
+    return;
+  }
 
-  badge({
-    text: ['snap', status.statusMessage.toLowerCase()],
-    colorB: colours[status.colour],
-    template: 'flat'
-  },
-  function(svg, err) {
-    if (err) {
-      console.log(`Failed generating badge for status ${key}:`, err.message);
-      return;
-    }
+  for (const key in UserFacingState) {
+    const status = UserFacingState[key];
 
-    const fileName = path.join(BADGES_PATH, `${key.toLowerCase()}.svg`);
-    fs.writeFile(fileName, svg, (err) => {
+    badge({
+      text: ['snap', status.statusMessage.toLowerCase()],
+      colorB: colours[status.colour],
+      template: 'flat'
+    },
+    function(svg, err) {
       if (err) {
-        console.log(`Failed writing badge for status ${key}:`, err.message);
+        console.log(`Failed generating badge for status ${key}:`, err.message);
         return;
       }
-      console.log(`Badge for status ${key} generated:`, fileName);
+
+      const fileName = path.join(BADGES_PATH, `${key.toLowerCase()}.svg`);
+      fs.writeFile(fileName, svg, (err) => {
+        if (err) {
+          console.log(`Failed writing badge for status ${key}:`, err.message);
+          return;
+        }
+        console.log(`Badge for status ${key} generated:`, fileName);
+      });
     });
-  });
-}
+  }
+
+});
