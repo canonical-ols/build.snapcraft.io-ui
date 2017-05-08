@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Clipboard from 'clipboard';
 
 import { HeadingThree } from '../vanilla/heading/';
 import styles from './help.css';
@@ -6,6 +7,10 @@ import styles from './help.css';
 const HELP_INSTALL_URL = 'https://snapcraft.io/docs/core/install';
 
 export default class HelpInstallSnap extends Component {
+  componentDidMount() {
+    new Clipboard('.clipboard');
+  }
+
   render() {
     const { children, headline, name, revision } = this.props;
     const revOption = revision ? `--revision=${ revision }` : '';
@@ -35,6 +40,15 @@ export default class HelpInstallSnap extends Component {
             Don’t have snapd installed?
           </a>
           )
+        </p>
+        <p>
+          <button
+            className="clipboard"
+            data-clipboard-action="copy"
+            data-clipboard-text={command}
+          >
+            Copy to clipboard
+          </button>
         </p>
       </div>
     );
