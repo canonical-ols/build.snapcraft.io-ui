@@ -653,6 +653,12 @@ export const authorizeSnap = async (req, res) => {
   }
 };
 
+export async function internalGetSnapBuilds(snap, start = 0, size = 10) {
+  return await getLaunchpad().get(snap.builds_collection_link, {
+    start: start, size: size
+  });
+}
+
 export const getSnapBuilds = async (req, res) => {
   const snapUrl = req.query.snap;
 
@@ -671,9 +677,8 @@ export const getSnapBuilds = async (req, res) => {
 
   try {
     const snap = await getLaunchpad().get(snapUrl);
-    const builds = await getLaunchpad().get(snap.builds_collection_link, {
-      start: start, size: size
-    });
+    const builds = await internalGetSnapBuilds(snap, start, size);
+
     return res.status(200).send({
       status: 'success',
       payload: {
