@@ -27,6 +27,7 @@ export default class HelpInstallSnap extends Component {
         <p className={ styles.p }>
           (
           <a
+            className={ styles.external }
             href={ HELP_INSTALL_URL }
             rel="noreferrer noopener"
             target="_blank"
