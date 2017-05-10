@@ -204,8 +204,7 @@ export class RepositoryRowView extends Component {
     // only attempt checking name ownership if user is authenticated
     // and we are not fetching any auth data (because fetched account info will
     // contain names already registered by given user)
-    if (this.props.authStore.authenticated &&
-        !nextProps.authStore.isFetching && !this.props.authStore.isFetching) {
+    if (this.isAuthReady(nextProps)) {
       const nextSnapcraftData = nextProps.snap.snapcraftData;
 
       // if register name doesn't match snapcraft.yaml name verfify who
@@ -219,6 +218,11 @@ export class RepositoryRowView extends Component {
         this.checkNameOwnership(nextProps.nameOwnership, nextProps.snap.storeName);
       }
     }
+  }
+
+  isAuthReady(nextProps) {
+    return (this.props.authStore.authenticated &&
+        !nextProps.authStore.isFetching && !this.props.authStore.isFetching);
   }
 
   checkNameOwnership(nameOwnershipStore, name) {

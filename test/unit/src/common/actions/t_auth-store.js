@@ -12,12 +12,12 @@ import { conf } from '../../../../../src/common/helpers/config';
 import { makeLocalForageStub } from '../../../../helpers';
 
 const localForageStub = makeLocalForageStub();
-const getPackageUploadRequestMacaroon = proxyquire.noCallThru().load(
+const registerNameModule = proxyquire.noCallThru().load(
   '../../../../../src/common/actions/register-name',
   { 'localforage': localForageStub }
-).getPackageUploadRequestMacaroon;
+);
+const { getPackageUploadRequestMacaroon, STORE_SERIES } = registerNameModule;
 
-const STORE_SERIES = '16';
 const authStoreModule = proxyquire.noCallThru().load(
   '../../../../../src/common/actions/auth-store',
   {

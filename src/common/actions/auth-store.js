@@ -227,8 +227,8 @@ async function fetchAccountInfo(root, discharge) {
   const response = await fetch(accountUrl, {
     headers: { 'Accept': 'application/json' }
   });
+  const json = await response.json();
   if (response.status >= 200 && response.status < 300) {
-    const json = await response.json();
     let registeredNames = null;
 
     if (json.snaps && json.snaps[STORE_SERIES]) {
@@ -237,7 +237,6 @@ async function fetchAccountInfo(root, discharge) {
 
     return { signedAgreement: true, hasShortNamespace: true, registeredNames };
   } else {
-    const json = await response.json();
     const payload = json.error_list ? json.error_list[0] : json;
     if (response.status === 403 && payload.code === 'user-not-ready') {
       const data = { signedAgreement: null, hasShortNamespace: null };
