@@ -662,9 +662,6 @@ export async function internalGetSnapBuilds(snap, start = 0, size = 10) {
 export const getSnapBuilds = async (req, res) => {
   const snapUrl = req.query.snap;
 
-  const start = typeof req.query.start !== 'undefined' ? req.query.start : 0;
-  const size = typeof req.query.size !== 'undefined' ? req.query.size : 10;
-
   if (!snapUrl) {
     return res.status(404).send({
       status: 'error',
@@ -677,7 +674,7 @@ export const getSnapBuilds = async (req, res) => {
 
   try {
     const snap = await getLaunchpad().get(snapUrl);
-    const builds = await internalGetSnapBuilds(snap, start, size);
+    const builds = await internalGetSnapBuilds(snap, req.query.start, req.query.size);
 
     return res.status(200).send({
       status: 'success',
