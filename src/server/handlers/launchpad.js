@@ -350,19 +350,9 @@ export const newSnap = async (req, res) => {
           { transacting: trx }
         );
       }
-      const repositoryModel = db.model('Repository');
-      let dbRepository = await repositoryModel
-        .where({ owner, name })
-        .fetch({ transacting: trx });
-      if (dbRepository === null) {
-        dbRepository = repositoryModel.forge({ owner, name });
-      }
-      dbRepository.set({
-        registrant_id: dbUser && dbUser.get('id')
-      });
-      if (dbRepository.hasChanged()) {
-        await dbRepository.save({}, { transacting: trx });
-      }
+      await db.model('Repository').addOrUpdate(
+        { owner, name }, { registrant: dbUser }, { transacting: trx }
+      );
 
       const result = await requestNewSnap(repositoryUrl);
       // as new snap is created we need to clear list of snaps from cache
@@ -551,6 +541,33 @@ const initializeMetrics = async (trx, gitHubId, snaps) => {
   }
 };
 
+// Keep the database up to date with a `findSnaps` response, for the sake of
+// metrics.
+const updateDatabaseSnaps = async (trx, snaps) => {
+  const owners = uniq(snaps.map((snap) => {
+    return parseGitHubRepoUrl(snap.git_repository_url).owner;
+  }));
+  const dbRepositories = await db.model('Repository')
+    .where('owner', 'in', owners)
+    .fetchAll({ transacting: trx });
+  const dbRepositoriesByFullName = keyBy(dbRepositories.models, (repo) => {
+    return `${repo.get('owner')}/${repo.get('name')}`;
+  });
+  for (const snap of snaps) {
+    const { owner, name, fullName } = parseGitHubRepoUrl(
+      snap.git_repository_url
+    );
+    await db.model('Repository').addOrUpdate(
+      dbRepositoriesByFullName[fullName] || { owner, name }, {
+        snapcraft_name: (
+          (snap.snapcraft_data && snap.snapcraft_data.name) || null
+        ),
+        store_name: snap.store_name || null
+      }, { transacting: trx }
+    );
+  }
+};
+
 export const findSnaps = async (req, res) => {
   const owner = req.query.owner || req.session.user.login;
   try {
@@ -569,37 +586,7 @@ export const findSnaps = async (req, res) => {
         });
         await initializeMetrics(trx, req.session.user.id, ownedSnaps);
       }
-      // Keep the database up to date with the response, for the sake of
-      // metrics.
-      const owners = uniq(snaps.map((snap) => {
-        return parseGitHubRepoUrl(snap.git_repository_url).owner;
-      }));
-      const dbRepositories = await db.model('Repository')
-        .where('owner', 'in', owners)
-        .fetchAll({ transacting: trx });
-      const dbRepositoriesByFullName = keyBy(dbRepositories.models, (repo) => {
-        return `${repo.get('owner')}/${repo.get('name')}`;
-      });
-      for (const snap of snaps) {
-        const { owner, name, fullName } = parseGitHubRepoUrl(
-          snap.git_repository_url
-        );
-        let dbRepository;
-        if (fullName in dbRepositoriesByFullName) {
-          dbRepository = dbRepositoriesByFullName[fullName];
-        } else {
-          dbRepository = db.model('Repository').forge({ owner, name });
-        }
-        dbRepository.set({
-          snapcraft_name: (
-            (snap.snapcraft_data && snap.snapcraft_data.name) || null
-          ),
-          store_name: snap.store_name || null
-        });
-        if (dbRepository.hasChanged()) {
-          await dbRepository.save({}, { transacting: trx });
-        }
-      }
+      await updateDatabaseSnaps(trx, snaps);
     });
     return res.status(200).send({
       status: 'success',
@@ -681,21 +668,10 @@ export const authorizeSnap = async (req, res) => {
           { transacting: trx }
         );
       }
-      const repositoryModel = db.model('Repository');
-      let dbRepository = await repositoryModel
-        .where({ owner, name })
-        .fetch({ transacting: trx });
-      if (dbRepository === null) {
-        dbRepository = repositoryModel.forge({
-          owner,
-          name,
-          registrant_id: dbUser && dbUser.get('id')
-        });
-      }
-      dbRepository.set({ store_name: snapName });
-      if (dbRepository.hasChanged()) {
-        await dbRepository.save({}, { transacting: trx });
-      }
+      await db.model('Repository').addOrUpdate(
+        { owner, name }, { registrant: dbUser , store_name: snapName },
+        { transacting: trx }
+      );
     });
     const snapUrl = result.self_link;
     await getLaunchpad().patch(snapUrl, {
