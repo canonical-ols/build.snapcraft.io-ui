@@ -79,7 +79,7 @@ async function signAgreement(root, discharge) {
 
 export async function requestRegisterName(root, discharge, snapName) {
   const authHeader = getMacaroonAuthHeader(root, discharge);
-  return await fetch(`${STORE_API_URL}/register-name`, {
+  return await fetch(`${STORE_API_URL}/register-name/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
