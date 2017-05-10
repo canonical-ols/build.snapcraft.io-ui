@@ -109,7 +109,7 @@ describe('name ownership actions', () => {
           })
           .reply(200, { macaroon: 'test-macaroon' });
         storeApi
-          .post('/register-name', { snap_name: snapName })
+          .post('/register-name/', { snap_name: snapName })
           .reply(409, { code: 'already_owned' });
       });
 
@@ -137,7 +137,7 @@ describe('name ownership actions', () => {
           })
           .reply(200, { macaroon: 'test-macaroon' });
         storeApi
-          .post('/register-name', { snap_name: snapName })
+          .post('/register-name/', { snap_name: snapName })
           .reply(409, { code: 'already_registered' });
       });
 
@@ -165,7 +165,7 @@ describe('name ownership actions', () => {
           })
           .reply(200, { macaroon: 'test-macaroon' });
         storeApi
-          .post('/register-name', { snap_name: snapName })
+          .post('/register-name/', { snap_name: snapName })
           .reply(200, { status: 'success' });
       });
 

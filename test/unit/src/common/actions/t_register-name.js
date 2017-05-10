@@ -159,7 +159,7 @@ describe('register name actions', () => {
           message: 'Internal server error'
         };
         storeApi
-          .post('/agreement', { latest_tos_accepted: true })
+          .post('/agreement/', { latest_tos_accepted: true })
           .reply(500, { error_list: [error] });
         await store.dispatch(registerName(repository, 'test-snap', {
           signAgreement: 'test-user'
@@ -335,7 +335,7 @@ describe('register name actions', () => {
             context('if signing agreement and that succeeds', () => {
               beforeEach(() => {
                 storeApi
-                  .post('/agreement', { latest_tos_accepted: true })
+                  .post('/agreement/', { latest_tos_accepted: true })
                   .reply(200, { latest_tos_accepted: true });
               });
 
@@ -345,15 +345,15 @@ describe('register name actions', () => {
                   message: 'Developer profile is missing short namespace.'
                 };
                 storeApi
-                  .get('/account')
+                  .get('/account/')
                   .query(true)
                   .reply(403, { error_list: [error] })
-                  .patch('/account', {
+                  .patch('/account/', {
                     short_namespace: 'test-user'
                   })
                   .reply(204);
                 storeApi
-                  .get('/account')
+                  .get('/account/')
                   .query(true)
                   .reply(200, {});
 
@@ -375,7 +375,7 @@ describe('register name actions', () => {
 
               it('leaves short namespace alone if already set', async () => {
                 storeApi
-                  .get('/account')
+                  .get('/account/')
                   .query(true)
                   .reply(200, {});
 

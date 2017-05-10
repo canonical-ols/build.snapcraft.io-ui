@@ -510,7 +510,7 @@ describe('store authentication actions', () => {
       });
 
       it('stores an error on failure to get account information', async () => {
-        storeApi.get('/account')
+        storeApi.get('/account/')
           .query(true)
           .reply(501, { error_list: [accountAssertionsDisabledError] });
         await store.dispatch(getAccountInfo('test-user'));
@@ -523,7 +523,7 @@ describe('store authentication actions', () => {
 
       it('stores success action if getting account information succeeds ' +
          'and returns a short namespace', async () => {
-        storeApi.get('/account')
+        storeApi.get('/account/')
           .query(true)
           .reply(200, {});
         const expectedAction = {
@@ -540,7 +540,7 @@ describe('store authentication actions', () => {
 
       it('stores success action if getting account information succeeds ' +
          'and returns a list of registered names', async () => {
-        storeApi.get('/account')
+        storeApi.get('/account/')
           .query(true)
           .reply(200, {
             snaps: {
@@ -564,7 +564,7 @@ describe('store authentication actions', () => {
 
       it('stores success action if getting account information fails ' +
          'because of an unsigned agreement', async () => {
-        storeApi.get('/account')
+        storeApi.get('/account/')
           .query(true)
           .reply(403, { error_list: [unsignedAgreementError] });
         const expectedAction = {
@@ -578,14 +578,14 @@ describe('store authentication actions', () => {
       context('if getting account information fails because of a missing ' +
               'short namespace', () => {
         beforeEach(() => {
-          storeApi.get('/account')
+          storeApi.get('/account/')
             .query(true)
             .reply(403, { error_list: [missingShortNamespaceError] });
         });
 
         it('stores an error on failure to set the short ' +
            'namespace', async () => {
-          storeApi.patch('/account', { short_namespace: 'test-user' })
+          storeApi.patch('/account/', { short_namespace: 'test-user' })
             .reply(409, { error_list: [shortNamespaceInUseError] });
           await store.dispatch(getAccountInfo('test-user'));
           const action = store.getActions().filter(
@@ -597,7 +597,7 @@ describe('store authentication actions', () => {
 
         it('stores success action if setting the short namespace fails ' +
            'because of an unsigned agreement', async () => {
-          storeApi.patch('/account', { short_namespace: 'test-user' })
+          storeApi.patch('/account/', { short_namespace: 'test-user' })
             .reply(403, { error_list: [unsignedAgreementError] });
           const expectedAction = {
             type: ActionTypes.GET_ACCOUNT_INFO_SUCCESS,
@@ -609,13 +609,13 @@ describe('store authentication actions', () => {
 
         context('if setting the short namespace succeeds', () => {
           beforeEach(() => {
-            storeApi.patch('/account')
+            storeApi.patch('/account/')
               .reply(204);
           });
 
           it('stores an error if getting account information ' +
              'fails', async () => {
-            storeApi.get('/account')
+            storeApi.get('/account/')
               .query(true)
               .reply(501, { error_list: [accountAssertionsDisabledError] });
             await store.dispatch(getAccountInfo('test-user'));
@@ -628,7 +628,7 @@ describe('store authentication actions', () => {
 
           it('stores success action if getting account information ' +
              'succeeds', async () => {
-            storeApi.get('/account')
+            storeApi.get('/account/')
               .query(true)
               .reply(200, {});
             const expectedAction = {
@@ -645,7 +645,7 @@ describe('store authentication actions', () => {
 
           it('stores success action if getting account information fails ' +
              'because of an unsigned agreement', async () => {
-            storeApi.get('/account')
+            storeApi.get('/account/')
               .query(true)
               .reply(403, { error_list: [unsignedAgreementError] });
             const expectedAction = {

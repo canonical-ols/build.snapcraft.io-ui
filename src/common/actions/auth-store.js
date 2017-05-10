@@ -225,7 +225,7 @@ function checkSignedIntoStoreError(error) {
 
 async function fetchAccountInfo(root, discharge) {
   const authHeader = getMacaroonAuthHeader(root, discharge);
-  const response = await fetch(`${STORE_API_URL}/account`, {
+  const response = await fetch(`${STORE_API_URL}/account/`, {
     headers: {
       'Authorization': authHeader,
       'Accept': 'application/json'
@@ -262,7 +262,7 @@ async function setShortNamespace(root, discharge, userName) {
   const authHeader = getMacaroonAuthHeader(root, discharge);
   // Try setting the short namespace to the SSO username.  This may not
   // work, but it's the best we can do automatically.
-  const response = await fetch(`${STORE_API_URL}/account`, {
+  const response = await fetch(`${STORE_API_URL}/account/`, {
     method: 'PATCH',
     headers: {
       'Authorization': authHeader,

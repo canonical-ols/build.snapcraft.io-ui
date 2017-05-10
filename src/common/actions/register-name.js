@@ -57,7 +57,7 @@ export async function getPackageUploadRequestMacaroon() {
 
 async function signAgreement(root, discharge) {
   const authHeader = getMacaroonAuthHeader(root, discharge);
-  const response = await fetch(`${STORE_API_URL}/agreement`, {
+  const response = await fetch(`${STORE_API_URL}/agreement/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
