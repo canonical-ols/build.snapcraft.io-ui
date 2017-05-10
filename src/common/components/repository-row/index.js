@@ -201,14 +201,23 @@ export class RepositoryRowView extends Component {
       });
     }
 
-    const nextSnapcraftData = nextProps.snap.snapcraftData;
+    // only attempt checking name ownership if user is authenticated
+    // and we are not fetching any auth data (because fetched account info will
+    // contain names already registered by given user)
+    if (this.props.authStore.authenticated &&
+        !nextProps.authStore.isFetching && !this.props.authStore.isFetching) {
+      const nextSnapcraftData = nextProps.snap.snapcraftData;
 
-    if (snapNameIsMismatched(nextProps.snap)) {
-      this.checkNameOwnership(nextProps.nameOwnership, nextSnapcraftData.name);
-    }
+      // if register name doesn't match snapcraft.yaml name verfify who
+      // owns name in snapcraft.yaml
+      if (snapNameIsMismatched(nextProps.snap)) {
+        this.checkNameOwnership(nextProps.nameOwnership, nextSnapcraftData.name);
+      }
 
-    if (nextProps.snap.storeName) {
-      this.checkNameOwnership(nextProps.nameOwnership, nextProps.snap.storeName);
+      // if snap has a registered name, verify who owns it
+      if (nextProps.snap.storeName) {
+        this.checkNameOwnership(nextProps.nameOwnership, nextProps.snap.storeName);
+      }
     }
   }
 
@@ -220,7 +229,7 @@ export class RepositoryRowView extends Component {
       (nameOwnership.status || nameOwnership.isFetching)
     );
 
-    if (this.props.authStore.authenticated && !isNameOwnershipAvailable) {
+    if (!isNameOwnershipAvailable) {
       this.props.checkNameOwnership(name);
     }
   }
@@ -484,6 +493,7 @@ RepositoryRowView.propTypes = {
   isPublished: PropTypes.bool,
   fullName: PropTypes.string,
   authStore: PropTypes.shape({
+    isFetching: PropTypes.bool,
     authenticated: PropTypes.bool,
     userName: PropTypes.string
   }),

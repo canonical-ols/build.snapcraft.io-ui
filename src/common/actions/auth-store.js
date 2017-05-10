@@ -8,7 +8,7 @@ import url from 'url';
 import { checkStatus, getError } from '../helpers/api';
 import { conf } from '../helpers/config';
 import { getCaveats } from '../helpers/macaroons';
-import { getPackageUploadRequestMacaroon } from './register-name';
+import { STORE_SERIES, getPackageUploadRequestMacaroon } from './register-name';
 
 const BASE_URL = conf.get('BASE_URL');
 
@@ -228,7 +228,14 @@ async function fetchAccountInfo(root, discharge) {
     headers: { 'Accept': 'application/json' }
   });
   if (response.status >= 200 && response.status < 300) {
-    return { signedAgreement: true, hasShortNamespace: true };
+    const json = await response.json();
+    let registeredNames = null;
+
+    if (json.snaps && json.snaps[STORE_SERIES]) {
+      registeredNames = Object.keys(json.snaps[STORE_SERIES]);
+    }
+
+    return { signedAgreement: true, hasShortNamespace: true, registeredNames };
   } else {
     const json = await response.json();
     const payload = json.error_list ? json.error_list[0] : json;
