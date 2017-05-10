@@ -12,17 +12,20 @@ import { conf } from '../../../../../src/common/helpers/config';
 import { makeLocalForageStub } from '../../../../helpers';
 
 const localForageStub = makeLocalForageStub();
-const getPackageUploadRequestMacaroon = proxyquire.noCallThru().load(
+const registerNameModule = proxyquire.noCallThru().load(
   '../../../../../src/common/actions/register-name',
   { 'localforage': localForageStub }
-).getPackageUploadRequestMacaroon;
+);
+const { getPackageUploadRequestMacaroon, STORE_SERIES } = registerNameModule;
+
 const authStoreModule = proxyquire.noCallThru().load(
   '../../../../../src/common/actions/auth-store',
   {
     'localforage': localForageStub,
-    './register-name': { getPackageUploadRequestMacaroon }
+    './register-name': { getPackageUploadRequestMacaroon, STORE_SERIES }
   }
 );
+
 const {
   checkSignedIntoStore,
   extractExpiresCaveat,
@@ -525,7 +528,35 @@ describe('store authentication actions', () => {
           .reply(200, {});
         const expectedAction = {
           type: ActionTypes.GET_ACCOUNT_INFO_SUCCESS,
-          payload: { signedAgreement: true, hasShortNamespace: true }
+          payload: {
+            signedAgreement: true,
+            hasShortNamespace: true,
+            registeredNames: null
+          }
+        };
+        await store.dispatch(getAccountInfo('test-user'));
+        expect(store.getActions()).toInclude(expectedAction);
+      });
+
+      it('stores success action if getting account information succeeds ' +
+         'and returns a list of registered names', async () => {
+        storeApi.get('/account')
+          .query(true)
+          .reply(200, {
+            snaps: {
+              [STORE_SERIES]: {
+                'test-name-1': {},
+                'test-name-2': {}
+              }
+            }
+          });
+        const expectedAction = {
+          type: ActionTypes.GET_ACCOUNT_INFO_SUCCESS,
+          payload: {
+            signedAgreement: true,
+            hasShortNamespace: true,
+            registeredNames: ['test-name-1', 'test-name-2']
+          }
         };
         await store.dispatch(getAccountInfo('test-user'));
         expect(store.getActions()).toInclude(expectedAction);
@@ -602,7 +633,11 @@ describe('store authentication actions', () => {
               .reply(200, {});
             const expectedAction = {
               type: ActionTypes.GET_ACCOUNT_INFO_SUCCESS,
-              payload: { signedAgreement: true, hasShortNamespace: true }
+              payload: {
+                signedAgreement: true,
+                hasShortNamespace: true,
+                registeredNames: null
+              }
             };
             await store.dispatch(getAccountInfo('test-user'));
             expect(store.getActions()).toInclude(expectedAction);
