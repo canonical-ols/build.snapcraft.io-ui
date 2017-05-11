@@ -345,15 +345,15 @@ describe('register name actions', () => {
                   message: 'Developer profile is missing short namespace.'
                 };
                 storeApi
-                  .get('/account/')
+                  .get('/account')
                   .query(true)
                   .reply(403, { error_list: [error] })
-                  .patch('/account/', {
+                  .patch('/account', {
                     short_namespace: 'test-user'
                   })
                   .reply(204);
                 storeApi
-                  .get('/account/')
+                  .get('/account')
                   .query(true)
                   .reply(200, {});
 
@@ -375,7 +375,7 @@ describe('register name actions', () => {
 
               it('leaves short namespace alone if already set', async () => {
                 storeApi
-                  .get('/account/')
+                  .get('/account')
                   .query(true)
                   .reply(200, {});
 
