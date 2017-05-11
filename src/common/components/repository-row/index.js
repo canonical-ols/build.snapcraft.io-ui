@@ -281,7 +281,7 @@ export class RepositoryRowView extends Component {
 
     const registeredName = snap.storeName;
 
-    const hasBuilt = !!(latestBuild && snap.snapcraftData);
+    const isBuilt = !!(latestBuild && snap.snapcraftData);
 
     const isActive = (
       showNameMismatchDropdown ||
@@ -298,10 +298,10 @@ export class RepositoryRowView extends Component {
       <Row isActive={isActive}>
 
         {/* cells */}
-        { this.renderRepoName(fullName, hasBuilt) }
+        { this.renderRepoName(fullName, isBuilt) }
         { this.renderConfiguredStatus(snap) }
         { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
-        { this.renderBuildStatus(fullName, hasBuilt, latestBuild) }
+        { this.renderBuildStatus(fullName, isBuilt, latestBuild) }
         { this.renderDelete() }
 
         {/* dropdowns */}
@@ -336,7 +336,7 @@ export class RepositoryRowView extends Component {
         }
         { showRemoveDropdown &&
           <RemoveRepoDropdown
-            latestBuild={latestBuild}
+            isBuilt={isBuilt}
             registeredName={registeredName}
             isOwnerOfRegisteredName={isOwnerOfRegisteredName}
             isAuthenticated={authStore.authenticated}
@@ -418,10 +418,10 @@ export class RepositoryRowView extends Component {
     );
   }
 
-  renderBuildStatus(fullName, hasBuilt, latestBuild) {
+  renderBuildStatus(fullName, isBuilt, latestBuild) {
     return (
-      <DataLink col="30" to={ hasBuilt ? `/user/${fullName}` : null }>
-        { hasBuilt
+      <DataLink col="30" to={ isBuilt ? `/user/${fullName}` : null }>
+        { isBuilt
           ? (
             <BuildStatus
               colour={ latestBuild.colour }

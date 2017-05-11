@@ -6,9 +6,9 @@ import { WarningIcon } from '../icons';
 
 import styles from './dropdowns.css';
 
-const getRemoveWarningMessage = (latestBuild, registeredName) => {
+const getRemoveWarningMessage = (isBuilt, registeredName) => {
   let warningText;
-  if (latestBuild) {
+  if (isBuilt) {
     warningText = (
       'Removing this repo will delete all its builds and build logs.'
     );
@@ -33,7 +33,7 @@ const RemoveRepoDropdown = (props) => {
   const {
     isAuthenticated,
     isOwnerOfRegisteredName,
-    latestBuild,
+    isBuilt,
     registeredName,
     onCancelClick,
     onSignInClick,
@@ -42,7 +42,7 @@ const RemoveRepoDropdown = (props) => {
 
   let message = (
     <span>
-      <WarningIcon /> { getRemoveWarningMessage(latestBuild, registeredName) }
+      <WarningIcon /> { getRemoveWarningMessage(isBuilt, registeredName) }
     </span>
   );
 
@@ -96,8 +96,8 @@ const RemoveRepoDropdown = (props) => {
 };
 
 RemoveRepoDropdown.propTypes = {
-  latestBuild: PropTypes.object,
   registeredName: PropTypes.string,
+  isBuilt: PropTypes.bool,
   isOwnerOfRegisteredName: PropTypes.bool,
   isAuthenticated: PropTypes.bool,
   onRemoveClick: PropTypes.func.isRequired,
