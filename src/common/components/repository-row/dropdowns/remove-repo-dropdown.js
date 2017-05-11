@@ -30,31 +30,66 @@ const getRemoveWarningMessage = (latestBuild, registeredName) => {
 };
 
 const RemoveRepoDropdown = (props) => {
-  const { latestBuild, registeredName, onCancelClick, onRemoveClick } = props;
+  const {
+    isAuthenticated,
+    isOwnerOfRegisteredName,
+    latestBuild,
+    registeredName,
+    onCancelClick,
+    onSignInClick,
+    onRemoveClick
+  } = props;
+
+  let message = (
+    <span>
+      <WarningIcon /> { getRemoveWarningMessage(latestBuild, registeredName) }
+    </span>
+  );
+
+  let actionButton = (
+    <Button
+      appearance="negative"
+      onClick={ onRemoveClick }
+    >
+      Remove
+    </Button>
+  );
+
+  if (registeredName) {
+    if (isAuthenticated) {
+      if (!isOwnerOfRegisteredName) {
+        message = `To remove this repo, contact the person who registered the name ${registeredName}.`;
+        actionButton = null;
+      }
+    } else {
+      message = `You can remove this repo only if you registered the name ${registeredName}.`;
+
+      actionButton = (
+        <Button
+          appearance="positive"
+          onClick={ onSignInClick }
+        >
+          Sign in
+        </Button>
+      );
+    }
+  }
 
   return (
     <Dropdown>
       <Row>
         <Data col="100">
-          <WarningIcon /> { getRemoveWarningMessage(latestBuild, registeredName) }
+          { message }
         </Data>
       </Row>
-      <Row>
-        <div className={ styles.buttonRow }>
-          <a
-            onClick={ onCancelClick }
-            className={ styles.cancel }
-          >
-            Cancel
-          </a>
-          <Button
-            appearance="negative"
-            onClick={ onRemoveClick }
-          >
-            Remove
-          </Button>
-        </div>
-      </Row>
+      { actionButton &&
+        <Row>
+          <div className={ styles.buttonRow }>
+            <a onClick={ onCancelClick } className={ styles.cancel }>Cancel</a>
+            { actionButton }
+          </div>
+        </Row>
+      }
     </Dropdown>
   );
 
@@ -63,7 +98,10 @@ const RemoveRepoDropdown = (props) => {
 RemoveRepoDropdown.propTypes = {
   latestBuild: PropTypes.object,
   registeredName: PropTypes.string,
+  isOwnerOfRegisteredName: PropTypes.bool,
+  isAuthenticated: PropTypes.bool,
   onRemoveClick: PropTypes.func.isRequired,
+  onSignInClick: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired
 };
 

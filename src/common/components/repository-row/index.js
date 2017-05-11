@@ -20,7 +20,7 @@ import {
 } from './icons';
 import * as authStoreActionCreators from '../../actions/auth-store';
 import * as registerNameActionCreators from '../../actions/register-name';
-import { checkNameOwnership } from '../../actions/name-ownership';
+import { NAME_OWNERSHIP_ALREADY_OWNED, checkNameOwnership } from '../../actions/name-ownership';
 import * as snapActionCreators from '../../actions/snaps';
 
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
@@ -290,10 +290,9 @@ export class RepositoryRowView extends Component {
       showUnregisteredDropdown ||
       showRemoveDropdown
     );
-    // XXX cjwatson 2017-02-28: The specification calls for the remove icon
-    // to be shown only when hovering over or tapping in an empty part of
-    // the row.  My attempts to do this so far have resulted in the remove
-    // icon playing hide-and-seek.
+
+    let isOwnerOfRegisteredName = (registeredName && nameOwnership[registeredName] &&
+      nameOwnership[registeredName].status === NAME_OWNERSHIP_ALREADY_OWNED);
 
     return (
       <Row isActive={isActive}>
@@ -339,7 +338,10 @@ export class RepositoryRowView extends Component {
           <RemoveRepoDropdown
             latestBuild={latestBuild}
             registeredName={registeredName}
+            isOwnerOfRegisteredName={isOwnerOfRegisteredName}
+            isAuthenticated={authStore.authenticated}
             onRemoveClick={this.onRemoveClick.bind(this, snap.gitRepoUrl)}
+            onSignInClick={this.onSignInClick.bind(this)}
             onCancelClick={this.onToggleRemoveClick.bind(this)}
           />
         }
