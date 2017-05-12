@@ -9,6 +9,7 @@ import {
 } from './launchpad';
 import { getGitHubRepoUrl } from '../../common/helpers/github-url';
 import { snapBuildFromAPI } from '../../common/helpers/snap-builds';
+
 const BADGES_PATH = path.join(__dirname, '../../common/images/badges');
 
 export const badge = async (req, res) => {
