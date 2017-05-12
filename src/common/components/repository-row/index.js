@@ -20,6 +20,7 @@ import {
 } from './icons';
 import * as authStoreActionCreators from '../../actions/auth-store';
 import * as registerNameActionCreators from '../../actions/register-name';
+import { NAME_OWNERSHIP_ALREADY_OWNED, checkNameOwnership } from '../../actions/name-ownership';
 import * as snapActionCreators from '../../actions/snaps';
 
 import { parseGitHubRepoUrl } from '../../helpers/github-url';
@@ -200,22 +201,41 @@ export class RepositoryRowView extends Component {
       });
     }
 
-    const nextSnapcraftData = nextProps.snap.snapcraftData;
-    const currentSnapcraftData = this.props.snap.snapcraftData;
+    // only attempt checking name ownership if user is authenticated
+    // and we are not fetching any auth data (because fetched account info will
+    // contain names already registered by given user)
+    if (this.isAuthReady(nextProps)) {
+      const nextSnapcraftData = nextProps.snap.snapcraftData;
 
-    // if there is a name mismatch we want to check who owns the name in the store
-    if (snapNameIsMismatched(nextProps.snap)
-        // we can only do this if user is authenticated in the store
-        && nextProps.authStore.authenticated
-        && (
-          // and we need to do this only if we don't know the status yet
-          !nextSnapcraftData.nameOwnershipStatus
-          // or if the snapcraft data name changed
-          || nextSnapcraftData.name !== currentSnapcraftData.name
-        )
-        // and if we are not fetching this data already
-        && !nextSnapcraftData.isFetching) {
-      this.props.nameActions.checkNameOwnership(nextProps.snap.gitRepoUrl, nextSnapcraftData.name);
+      // if register name doesn't match snapcraft.yaml name verfify who
+      // owns name in snapcraft.yaml
+      if (snapNameIsMismatched(nextProps.snap)) {
+        this.checkNameOwnership(nextProps.nameOwnership, nextSnapcraftData.name);
+      }
+
+      // if snap has a registered name, verify who owns it
+      if (nextProps.snap.storeName) {
+        this.checkNameOwnership(nextProps.nameOwnership, nextProps.snap.storeName);
+      }
+    }
+  }
+
+  isAuthReady(nextProps) {
+    return (this.props.authStore.authenticated &&
+        !nextProps.authStore.isFetching && !this.props.authStore.isFetching);
+  }
+
+  checkNameOwnership(nameOwnershipStore, name) {
+    const nameOwnership = nameOwnershipStore[name];
+
+    // don't fetch if we have the data or it's already fetching
+    // also in case of error don't fetch again (to avoid fetching loop...)
+    const isNameOwnershipAvailable = (nameOwnership &&
+      (nameOwnership.status || nameOwnership.isFetching || nameOwnership.error)
+    );
+
+    if (!isNameOwnershipAvailable) {
+      this.props.checkNameOwnership(name);
     }
   }
 
@@ -246,7 +266,8 @@ export class RepositoryRowView extends Component {
       isPublished,
       fullName,
       authStore,
-      registerNameStatus
+      registerNameStatus,
+      nameOwnership
     } = this.props;
 
     const showUnconfiguredDropdown = !snapIsConfigured(snap) && this.state.unconfiguredDropdownExpanded;
@@ -260,7 +281,7 @@ export class RepositoryRowView extends Component {
 
     const registeredName = snap.storeName;
 
-    const hasBuilt = !!(latestBuild && snap.snapcraftData);
+    const isBuilt = !!(latestBuild && snap.snapcraftData);
 
     const isActive = (
       showNameMismatchDropdown ||
@@ -269,25 +290,25 @@ export class RepositoryRowView extends Component {
       showUnregisteredDropdown ||
       showRemoveDropdown
     );
-    // XXX cjwatson 2017-02-28: The specification calls for the remove icon
-    // to be shown only when hovering over or tapping in an empty part of
-    // the row.  My attempts to do this so far have resulted in the remove
-    // icon playing hide-and-seek.
+
+    let isOwnerOfRegisteredName = (registeredName && nameOwnership[registeredName] &&
+      nameOwnership[registeredName].status === NAME_OWNERSHIP_ALREADY_OWNED);
 
     return (
       <Row isActive={isActive}>
 
         {/* cells */}
-        { this.renderRepoName(fullName, hasBuilt) }
+        { this.renderRepoName(fullName, isBuilt) }
         { this.renderConfiguredStatus(snap) }
         { this.renderSnapName(registeredName, showRegisterNameInput, snap) }
-        { this.renderBuildStatus(fullName, hasBuilt, latestBuild) }
+        { this.renderBuildStatus(fullName, isBuilt, latestBuild) }
         { this.renderDelete() }
 
         {/* dropdowns */}
         { showNameMismatchDropdown &&
           <NameMismatchDropdown
             snap={snap}
+            nameOwnership={nameOwnership}
             onOpenRegisterNameClick={this.onUnregisteredClick.bind(this)}
           />
         }
@@ -315,36 +336,17 @@ export class RepositoryRowView extends Component {
         }
         { showRemoveDropdown &&
           <RemoveRepoDropdown
-            message={this.getRemoveWarningMessage(latestBuild, registeredName)}
+            isBuilt={isBuilt}
+            registeredName={registeredName}
+            isOwnerOfRegisteredName={isOwnerOfRegisteredName}
+            isAuthenticated={authStore.authenticated}
             onRemoveClick={this.onRemoveClick.bind(this, snap.gitRepoUrl)}
+            onSignInClick={this.onSignInClick.bind(this)}
             onCancelClick={this.onToggleRemoveClick.bind(this)}
           />
         }
       </Row>
     );
-  }
-
-  getRemoveWarningMessage(latestBuild, registeredName) {
-    let warningText;
-    if (latestBuild) {
-      warningText = (
-        'Removing this repo will delete all its builds and build logs.'
-      );
-    } else {
-      warningText = (
-        'Are you sure you want to remove this repo from the list?'
-      );
-    }
-    if (registeredName !== null) {
-      warningText += ' The name will remain registered.';
-    }
-    // XXX cjwatson 2017-02-28: Once we can get hold of published states for
-    // builds, we should also implement this design requirement:
-    //   Separately, if any build has been published, the text should end
-    //   with:
-    //     Published builds will remain published.
-
-    return warningText;
   }
 
   renderRepoName(fullName, isLinked) {
@@ -416,10 +418,10 @@ export class RepositoryRowView extends Component {
     );
   }
 
-  renderBuildStatus(fullName, hasBuilt, latestBuild) {
+  renderBuildStatus(fullName, isBuilt, latestBuild) {
     return (
-      <DataLink col="30" to={ hasBuilt ? `/user/${fullName}` : null }>
-        { hasBuilt
+      <DataLink col="30" to={ isBuilt ? `/user/${fullName}` : null }>
+        { isBuilt
           ? (
             <BuildStatus
               colour={ latestBuild.colour }
@@ -476,6 +478,7 @@ RepositoryRowView.propTypes = {
   isPublished: PropTypes.bool,
   fullName: PropTypes.string,
   authStore: PropTypes.shape({
+    isFetching: PropTypes.bool,
     authenticated: PropTypes.bool,
     userName: PropTypes.string
   }),
@@ -483,8 +486,10 @@ RepositoryRowView.propTypes = {
     success: PropTypes.bool,
     error: PropTypes.object
   }),
+  nameOwnership: PropTypes.object.isRequired,
   registerNameIsOpen: PropTypes.bool,
   configureIsOpen: PropTypes.bool,
+  checkNameOwnership: PropTypes.func,
   authActions: PropTypes.object,
   nameActions: PropTypes.object,
   snapActions: PropTypes.object
@@ -494,7 +499,8 @@ function mapDispatchToProps(dispatch) {
   return {
     authActions: bindActionCreators(authStoreActionCreators, dispatch),
     nameActions: bindActionCreators(registerNameActionCreators, dispatch),
-    snapActions: bindActionCreators(snapActionCreators, dispatch)
+    snapActions: bindActionCreators(snapActionCreators, dispatch),
+    checkNameOwnership: bindActionCreators(checkNameOwnership, dispatch)
   };
 }
 

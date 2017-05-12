@@ -8,7 +8,7 @@ import url from 'url';
 import { checkStatus, getError } from '../helpers/api';
 import { conf } from '../helpers/config';
 import { getCaveats } from '../helpers/macaroons';
-import { getPackageUploadRequestMacaroon } from './register-name';
+import { STORE_SERIES, getPackageUploadRequestMacaroon } from './register-name';
 
 const BASE_URL = conf.get('BASE_URL');
 
@@ -28,11 +28,10 @@ export const SIGN_AGREEMENT_SUCCESS = 'SIGN_AGREEMENT_SUCCESS';
 export const SIGN_OUT_OF_STORE_ERROR = 'SIGN_OUT_OF_STORE_ERROR';
 
 export function extractExpiresCaveat(macaroon) {
-  const storeLocation = url.parse(conf.get('STORE_API_URL')).host;
   for (const caveat of getCaveats(macaroon)) {
     if (caveat.verificationKeyId === '') {
       const parts = caveat.caveatId.split('|');
-      if (parts[0] === storeLocation && parts[1] === 'expires') {
+      if (parts[0] === macaroon.location && parts[1] === 'expires') {
         return moment.utc(parts[2]);
       }
     }
@@ -228,10 +227,16 @@ async function fetchAccountInfo(root, discharge) {
   const response = await fetch(accountUrl, {
     headers: { 'Accept': 'application/json' }
   });
+  const json = await response.json();
   if (response.status >= 200 && response.status < 300) {
-    return { signedAgreement: true, hasShortNamespace: true };
+    let registeredNames = null;
+
+    if (json.snaps && json.snaps[STORE_SERIES]) {
+      registeredNames = Object.keys(json.snaps[STORE_SERIES]);
+    }
+
+    return { signedAgreement: true, hasShortNamespace: true, registeredNames };
   } else {
-    const json = await response.json();
     const payload = json.error_list ? json.error_list[0] : json;
     if (response.status === 403 && payload.code === 'user-not-ready') {
       const data = { signedAgreement: null, hasShortNamespace: null };
