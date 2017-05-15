@@ -1,13 +1,18 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import Clipboard from 'clipboard';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
+import COPY_TO_CLIPBOARD_SELECTOR from '../components/share/';
 
 import BetaNotificationTrigger from '../components/beta-notification/trigger';
 
 export class App extends Component {
+  componentDidMount() {
+    new Clipboard(`.${COPY_TO_CLIPBOARD_SELECTOR}`);
+  }
   render() {
     return (
       <div>
