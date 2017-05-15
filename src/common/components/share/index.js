@@ -14,6 +14,7 @@ export class CopyToClipboard extends Component {
 
     return (
       <span
+        title="Copy to clipboard"
         className={`${styles.share} ${COPY_TO_CLIPBOARD_CLASS}`}
         data-clipboard-action="copy"
         data-clipboard-text={ copyme }

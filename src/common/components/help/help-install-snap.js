@@ -25,7 +25,7 @@ export default class HelpInstallSnap extends Component {
             The installed snap will not be auto-updated.
           </p>
         }
-        <p className={ styles.p }>
+        <p className={ styles.snapdLink }>
           (
           <a
             className={ styles.external }
@@ -37,11 +37,11 @@ export default class HelpInstallSnap extends Component {
           </a>
           )
         </p>
-        <p>
+        <div>
           <CopyToClipboard
             copyme={ command }
           />
-        </p>
+        </div>
       </div>
     );
   }
