@@ -8,8 +8,14 @@ describe('<CopyToClipboard />', function() {
   let wrapper;
 
   beforeEach(function() {
-    wrapper = shallow(<CopyToClipboard copyme={'hello'} />);
+    wrapper = shallow(<CopyToClipboard copyme={'hello'} />, {
+      lifecycleExperimental: true
+    });
     wrapper.setState({ isSupported: true });
+  });
+
+  afterEach(function() {
+    expect.restoreSpies();
   });
 
   it('should not render if clipboard API is unsupported', function() {
@@ -30,5 +36,27 @@ describe('<CopyToClipboard />', function() {
 
     wrapper.setProps({ copyme });
     expect(wrapper.is(`[data-clipboard-text="${copyme}"]`)).toBe(true);
+  });
+
+  it('should call initClipboard on componentDidMount', function() {
+    const inst = wrapper.instance();
+
+    expect.spyOn(inst, 'initClipboard');
+    wrapper.update();
+    inst.componentDidMount();
+
+    expect(inst.initClipboard).toHaveBeenCalled();
+  });
+
+
+  it('should destroy clipboard on componentWillUnmount', function() {
+    const inst = wrapper.instance();
+
+    inst.clipboard = {
+      destroy: expect.createSpy()
+    };
+    inst.componentWillUnmount();
+
+    expect(inst.clipboard.destroy).toHaveBeenCalled();
   });
 });

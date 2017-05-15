@@ -14,13 +14,16 @@ export class CopyToClipboard extends Component {
 
   componentDidMount() {
     if (this.state.isSupported) {
-      console.log('xxx');
-      this.clipboard = new Clipboard(this.copyBtn);
+      this.initClipboard();
     }
   }
 
   componentWillUnmount() {
     this.clipboard && this.clipboard.destroy();
+  }
+
+  initClipboard() {
+    this.clipboard = new Clipboard(this.copyBtn);
   }
 
   render() {
