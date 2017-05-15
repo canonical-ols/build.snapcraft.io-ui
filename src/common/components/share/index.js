@@ -1,15 +1,38 @@
 import React, { Component, PropTypes } from 'react';
+import Clipboard from 'clipboard';
 
 import styles from './styles.css';
 
-export const COPY_TO_CLIPBOARD_SELECTOR = 'copyToClipboard';
-
 export class CopyToClipboard extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isSupported: Clipboard.isSupported()
+    };
+  }
+
+  componentDidMount() {
+    if (this.state.isSupported) {
+      console.log('xxx');
+      this.clipboard = new Clipboard(this.copyBtn);
+    }
+  }
+
+  componentWillUnmount() {
+    this.clipboard && this.clipboard.destroy();
+  }
+
   render() {
     const { copyme } = this.props;
 
+    if (!this.state.isSupported) {
+      return null;
+    }
+
     return (
       <span
+        ref={(span) => { this.copyBtn = span; }}
         title="Copy to clipboard"
         className={`${styles.share} ${styles.clipboard}`}
         data-clipboard-action="copy"
@@ -20,5 +43,5 @@ export class CopyToClipboard extends Component {
 }
 
 CopyToClipboard.propTypes = {
-  copyme: PropTypes.string
+  copyme: PropTypes.string.isRequired
 };
