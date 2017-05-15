@@ -16,8 +16,11 @@
   line-height:1.5;
   display:inline-block;
   border-radius:2px;
+  border: 1px solid $dark-grey;
+  padding:16px;
   color: $cool-grey;
   background-color: $light-grey;
+  margin-bottom: 1rem;
 }
 
 .external {
