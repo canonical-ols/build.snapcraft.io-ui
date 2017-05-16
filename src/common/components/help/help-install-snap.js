@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import { CopyToClipboard } from '../share';
+import { CopyToClipboard, Tweet } from '../share';
 import { HeadingThree } from '../vanilla/heading/';
 import styles from './help.css';
 
@@ -41,6 +41,7 @@ export default class HelpInstallSnap extends Component {
           <CopyToClipboard
             copyme={ command }
           />
+          <Tweet name={ name }/>
         </div>
       </div>
     );

@@ -7,6 +7,7 @@
   background-color: #666;
   background-position: 50% 50%;
   background-repeat: no-repeat;
+  margin-right:6px;
 }
 
 .share:hover {
@@ -15,5 +16,10 @@
 
 .clipboard {
   background-image: url(https://assets.ubuntu.com/v1/9cbcbbc7-copy-clipboard.svg);
+  background-size: 12px;
+}
+
+.tweet {
+  background-image: url(https://assets.ubuntu.com/v1/ff8d113b-icon-twitter-white.svg);
   background-size: 12px;
 }
