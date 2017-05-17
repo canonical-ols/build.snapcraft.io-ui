@@ -192,7 +192,7 @@ describe('The login route', () => {
             .send()
             .end((err, res) => {
               expect(res.statusCode).toEqual(302);
-              expect(res.headers.location).toEqual('/user/anowner');
+              expect(res.headers.location).toEqual('/user/anowner?sign-in');
               done(err);
             });
         });

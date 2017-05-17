@@ -114,7 +114,7 @@ export const verify = (req, res, next) => {
     });
 
     // Redirect to logged in URL
-    res.redirect(`/user/${req.session.user.login}`);
+    res.redirect(`/user/${req.session.user.login}?sign-in`);
   });
 };
 

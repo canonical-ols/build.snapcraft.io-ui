@@ -53,10 +53,14 @@ class RepositoriesHome extends Component {
     // if snaps stopped fetching
     if ((this.props.snaps.isFetching !== snaps.isFetching) && !snaps.isFetching) {
       // if user doesn't have enabled repos open add repositories view
-      if (!hasSnaps) {
+      if (!hasSnaps && nextProps.hasJustSignedIn) {
         this.props.router.replace('/select-repositories');
       } else {
-      // or update builds for their snaps
+        // or remove sign-in from URL
+        if (nextProps.hasJustSignedIn) {
+          this.props.router.replace(`/user/${nextProps.user.login}`);
+        }
+        // and update builds for their snaps
         this.updateBuilds(nextProps);
       }
     }
@@ -92,18 +96,18 @@ class RepositoriesHome extends Component {
   }
 
   render() {
-    // show spinner if snaps data was not yet fetched (snaps list is empty)
-    // (to avoid spinner during polling we are not checking `success` or `isFetching`
+    // show spinner if user has just signed in snaps data was not yet fetched
     //
-    // when snaps are loaded and user doesn't have any, they will be redirected
-    // to select repositories (so spinner won't be showing endlessly)
-    return !this.props.hasSnaps
+    // when snaps are loaded and user (how just signed in) doesn't have any,
+    // they will be redirected to select repositories
+    return (this.props.hasJustSignedIn && this.props.snaps.isFetching)
       ? this.renderSpinner()
       : this.renderRepositoriesList();
   }
 }
 
 RepositoriesHome.propTypes = {
+  hasJustSignedIn: PropTypes.bool,
   auth: PropTypes.object.isRequired,
   user: PropTypes.object,
   entities: PropTypes.object,
@@ -115,7 +119,7 @@ RepositoriesHome.propTypes = {
   fetchBuilds: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   const {
     auth,
     user,
@@ -125,6 +129,7 @@ function mapStateToProps(state) {
   } = state;
 
   return {
+    hasJustSignedIn: ownProps.hasJustSignedIn,
     auth,
     user,
     entities,

@@ -18,38 +18,12 @@ describe('The RepositoriesHome component', () => {
     clock.restore();
   });
 
-  context('when snaps are not loaded', () => {
+  context('when user just signed in', () => {
     let wrapper;
 
     beforeEach(() => {
       props = {
-        auth: {
-          authenticated: true
-        },
-        user: {},
-        entities: {
-          snaps: {}
-        },
-        snaps: {},
-        snapBuilds: {},
-        fetchBuilds: () => {},
-        updateSnaps: () => {},
-        router: {}
-      };
-
-      wrapper = shallow(<RepositoriesHome { ...props } />);
-    });
-
-    it('should render spinner', () => {
-      expect(wrapper.find('Spinner').length).toBe(1);
-    });
-  });
-
-  context('when user has no snaps', () => {
-    let wrapper;
-
-    beforeEach(() => {
-      props = {
+        hasJustSignedIn: true,
         auth: {
           authenticated: true
         },
@@ -100,6 +74,36 @@ describe('The RepositoriesHome component', () => {
         expect(props.router.replace).toHaveBeenCalledWith('/select-repositories');
       });
     });
+  });
+
+  context('when user has no snaps', () => {
+    let wrapper;
+
+    beforeEach(() => {
+      props = {
+        auth: {
+          authenticated: true
+        },
+        user: {},
+        entities: {
+          snaps: {}
+        },
+        snaps: {
+          isFetching: true
+        },
+        snapBuilds: {},
+        fetchBuilds: () => {},
+        updateSnaps: () => {},
+        router: {}
+      };
+
+      wrapper = shallow(<RepositoriesHome { ...props } />);
+    });
+
+    xit('should render "No repos" message', () => {
+      expect(wrapper.find('Spinner').length).toBe(1);
+    });
+
   });
 
   context('when user is logged in', () => {
