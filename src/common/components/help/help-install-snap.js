@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import { CopyToClipboard, Tweet } from '../share';
+import { CopyToClipboard } from '../share';
 import { HeadingThree } from '../vanilla/heading/';
 import styles from './help.css';
 
@@ -12,9 +12,11 @@ export default class HelpInstallSnap extends Component {
     const revOption = revision ? `--revision=${ revision }` : '';
     const command = children || `sudo snap install --edge ${name} ${revOption}`;
 
+    /**
     const tweet = `Install ${name} in seconds on Linux OSes:\n`
       + `sudo snap install ${name}\n\n`
       + '(Don’t have snapd? https://snapcraft.io/docs/core/install)';
+     **/
 
     return (
       <div className={styles.helpWrapper}>
@@ -45,9 +47,11 @@ export default class HelpInstallSnap extends Component {
           <CopyToClipboard
             copyme={ command }
           />
+          {/*
           <Tweet
             text={ tweet }
           />
+          */}
         </div>
       </div>
     );
