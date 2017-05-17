@@ -12,6 +12,10 @@ export default class HelpInstallSnap extends Component {
     const revOption = revision ? `--revision=${ revision }` : '';
     const command = children || `sudo snap install --edge ${name} ${revOption}`;
 
+    const tweet = `Install ${name} in seconds on Linux OSes:\n`
+      + `sudo snap install ${name}\n\n`
+      + '(Don’t have snapd? https://snapcraft.io/docs/core/install)';
+
     return (
       <div className={styles.helpWrapper}>
         <HeadingThree>{ headline }</HeadingThree>
@@ -42,9 +46,7 @@ export default class HelpInstallSnap extends Component {
             copyme={ command }
           />
           <Tweet
-            text={ `Install ${name} in seconds on Linux OSes:\n`
-                + `sudo snap install ${name}\n\n`
-                + '(Don’t have snapd? https://snapcraft.io/docs/core/install)' }
+            text={ tweet }
           />
         </div>
       </div>
