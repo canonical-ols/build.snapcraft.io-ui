@@ -1,14 +1,13 @@
-import url from 'url';
+import qs from 'qs';
 
+import { conf } from '../../../helpers/config';
 import { parseGitHubRepoUrl } from '../../../helpers/github-url';
 
-export default function getTemplateUrl(repositoryUrl, configFilePath) {
-  const { fullName } = parseGitHubRepoUrl(repositoryUrl);
-  const templateUrl = url.format({
-    protocol: 'https:',
-    host: 'github.com',
-    pathname: `${fullName}/edit/master/${configFilePath}`
-  });
+const BASE_URL = conf.get('BASE_URL');
 
-  return templateUrl;
+export default function getTemplateUrl(repositoryUrl, configFilePath) {
+  const { owner, name } = parseGitHubRepoUrl(repositoryUrl);
+  return `${BASE_URL}/api/github/repos/${owner}/${name}/edit?` + qs.stringify({
+    filename: configFilePath
+  });
 }

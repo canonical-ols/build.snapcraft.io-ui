@@ -260,6 +260,50 @@ export const createWebhook = async (req, res) => {
   }
 };
 
+const getDefaultBranch = async (owner, name, token) => {
+  const response = await requestGitHub.get(`/repos/${owner}/${name}`, {
+    token, json: true
+  });
+  if (response.statusCode !== 200) {
+    // Since this is used in handlers that are expected to redirect (which
+    // is less effort for the client), try to send the user somewhere that
+    // stands a chance of being sensible.
+    return 'master';
+  }
+  return response.body.default_branch;
+};
+
+export const redirectNewFile = async (req, res) => {
+  if (!req.session || !req.session.token) {
+    return res.status(401).send(RESPONSE_AUTHENTICATION_FAILED);
+  }
+
+  const { owner, name } = req.params;
+  const defaultBranch = await getDefaultBranch(owner, name, req.session.token);
+  const targetUrl = url.format({
+    protocol: 'https:',
+    host: 'github.com',
+    pathname: `/${owner}/${name}/new/${defaultBranch}`,
+    query: req.query
+  });
+  res.redirect(targetUrl);
+};
+
+export const redirectEditFile = async (req, res) => {
+  if (!req.session || !req.session.token) {
+    return res.status(401).send(RESPONSE_AUTHENTICATION_FAILED);
+  }
+
+  const { owner, name } = req.params;
+  const defaultBranch = await getDefaultBranch(owner, name, req.session.token);
+  const targetUrl = url.format({
+    protocol: 'https:',
+    host: 'github.com',
+    pathname: `/${owner}/${name}/edit/${defaultBranch}/${req.query.filename}`
+  });
+  res.redirect(targetUrl);
+};
+
 const getRequest = (owner, name, token, secret) => {
   return {
     token,

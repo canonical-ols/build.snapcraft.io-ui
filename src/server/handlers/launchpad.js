@@ -272,7 +272,7 @@ const requestNewSnap = (repositoryUrl) => {
       distro_series: `/${DISTRIBUTION}/${DISTRO_SERIES}`,
       name: `${makeSnapName(repositoryUrl)}-${DISTRO_SERIES}`,
       git_repository_url: repositoryUrl,
-      git_path: 'refs/heads/master',
+      git_path: 'HEAD',
       // auto_build will be enabled later, once snapcraft.yaml exists and
       // the snap name has been registered.
       auto_build: false,
