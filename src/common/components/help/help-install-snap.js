@@ -41,7 +41,11 @@ export default class HelpInstallSnap extends Component {
           <CopyToClipboard
             copyme={ command }
           />
-          <Tweet name={ name }/>
+          <Tweet
+            text={ `Install ${name} in seconds on Linux OSes:\n`
+                + `sudo snap install ${name}\n\n`
+                + '(Don’t have snapd? https://snapcraft.io/docs/core/install)' }
+          />
         </div>
       </div>
     );
