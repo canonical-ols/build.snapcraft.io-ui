@@ -98,7 +98,7 @@ class RepositoriesHome extends Component {
   render() {
     // show spinner if user has just signed in snaps data was not yet fetched
     //
-    // when snaps are loaded and user (how just signed in) doesn't have any,
+    // when snaps are loaded and user (who just signed in) doesn't have any,
     // they will be redirected to select repositories
     return (this.props.hasJustSignedIn && this.props.snaps.isFetching)
       ? this.renderSpinner()
