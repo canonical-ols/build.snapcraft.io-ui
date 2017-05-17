@@ -7,7 +7,10 @@
   background-color: #666;
   background-position: 50% 50%;
   background-repeat: no-repeat;
-  margin-right:6px;
+}
+
+.share + .share {
+  margin-left:6px;
 }
 
 .share:hover {
