@@ -131,8 +131,9 @@ export class RepositoriesListView extends Component {
             </Row>
           </Head>
           <Body>
-            { this.props.hasSnaps &&
-              Array.from(ids).sort().map(this.renderRow.bind(this))
+            { this.props.hasSnaps
+              ? Array.from(ids).sort().map(this.renderRow.bind(this))
+              : <div className={styles.noRepos}>No repos</div>
             }
           </Body>
         </Table>

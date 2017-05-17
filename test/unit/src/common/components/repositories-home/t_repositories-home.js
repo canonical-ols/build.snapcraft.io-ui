@@ -100,10 +100,9 @@ describe('The RepositoriesHome component', () => {
       wrapper = shallow(<RepositoriesHome { ...props } />);
     });
 
-    xit('should render "No repos" message', () => {
-      expect(wrapper.find('Spinner').length).toBe(1);
+    it('should render repositories list view message', () => {
+      expect(wrapper.find('Connect(RepositoriesListView)').length).toBe(1);
     });
-
   });
 
   context('when user is logged in', () => {

@@ -77,7 +77,7 @@ class RepositoriesHome extends Component {
         <div className={ styles['button-container'] }>
           <HeadingThree>Repos to build and publish</HeadingThree>
           <div>
-            <LinkButton appearance="neutral" to="/select-repositories">
+            <LinkButton appearance="positive" to="/select-repositories">
               Add repos…
             </LinkButton>
           </div>
