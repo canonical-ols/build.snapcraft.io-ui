@@ -16,16 +16,18 @@ class SelectRepositoryRow extends Component {
     // TODO tidy up when we get rid of prefixes
     const isChecked = repository.isSelected || isEnabled;
     const isFetching = repository.isFetching;
-    const isDisabled = isEnabled || isFetching;
+    const isDisabled = isEnabled || isFetching || !repository.isAdmin;
 
     const rowClass = classNames({
       [styles.repositoryRow]: true,
       [styles.error]: errorMsg,
-      [styles.disabled]: isEnabled
+      [styles.disabled]: isEnabled || !repository.isAdmin
     });
 
+    const tooltip = !repository.isAdmin ? 'You don’t have admin permission for this repo' : '';
+
     return (
-      <div className={ rowClass }>
+      <label htmlFor={ repository.fullName } className={ rowClass } title={tooltip}>
         <input
           id={ repository.fullName }
           type="checkbox"
@@ -33,15 +35,13 @@ class SelectRepositoryRow extends Component {
           checked={ isChecked }
           disabled={ isDisabled }
         />
-        <div>
-          <label htmlFor={ repository.fullName }>{repository.fullName}</label>
-        </div>
+        { repository.fullName }
         { errorMsg &&
           <div className={ styles.errorMessage }>
             { errorMsg }
           </div>
         }
-      </div>
+      </label>
     );
   }
 }
