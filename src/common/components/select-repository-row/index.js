@@ -10,18 +10,18 @@ class SelectRepositoryRow extends Component {
       errorMsg,
       repository,
       onChange,
-      isEnabled // is repository already enabled as a snap build
+      isRepoEnabled // is repository already enabled as a snap build
     } = this.props;
 
     // TODO tidy up when we get rid of prefixes
-    const isChecked = repository.isSelected || isEnabled;
+    const isChecked = repository.isSelected || isRepoEnabled;
     const isFetching = repository.isFetching;
-    const isDisabled = isEnabled || isFetching || !repository.isAdmin;
+    const isInputDisabled = isRepoEnabled || isFetching || !repository.isAdmin;
 
     const rowClass = classNames({
       [styles.repositoryRow]: true,
       [styles.error]: errorMsg,
-      [styles.disabled]: isEnabled || !repository.isAdmin
+      [styles.disabled]: isRepoEnabled || !repository.isAdmin
     });
 
     const tooltip = !repository.isAdmin ? 'You don’t have admin permission for this repo' : '';
@@ -33,7 +33,7 @@ class SelectRepositoryRow extends Component {
           type="checkbox"
           onChange={ onChange }
           checked={ isChecked }
-          disabled={ isDisabled }
+          disabled={ isInputDisabled }
         />
         { repository.fullName }
         { errorMsg &&
@@ -48,7 +48,7 @@ class SelectRepositoryRow extends Component {
 
 SelectRepositoryRow.defaultProps = {
   isSelected: false,
-  isEnabled: false
+  isRepoEnabled: false
 };
 
 SelectRepositoryRow.propTypes = {
@@ -56,7 +56,7 @@ SelectRepositoryRow.propTypes = {
   repository: PropTypes.shape({
     fullName: PropTypes.string.isRequired
   }).isRequired,
-  isEnabled: PropTypes.bool,
+  isRepoEnabled: PropTypes.bool,
   onChange: PropTypes.func,
   isSelected: PropTypes.bool
 };
