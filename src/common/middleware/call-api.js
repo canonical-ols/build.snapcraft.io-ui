@@ -42,47 +42,45 @@ export default defaults => () => next => action => {
               }
 
               if (successType) {
-                next(createAction({
+                return next(createAction({
                   type: successType,
                   payload: {
                     response: result
                   }
                 }));
+              } else {
+                return Promise.resolve(result);
               }
-
-              return Promise.resolve(result);
             });
         })
         .catch((error) => {
           if (failureType) {
-            next(createAction({
+            return  next(createAction({
               type: failureType,
               payload: {
                 error: error
               },
               error: true
             }));
+          } else {
+            error.action = action;
+            return Promise.reject(error);
           }
-
-          error.action = action;
-
-          return Promise.reject(error);
         });
     })
     .catch((error) => {
       if (failureType) {
-        next(createAction({
+        return next(createAction({
           type: failureType,
           payload: {
             error: error
           },
           error: true
         }));
+      } else {
+        error.action = action;
+        return Promise.reject(error);
       }
-
-      error.action = action;
-
-      return Promise.reject(error);
     });
 };
 
