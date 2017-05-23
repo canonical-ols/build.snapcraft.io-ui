@@ -7,7 +7,7 @@ export const CALL_API = 'CALL_API';
 // Performs the call and promises when such actions are dispatched. This
 // has been implemented using promises because of suspected problems with
 // sourcemapping async / await code.
-export default defaults => () => next => action => {
+export default (defaults) => () => (next) => (action) => {
   // If action does not invoke CALL_API,
   // ignore it
   const settings = action[CALL_API];
@@ -42,35 +42,24 @@ export default defaults => () => next => action => {
               }
 
               if (successType) {
-                return next(createAction({
+                next(createAction({
                   type: successType,
                   payload: {
                     response: result
                   }
                 }));
-              } else {
-                return Promise.resolve(result);
               }
+
+              // resolve promise with response JSON
+              return result;
             });
-        })
-        .catch((error) => {
-          if (failureType) {
-            return  next(createAction({
-              type: failureType,
-              payload: {
-                error: error
-              },
-              error: true
-            }));
-          } else {
-            error.action = action;
-            return Promise.reject(error);
-          }
         });
     })
     .catch((error) => {
       if (failureType) {
-        return next(createAction({
+        // if type of failure action is defined in settings
+        // catch the error and pass it in failure action payload
+        next(createAction({
           type: failureType,
           payload: {
             error: error
@@ -78,8 +67,8 @@ export default defaults => () => next => action => {
           error: true
         }));
       } else {
-        error.action = action;
-        return Promise.reject(error);
+        // otherwise, reject the promise with error
+        throw error;
       }
     });
 };
