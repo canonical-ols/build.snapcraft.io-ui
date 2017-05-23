@@ -110,7 +110,7 @@ export const verify = (req, res, next) => {
           await dbUser.save({}, { transacting: trx });
         }
 
-        hasAddedSnaps = dbUser.attributes.snaps_added > 0;
+        hasAddedSnaps = dbUser.get('snaps_added') > 0;
       } catch (error) {
         return next(error);
       }
