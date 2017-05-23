@@ -18,64 +18,6 @@ describe('The RepositoriesHome component', () => {
     clock.restore();
   });
 
-  context('when user just signed in', () => {
-    let wrapper;
-
-    beforeEach(() => {
-      props = {
-        hasJustSignedIn: true,
-        auth: {
-          authenticated: true
-        },
-        user: {},
-        entities: {
-          snaps: {}
-        },
-        snaps: {
-          isFetching: true
-        },
-        snapBuilds: {},
-        fetchBuilds: () => {},
-        updateSnaps: () => {},
-        router: {
-          replace: expect.createSpy()
-        }
-      };
-
-      wrapper = shallow(<RepositoriesHome { ...props } />);
-    });
-
-    it('should render spinner', () => {
-      expect(wrapper.find('Spinner').length).toBe(1);
-    });
-
-    context('and component recieves props', () => {
-      beforeEach(() => {
-        wrapper.instance().componentDidMount();
-
-        props = {
-          ...props,
-          snaps: {
-            ...props.snaps,
-            isFetching: false,
-            success: true,
-            snaps: [],
-            ids: []
-          }
-        };
-        wrapper.instance().componentWillReceiveProps(props);
-      });
-
-      afterEach(() => {
-        wrapper.instance().componentWillUnmount();
-      });
-
-      it('should redirect to select repositories', () => {
-        expect(props.router.replace).toHaveBeenCalledWith('/select-repositories');
-      });
-    });
-  });
-
   context('when user has no snaps', () => {
     let wrapper;
 

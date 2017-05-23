@@ -1,5 +1,4 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 
 import BetaNotification from '../components/beta-notification';
@@ -16,20 +15,10 @@ class MyRepos extends Component {
         />
         <BetaNotification />
         <UserAvatar />
-        <RepositoriesHome hasJustSignedIn={this.props.hasJustSignedIn}/>
+        <RepositoriesHome />
       </div>
     );
   }
 }
 
-MyRepos.propTypes = {
-  hasJustSignedIn: PropTypes.bool
-};
-
-function mapStateToProps(state, ownProps) {
-  return {
-    hasJustSignedIn: ownProps.location.query['sign-in'] !== undefined
-  };
-}
-
-export default connect(mapStateToProps)(MyRepos);
+export default MyRepos;
