@@ -70,7 +70,7 @@ describe('The RepositoriesHome component', () => {
 
     context('and component mounts', () => {
       beforeEach(() => {
-        wrapper.instance().componentDidMount();
+        wrapper.instance().componentWillMount();
       });
 
       afterEach(() => {
@@ -95,7 +95,7 @@ describe('The RepositoriesHome component', () => {
 
     context('and component mounts, then unmounts', () => {
       beforeEach(() => {
-        wrapper.instance().componentDidMount();
+        wrapper.instance().componentWillMount();
         clock.tick(60000);
         wrapper.instance().componentWillUnmount();
         props.updateSnaps.reset();

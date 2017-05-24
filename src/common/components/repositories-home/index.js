@@ -24,7 +24,7 @@ class RepositoriesHome extends Component {
     });
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const { authenticated } = this.props.auth;
     const { updateSnaps } = this.props;
     const owner = this.props.user.login;
