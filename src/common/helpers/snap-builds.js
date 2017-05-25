@@ -65,12 +65,12 @@ export const UserFacingState = {
     6,
     'wont_release'
   ),
-  'PUBLISHED': createState(
-    'Built and published',
+  'RELEASED': createState(
+    'Built and released',
     BuildStatusColours.GREEN,
     BuildStatusIcons.TICK_SOLID,
     5,
-    'published'
+    'released'
   ),
   'RELEASE_FAILED': createState(
     'Built, failed to release',
@@ -179,7 +179,7 @@ function internalMapSnapBuildStoreUploadState(uploadState) {
     case LaunchpadStoreUploadStates.FAILEDTORELEASE:
       return UserFacingState.RELEASE_FAILED;
     case LaunchpadStoreUploadStates.UPLOADED:
-      return UserFacingState.PUBLISHED;
+      return UserFacingState.RELEASED;
     default:
       throw new RangeError('Unrecognised publishState in internalMapSnapBuildStoreUploadState');
   }
