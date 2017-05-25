@@ -79,12 +79,12 @@ export const UserFacingState = {
     4,
     'publishing_failed'
   ),
-  'PUBLISHING_SOON': createState(
-    'Built, publishing soon',
+  'RELEASING_SOON': createState(
+    'Built, releasing soon',
     BuildStatusColours.GREY,
     BuildStatusIcons.TICK,
     3,
-    'publishing_soon'
+    'releasing_soon'
   ),
   'IN_PROGRESS': createState(
     'In progress',
@@ -174,7 +174,7 @@ function internalMapSnapBuildStoreUploadState(uploadState) {
     case LaunchpadStoreUploadStates.UNSCHEDULED:
       return UserFacingState.WONT_RELEASE;
     case LaunchpadStoreUploadStates.PENDING:
-      return UserFacingState.PUBLISHING_SOON;
+      return UserFacingState.RELEASING_SOON;
     case LaunchpadStoreUploadStates.FAILEDTOUPLOAD:
     case LaunchpadStoreUploadStates.FAILEDTORELEASE:
       return UserFacingState.PUBLISHING_FAILED;
