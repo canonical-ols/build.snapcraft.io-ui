@@ -37,7 +37,7 @@ class Landing extends Component {
                   Built automatically
                 </li>
                 <li className={ styles.bannerLabel }>
-                  Published for your users
+                  Released for your users
                 </li>
               </ul>
 
