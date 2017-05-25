@@ -71,7 +71,7 @@ class RepositoriesHome extends Component {
       <div>
         <FirstTimeHeading isOnMyRepos={true} />
         <div className={ styles['button-container'] }>
-          <HeadingThree>Repos to build and publish</HeadingThree>
+          <HeadingThree>Repos to build</HeadingThree>
           <div>
             <LinkButton appearance="neutral" to="/select-repositories">
               Add repos…
