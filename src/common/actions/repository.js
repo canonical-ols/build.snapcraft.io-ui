@@ -23,7 +23,7 @@ export const REPO_RESET = 'REPO_RESET';
 export function addRepos(repos, owner) {
   return async (dispatch) => {
     try {
-      await Promise.all(repos.map( async (repo) => {
+      await Promise.all(repos.map(async (repo) => {
         await dispatch(createWebhook(repo));
         return dispatch(addRepo(repo));
       }));
