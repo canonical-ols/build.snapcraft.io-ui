@@ -1,25 +1,21 @@
 import 'isomorphic-fetch';
-import url from 'url';
+import qs from 'qs';
 
 import { conf } from '../helpers/config';
 
-const STORE_CPI_API_URL = conf.get('STORE_CPI_API_URL');
+const STORE_SEARCH_API_URL = conf.get('STORE_SEARCH_API_URL');
 
 export const getSnapDetails = async (req, res) => {
   const snapName = req.params.name;
-  const query = {};
 
-  // pass allowed query parameters
-  for (const key of ['fields', 'channel', 'confinement'] ) {
-    if (req.query && req.query.hasOwnProperty(key)) {
-      query[key] = req.query[key];
-    }
-  }
-
-  const fetchUrl = url.format({
-    ...url.parse(`${STORE_CPI_API_URL}/snaps/details/${snapName}`),
-    query
+  const query = qs.stringify(req.query, {
+    filter: ['fields', 'channel']
   });
+
+  let fetchUrl = `${STORE_SEARCH_API_URL}/snaps/details/${snapName}`;
+  if (query.length) {
+    fetchUrl = `${fetchUrl}?${query}`;
+  }
 
   try {
     const response = await fetch(fetchUrl, {

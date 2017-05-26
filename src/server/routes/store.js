@@ -7,7 +7,7 @@ import {
 
 const router = Router();
 
-router.use('/github/user', json());
+router.use('/snaps/details/:name', json());
 router.get('/snaps/details/:name', getSnapDetails);
 
 export default router;

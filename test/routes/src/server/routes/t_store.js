@@ -15,7 +15,7 @@ describe('The store API endpoint', () => {
     let api;
 
     beforeEach(() => {
-      api = nock(conf.get('STORE_CPI_API_URL'))
+      api = nock(conf.get('STORE_SEARCH_API_URL'))
         .get(`/snaps/details/${snapName}`)
         .matchHeader('X-Ubuntu-Series', '16');
     });
