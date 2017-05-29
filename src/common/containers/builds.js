@@ -37,7 +37,7 @@ export class Builds extends Component {
       return (
         <div className={styles.row}>
           <div className={styles.rowItem}>
-            <HelpBox>
+            <HelpBox isFlex>
               <HelpInstallSnap
                 headline='To test the latest successful build on your cloud instance or device'
                 name={ snap.storeName }
@@ -47,7 +47,7 @@ export class Builds extends Component {
           <div className={styles.rowItem}>
             { snap.stableRevision
               ? (
-                <HelpBox>
+                <HelpBox isFlex>
                   <HelpInstallSnap
                     headline='To install the latest stable version'
                     stable={ true }

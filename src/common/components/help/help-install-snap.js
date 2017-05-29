@@ -20,39 +20,41 @@ export default class HelpInstallSnap extends Component {
      **/
 
     return (
-      <div className={styles.helpWrapper}>
-        <HeadingThree>{ headline }</HeadingThree>
-        <pre>
-          <code className={ styles.cli }>
-            {command}
-          </code>
-        </pre>
-        { revision &&
-          <p className={ styles.p }>
-            The installed snap will not be auto-updated.
+      <div className={styles.helpFlexWrapper}>
+        <HeadingThree className={styles.helpFlexHeading}>{ headline }</HeadingThree>
+        <div className={styles.helpText}>
+          <pre>
+            <code className={ styles.cli }>
+              {command}
+            </code>
+          </pre>
+          { revision &&
+            <p className={ styles.p }>
+              The installed snap will not be auto-updated.
+            </p>
+          }
+          <p className={ styles.snapdLink }>
+            (
+            <a
+              className={ styles.external }
+              href={ HELP_INSTALL_URL }
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              Don’t have snapd installed?
+            </a>
+            )
           </p>
-        }
-        <p className={ styles.snapdLink }>
-          (
-          <a
-            className={ styles.external }
-            href={ HELP_INSTALL_URL }
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            Don’t have snapd installed?
-          </a>
-          )
-        </p>
-        <div>
-          <CopyToClipboard
-            copyme={ command }
-          />
-          {/*
-          <Tweet
-            text={ tweet }
-          />
-          */}
+          <div>
+            <CopyToClipboard
+              copyme={ command }
+            />
+            {/*
+            <Tweet
+              text={ tweet }
+            />
+            */}
+          </div>
         </div>
       </div>
     );
