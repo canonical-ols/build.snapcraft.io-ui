@@ -1,4 +1,5 @@
 import 'isomorphic-fetch';
+import qs from 'qs';
 
 import { CALL_API } from '../middleware/call-api';
 
@@ -44,7 +45,10 @@ export function removeSnap(repositoryUrl) {
 }
 
 export function fetchSnapStableRelease(repositoryUrl, snapName) {
-  const query = 'channel=stable&fields=name,revision';
+  const query = qs.stringify({
+    channel: 'stable',
+    fields: 'name,revision'
+  });
 
   return {
     payload: { id: repositoryUrl },
