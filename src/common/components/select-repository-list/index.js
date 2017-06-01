@@ -116,7 +116,7 @@ export class SelectRepositoryListComponent extends Component {
           <HeadingThree>
             { selectedRepositories.length } selected
           </HeadingThree>
-          <div className={ styles.buttons }>
+          <div>
             <LinkButton appearance="neutral" to={`/user/${user.login}`}>
               Cancel
             </LinkButton>
