@@ -120,10 +120,8 @@ $neutral-border-color: $dark-grey;
   position: absolute;
   height: 20px;
   width: 20px;
-  left: 50%;
-  top: 50%;
-  margin-left: -10px;
-  margin-top: -10px;
+  left: calc(50% - 10px);
+  top: calc(50% - 10px);
 }
 
 .bigger {
