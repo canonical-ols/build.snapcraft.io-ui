@@ -7,7 +7,6 @@ import { fetchUserOrganizations } from '../../actions/organizations';
 import SelectRepositoryList from '../select-repository-list';
 import { HeadingThree } from '../vanilla/heading';
 import FirstTimeHeading from '../first-time-heading';
-import { CardHighlighted } from '../vanilla/card';
 import PrivateReposInfo from '../private-repos-info';
 
 import styles from './select-repositories-page.css';
@@ -32,13 +31,15 @@ class SelectRepositoriesPage extends Component {
     return (
       <div>
         <FirstTimeHeading />
-        <CardHighlighted>
-          <HeadingThree className={ styles.heading }>
-            Choose repos to add
-          </HeadingThree>
-          <PrivateReposInfo user={ this.props.user } onRefreshClick={this.onRefresh.bind(this)}/>
+        <div className={styles.selectRepositoriesBox}>
+          <div className={styles.selectRepositoriesHeading}>
+            <HeadingThree className={ styles.heading }>
+              Add repos
+            </HeadingThree>
+            <PrivateReposInfo user={ this.props.user } onRefreshClick={this.onRefresh.bind(this)}/>
+          </div>
           <SelectRepositoryList/>
-        </CardHighlighted>
+        </div>
       </div>
     );
   }
