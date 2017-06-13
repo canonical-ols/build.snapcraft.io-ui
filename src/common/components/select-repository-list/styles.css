@@ -12,7 +12,7 @@
 }
 
 .repoList {
-  height: 300px;
+  height: 330px;
   overflow: auto;
   padding: 0 10px;
   border-bottom: 1px solid $mid-grey;

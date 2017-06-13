@@ -91,7 +91,7 @@ export default class PrivateReposInfo extends Component {
 
   render() {
     return (
-      <ul>
+      <ul className={styles.infoList} onClick={this.props.onClick}>
         <li>
           <p className={styles.infoMsg}>Want to use a <strong>private repo</strong>? We’re working hard on making these buildable. If you like, we can e-mail you when we’re ready.</p>
           { this.state.subscribeSuccess
@@ -139,5 +139,6 @@ PrivateReposInfo.propTypes = {
   user: PropTypes.shape({
     orgs: PropTypes.array
   }).isRequired,
-  onRefreshClick: PropTypes.func
+  onRefreshClick: PropTypes.func,
+  onClick: PropTypes.func,
 };

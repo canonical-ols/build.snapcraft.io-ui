@@ -6,16 +6,18 @@ $background-color: #FFF;
   position: relative;
 }
 
-.info ul {
+.infoList {
+  padding-top: 10px;
+  padding-bottom: 10px;
   list-style: disc;
   padding-left: 20px;
 }
 
-.info ul li {
+.infoList li {
   margin-bottom: 12px;
 }
 
-.info ul li:last-child {
+.infoList li:last-child {
   margin-bottom: 0;
 }
 
