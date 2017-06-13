@@ -44,13 +44,17 @@ export class SelectRepositoryListComponent extends Component {
     });
 
     // bind document click event
-    this.onBoundDocumentClick = this.onDocumentClick.bind(this);
-    document.addEventListener('click', this.onBoundDocumentClick);
+    if (typeof document !== 'undefined') {
+      this.onBoundDocumentClick = this.onDocumentClick.bind(this);
+      document.addEventListener('click', this.onBoundDocumentClick);
+    }
   }
 
   componentWillUnmount() {
     // unbind document click event
-    document.removeEventListener('click', this.onBoundDocumentClick);
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('click', this.onBoundDocumentClick);
+    }
   }
 
   onDocumentClick() {
