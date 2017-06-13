@@ -7,7 +7,7 @@ import { fetchUserOrganizations } from '../../actions/organizations';
 import SelectRepositoryList from '../select-repository-list';
 import { HeadingThree } from '../vanilla/heading';
 import FirstTimeHeading from '../first-time-heading';
-import PrivateReposInfo from '../private-repos-info';
+import PrivateReposInfoPopover from '../private-repos-info';
 
 import styles from './select-repositories-page.css';
 
@@ -36,7 +36,7 @@ class SelectRepositoriesPage extends Component {
             <HeadingThree className={ styles.heading }>
               Add repos
             </HeadingThree>
-            <PrivateReposInfo user={ this.props.user } onRefreshClick={this.onRefresh.bind(this)}/>
+            <PrivateReposInfoPopover user={ this.props.user } onRefreshClick={this.onRefresh.bind(this)}/>
           </div>
           <SelectRepositoryList/>
         </div>
