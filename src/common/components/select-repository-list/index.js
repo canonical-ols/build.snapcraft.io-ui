@@ -136,11 +136,18 @@ export class SelectRepositoryListComponent extends Component {
     return page;
   }
 
-  render() {
-    const { user, selectedRepositories, isAddingSnaps, isUpdatingSnaps } = this.props;
+  renderRepoList() {
     const { ids, error, isFetching, pageLinks } = this.props.repositories;
-    const pagination = this.renderPageLinks(pageLinks);
 
+    if (isFetching) {
+      return (
+        <div className={ styles.spinnerWrapper }>
+          <div className={ spinnerStyles }><Spinner /></div>
+        </div>
+      );
+    }
+
+    const pagination = this.renderPageLinks(pageLinks);
     let renderedRepos = null;
 
     if (!error) {
@@ -151,6 +158,18 @@ export class SelectRepositoryListComponent extends Component {
     } else {
       // TODO show error message and keep old repo list
     }
+
+    return (
+      <div>
+        { renderedRepos }
+        { pagination }
+      </div>
+    );
+  }
+
+  render() {
+    const { user, selectedRepositories, isAddingSnaps, isUpdatingSnaps } = this.props;
+    const { isFetching } = this.props.repositories;
 
     const buttonSpinner = isFetching || isAddingSnaps || isUpdatingSnaps;
 
@@ -165,17 +184,7 @@ export class SelectRepositoryListComponent extends Component {
                 onClick={this.onMissingInfoClick.bind(this)}
               />
             )
-            : (
-              <div>
-                { isFetching &&
-                  <div className={ styles.spinnerWrapper }>
-                    <div className={ spinnerStyles }><Spinner /></div>
-                  </div>
-                }
-                { renderedRepos }
-                { pagination }
-              </div>
-            )
+            : this.renderRepoList()
           }
         </div>
         <div className={ styles.footer }>
