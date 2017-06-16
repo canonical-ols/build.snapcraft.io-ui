@@ -188,7 +188,10 @@ export class SelectRepositoryListComponent extends Component {
           }
         </div>
         <div className={ styles.footer }>
-          <div>
+          { this.state.showMissingReposInfo &&
+            <div className={ styles.arrow } />
+          }
+          <div className={ styles.summary }>
             <strong>
               { selectedRepositories.length } selected
             </strong>
