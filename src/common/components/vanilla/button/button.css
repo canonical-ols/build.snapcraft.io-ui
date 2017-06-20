@@ -30,6 +30,12 @@ $neutral-border-color: $dark-grey;
   font-weight: 300;
   cursor: pointer;
   background-color: transparent;
+  color: $text-color;
+  margin-right: 10px;
+}
+
+.button:last-child {
+  margin: 0;
 }
 
 .button:active,

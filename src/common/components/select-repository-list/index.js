@@ -201,7 +201,7 @@ export class SelectRepositoryListComponent extends Component {
             </a>)
           </div>
           <div>
-            <LinkButton appearance="neutral" to={`/user/${user.login}`}>
+            <LinkButton appearance="base" to={`/user/${user.login}`}>
               Cancel
             </LinkButton>
             {' '}
