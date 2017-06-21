@@ -140,5 +140,5 @@ PrivateReposInfo.propTypes = {
     orgs: PropTypes.array
   }).isRequired,
   onRefreshClick: PropTypes.func,
-  onClick: PropTypes.func,
+  onClick: PropTypes.func
 };
