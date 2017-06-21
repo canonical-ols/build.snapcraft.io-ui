@@ -13,11 +13,11 @@ $background-color: #FFF;
   padding-left: 20px;
 }
 
-.infoList li {
+.infoListItem {
   margin-bottom: 12px;
 }
 
-.infoList li:last-child {
+.infoListItem:last-child {
   margin-bottom: 0;
 }
 
