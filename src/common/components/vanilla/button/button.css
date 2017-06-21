@@ -1,3 +1,4 @@
+$text-color: $cool-grey;
 $base-button-color-hover: $mid-grey;
 
 $positive-button-color: $success;
@@ -35,7 +36,7 @@ $neutral-border-color: $dark-grey;
 }
 
 .button:last-child {
-  margin: 0;
+  margin-right: 0;
 }
 
 .button:active,
