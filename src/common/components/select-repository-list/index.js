@@ -42,12 +42,6 @@ export class SelectRepositoryListComponent extends Component {
     this.props.selectedRepositories && this.props.selectedRepositories.map(id => {
       this.props.dispatch(resetRepository(id));
     });
-
-    // bind document click event
-    if (typeof document !== 'undefined') {
-      this.onBoundDocumentClick = this.onDocumentClick.bind(this);
-      document.addEventListener('click', this.onBoundDocumentClick);
-    }
   }
 
   componentWillUnmount() {
@@ -55,12 +49,6 @@ export class SelectRepositoryListComponent extends Component {
     if (typeof document !== 'undefined') {
       document.removeEventListener('click', this.onBoundDocumentClick);
     }
-  }
-
-  onDocumentClick() {
-    this.setState({
-      showMissingReposInfo: false
-    });
   }
 
   onHelpClick(event) {
@@ -196,7 +184,7 @@ export class SelectRepositoryListComponent extends Component {
               { selectedRepositories.length } selected
             </strong>
             {' '}
-            (<a href="#" onClick={this.onHelpClick.bind(this)}>
+            (<a onClick={this.onHelpClick.bind(this)} aria-label={ this.state.showMissingReposInfo ? 'Click to close the missing / private repos dialog' : 'Click to open the missing / private repos dialog' }>
               { this.state.showMissingReposInfo ? 'Return to repos list' : 'Anything missing?' }
             </a>)
           </div>
