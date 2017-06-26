@@ -11,7 +11,7 @@ import {
   resetRepository,
   toggleRepositorySelection,
 } from '../../../../../../src/common/actions/repository';
-import Button, { LinkButton } from '../../../../../../src/common/components/vanilla/button';
+import { LinkButton } from '../../../../../../src/common/components/vanilla/button';
 import Spinner from '../../../../../../src/common/components/spinner';
 
 describe('<SelectRepositoryListComponent /> instance', function() {
