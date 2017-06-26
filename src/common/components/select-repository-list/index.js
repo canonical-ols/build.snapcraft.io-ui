@@ -184,9 +184,9 @@ export class SelectRepositoryListComponent extends Component {
               { selectedRepositories.length } selected
             </strong>
             {' '}
-            (<a onClick={this.onHelpClick.bind(this)} aria-label={ this.state.showMissingReposInfo ? 'Click to close the missing / private repos dialog' : 'Click to open the missing / private repos dialog' }>
+            (<Button appearance={ 'link' } onClick={this.onHelpClick.bind(this)} aria-label={ this.state.showMissingReposInfo ? 'Click to close the missing / private repos dialog' : 'Click to open the missing / private repos dialog' }>
               { this.state.showMissingReposInfo ? 'Return to repos list' : 'Anything missing?' }
-            </a>)
+            </Button>)
           </div>
           <div>
             <LinkButton appearance="base" to={`/user/${user.login}`}>
