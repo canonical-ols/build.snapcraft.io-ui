@@ -92,7 +92,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
     });
 
     it('should render disabled Add button', function() {
-      expect(wrapper.find('Button').prop('disabled')).toBe(true);
+      expect(wrapper.find('#add-repo').prop('disabled')).toBe(true);
     });
 
     it('should show message about 0 selected repos', function() {
@@ -224,7 +224,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
     });
 
     it('should dispatch selected repositories for building on add button click', function() {
-      wrapper.find(Button).simulate('click');
+      wrapper.find('#add-repo').simulate('click');
       expect(spy).toHaveBeenCalledWith(addRepos(testProps.reposToAdd));
     });
   });
