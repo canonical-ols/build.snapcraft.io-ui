@@ -198,7 +198,6 @@ export class SelectRepositoryListComponent extends Component {
               disabled={ !selectedRepositories.length || buttonSpinner }
               onClick={ this.handleAddRepositories.bind(this) }
               isSpinner={buttonSpinner}
-              id={ 'add-repo'}
             >
               Add
             </Button>

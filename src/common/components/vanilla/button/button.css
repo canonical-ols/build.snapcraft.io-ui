@@ -16,7 +16,7 @@ $neutral-button-color-hover: rgba(0, 0, 0, 0.1);
 $neutral-button-text-color: $dark-grey;
 $neutral-border-color: $dark-grey;
 
-$link-button-text-color: $link-blue;
+$internal-button-text-color: $link-blue;
 
 .button {
   font-family: $base-font-family;
