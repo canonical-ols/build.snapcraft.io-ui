@@ -36,7 +36,7 @@ export function fetchUserRepositoriesAndSnaps(owner) {
   };
 }
 
-function fetchChainedUserRepos(page) {
+export function fetchChainedUserRepos(page) {
   return (dispatch) => {
     return dispatch(fetchUserRepositories(page))
       .then((result) => {
