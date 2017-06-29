@@ -125,6 +125,33 @@ export class SelectRepositoryListComponent extends Component {
     return renderedRepos;
   }
 
+  renderRepoAmount() {
+    const { ids, error, isFetching, isDelayed } = this.props.repositories;
+    const { selectedRepositories } = this.props;
+
+    let repoAmount = ids;
+    let selectedRepos = selectedRepositories;
+
+    if (isFetching && ids.length === 0) {
+      return (
+        <span>Calculating your total repositories&hellip;</span>
+      );
+    }
+
+    return (
+      <div>
+          <strong>
+            { selectedRepos.length } selected out of
+          </strong>
+          {' '}
+          <span>
+            { repoAmount.length } Total repositories
+          </span>
+          {' '}
+      </div>
+    );
+  }
+
   render() {
     const { user, selectedRepositories, isAddingSnaps, isUpdatingSnaps } = this.props;
 
@@ -149,13 +176,13 @@ export class SelectRepositoryListComponent extends Component {
             <div className={ styles.arrow } />
           }
           <div className={ styles.summary }>
-            <strong>
-              { selectedRepositories.length } selected
-            </strong>
-            {' '}
-            (<Button appearance={ 'link' } onClick={this.onHelpClick.bind(this)}>
-              { this.state.showMissingReposInfo ? 'Return to repos list' : 'Anything missing?' }
-            </Button>)
+            { this.renderRepoAmount() }
+            <div>
+              {'\u00A0'}
+              (<Button appearance={ 'link' } onClick={this.onHelpClick.bind(this)}>
+                { this.state.showMissingReposInfo ? 'Return to repos list' : 'Anything missing?' }
+              </Button>)
+            </div>
           </div>
           <div>
             <LinkButton appearance="base" to={`/user/${user.login}`}>
