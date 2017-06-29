@@ -129,9 +129,6 @@ export class SelectRepositoryListComponent extends Component {
     const { ids, error, isFetching, isDelayed } = this.props.repositories;
     const { selectedRepositories } = this.props;
 
-    let repoAmount = ids;
-    let selectedRepos = selectedRepositories;
-
     if (isFetching && ids.length === 0) {
       return (
         <span>Calculating your total repositories&hellip;</span>
@@ -141,13 +138,12 @@ export class SelectRepositoryListComponent extends Component {
     return (
       <div>
           <strong>
-            { selectedRepos.length } selected out of
+            { selectedRepositories.length } selected out of
           </strong>
           {' '}
           <span>
-            { repoAmount.length } Total repositories
+            { ids.length } Total repositories
           </span>
-          {' '}
       </div>
     );
   }
