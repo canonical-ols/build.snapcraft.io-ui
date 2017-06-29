@@ -94,7 +94,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
     });
 
     it('should show message about 3 total repos', function() {
-      expect(wrapper.html()).toInclude('3 Total repositories');
+      expect(wrapper.html()).toInclude('3 repositories');
     });
 
     it('should render same number of rows as repos in state', function() {
