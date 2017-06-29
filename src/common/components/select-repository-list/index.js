@@ -138,12 +138,8 @@ export class SelectRepositoryListComponent extends Component {
     return (
       <div>
           <strong>
-            { selectedRepositories.length } selected out of
+            { selectedRepositories.length } selected out of { ids.length } Total repositories
           </strong>
-          {' '}
-          <span>
-            { ids.length } Total repositories
-          </span>
       </div>
     );
   }

@@ -7,8 +7,6 @@
 }
 
 .summary {
-  flex-direction: row;
-  justify-content: flex-end;
   display: flex;
   flex: 1;
   margin-right: 10px;
