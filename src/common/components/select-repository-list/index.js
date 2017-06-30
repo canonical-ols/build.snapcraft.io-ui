@@ -129,15 +129,26 @@ export class SelectRepositoryListComponent extends Component {
     const { ids, isFetching } = this.props.repositories;
     const { selectedRepositories } = this.props;
 
+    let reposSelected = false;
+
     // Return nothing until isFetching completes
-    if (isFetching) {
+    if (isFetching || ids.length === 0) {
       return;
+    }
+
+    // Check if any respos have been selected
+    if (selectedRepositories.length > 0) {
+      reposSelected = true;
+    } else {
+      reposSelected = false;
     }
 
     // Return selected repos amount and the total
     return (
       <strong>
-        { selectedRepositories.length } selected of { ids.length } repos
+        { reposSelected &&
+          <span>{ selectedRepositories.length } selected of </span>
+        }{ ids.length } repos
       </strong>
     );
   }
