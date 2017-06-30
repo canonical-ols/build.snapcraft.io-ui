@@ -130,9 +130,7 @@ export class SelectRepositoryListComponent extends Component {
     const { selectedRepositories } = this.props;
 
     if (isFetching && ids.length === 0) {
-      return (
-        <span>Calculating your total repositories&hellip;</span>
-      );
+      return;
     }
 
     return (
