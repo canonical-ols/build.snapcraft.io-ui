@@ -7,11 +7,9 @@
 }
 
 .summary {
-  display: flex;
   flex: 1;
   margin-right: 10px;
   text-align: right;
-  justify-content: flex-end;
 }
 
 .repoList {
