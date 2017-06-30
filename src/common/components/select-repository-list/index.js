@@ -129,10 +129,12 @@ export class SelectRepositoryListComponent extends Component {
     const { ids, isFetching } = this.props.repositories;
     const { selectedRepositories } = this.props;
 
-    if (isFetching && ids.length === 0) {
+    // Return nothing until isFetching completes
+    if (isFetching) {
       return;
     }
 
+    // Return selected repos amount and the total
     return (
       <strong>
         { selectedRepositories.length } selected of { ids.length } repos
@@ -165,12 +167,10 @@ export class SelectRepositoryListComponent extends Component {
           }
           <div className={ styles.summary }>
             { this.renderRepoAmount() }
-            <div>
-              {'\u00A0'}
-              (<Button appearance={ 'link' } onClick={this.onHelpClick.bind(this)}>
-                { this.state.showMissingReposInfo ? 'Return to repos list' : 'Anything missing?' }
-              </Button>)
-            </div>
+            {'\u00A0'}
+            (<Button appearance={ 'link' } onClick={this.onHelpClick.bind(this)}>
+              { this.state.showMissingReposInfo ? 'Return to repos list' : 'Anything missing?' }
+            </Button>)
           </div>
           <div>
             <LinkButton appearance="base" to={`/user/${user.login}`}>
