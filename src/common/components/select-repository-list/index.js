@@ -117,11 +117,11 @@ export class SelectRepositoryListComponent extends Component {
     let renderedRepos = null;
     let filteredRepos = ids;
 
-    if (this.props.searchTerm) {
+    if (this.props.repositories.searchTerm) {
       filteredRepos = ids.filter(
          (id) => {
            return this.props.entities.repos[id].fullName.toLowerCase().indexOf(
-                this.props.searchTerm.toLowerCase()) !== -1; }
+                this.props.repositories.searchTerm.toLowerCase()) !== -1; }
          );
     }
 
@@ -218,15 +218,14 @@ SelectRepositoryListComponent.propTypes = {
   hasFailedRepositories: PropTypes.bool,
   isUpdatingSnaps: PropTypes.bool,
   isAddingSnaps: PropTypes.bool,
-  onRefresh: PropTypes.func,
-  searchTerm: PropTypes.string
+  onRefresh: PropTypes.func
 };
 
 function mapStateToProps(state, ownProps) {
   const {
     user,
     entities,
-    repositories,
+    repositories
   } = state;
 
   return {

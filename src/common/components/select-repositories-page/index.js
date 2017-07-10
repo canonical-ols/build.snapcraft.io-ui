@@ -49,7 +49,6 @@ class SelectRepositoriesPage extends Component {
           </div>
           <SelectRepositoryList
             onRefresh={ this.onRefresh.bind(this) }
-            searchTerm={ this.props.searchTerm }
           />
         </div>
       </div>
