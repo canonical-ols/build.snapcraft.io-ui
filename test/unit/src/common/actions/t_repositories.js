@@ -110,4 +110,21 @@ describe('repositories actions', () => {
     });
 
   });
+
+  xcontext('searchRepos', () => {
+
+    it('should create an action to update search term', () => {
+      // const expectedAction = {
+      //   type: ActionTypes.REPOSITORIES_SEARCH,
+      //   payload: 'test'
+      // };
+      //
+      // store.dispatch(searchRepos('test'));
+      // expect(store.getActions()).toInclude(expectedAction);
+    });
+
+    it('should create a valid flux standard action', () => {
+      // expect(isFSA(action)).toBe(true);
+    });
+  });
 });

@@ -308,4 +308,17 @@ describe('selectors', function() {
 
   });
 
+  xcontext('getFilteredRepos', function() {
+    it('should return all repos if search term is empty', function() {
+
+    });
+
+    it('should return filtered repos if search term matches', function() {
+
+    });
+
+    it('should return empty list if search term does not match any repos', function() {
+
+    });
+  });
 });
