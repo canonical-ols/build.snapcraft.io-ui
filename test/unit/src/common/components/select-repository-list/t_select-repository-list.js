@@ -187,8 +187,20 @@ describe('<SelectRepositoryListComponent /> instance', function() {
   });
 
   context('searching repositories', function() {
-    xit('should render only selected repositories', function() {
-      // TODO: implement
+    let wrapper;
+    let spy;
+
+    beforeEach(function() {
+      spy = spyOn(props, 'dispatch');
+      wrapper = shallow(<SelectRepositoryListComponent { ...props } />);
+    });
+
+    afterEach(function() {
+      spy.restore();
+    });
+
+    it('should render same number of rows as repos in filtered repos', function() {
+      expect(wrapper.find(SelectRepositoryRow).length).toBe(props.filteredRepos.length);
     });
   });
 });
