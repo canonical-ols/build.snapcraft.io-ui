@@ -110,16 +110,20 @@ describe('repositories reducers', () => {
     });
   });
 
-  xcontext('REPOSITORIES_SEARCH', () => {
+  context('REPOSITORIES_SEARCH', () => {
+    const state = {
+      ...initialState
+    };
+
     const action = {
       type: ActionTypes.REPOSITORIES_SEARCH,
       payload: 'test'
     };
 
     it('should store search term', () => {
-      // TODO: implement
-      expect(repositories(initialState, action)).toEqual({
-
+      expect(repositories(state, action)).toEqual({
+        ...state,
+        searchTerm: 'test'
       });
     });
   });
