@@ -130,13 +130,7 @@ describe('repositories actions', () => {
     });
 
     it('should create a valid flux standard action', () => {
-      const action = {
-        type: ActionTypes.REPOSITORIES_SEARCH,
-        payload: 'test'
-      };
-
-      store.dispatch(searchRepos('test'));
-      expect(isFSA(action)).toBe(true);
+      expect(isFSA(searchRepos('test'))).toBe(true);
     });
   });
 });
