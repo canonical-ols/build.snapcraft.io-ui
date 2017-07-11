@@ -52,7 +52,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
       },
       repositories: {
         isFetching: false,
-        ids: [1001,1002,1003],
+        ids: [1001, 1002, 1003]
       },
       snaps: {
         success: true,
@@ -61,7 +61,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
       enabledRepositories: { // stub the selector
         1001: {}
       },
-      filteredRepos: [1001,1002,1003],
+      filteredRepos: [1001, 1002, 1003],
       selectedRepositories: [], // stub the selector
       reposToAdd: [] // stub the selector
     };
