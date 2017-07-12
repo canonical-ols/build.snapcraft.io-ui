@@ -52,7 +52,8 @@ describe('<SelectRepositoryListComponent /> instance', function() {
       },
       repositories: {
         isFetching: false,
-        ids: [1001, 1002, 1003]
+        ids: [1001, 1002, 1003],
+        searchTerm: ''
       },
       snaps: {
         success: true,
@@ -195,6 +196,16 @@ describe('<SelectRepositoryListComponent /> instance', function() {
 
     it('should render same number of rows as repos in filtered repos', function() {
       expect(wrapper.find(SelectRepositoryRow).length).toBe(props.filteredRepos.length);
+    });
+
+    it('should render only one row as the searchTerm is set', function() {
+      wrapper.setProps(Object.assign({}, props, { filteredRepos: [1001] }));
+      expect(wrapper.find(SelectRepositoryRow).length).toBe(1);
+    });
+
+    it('should render text 1 match in', function() {
+      wrapper.setProps(Object.assign({}, props, { filteredRepos: [1001] }));
+      expect(wrapper.html()).toNotInclude('1 match in');
     });
   });
 });
