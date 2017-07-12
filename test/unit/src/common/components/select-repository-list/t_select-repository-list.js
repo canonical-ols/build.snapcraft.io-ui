@@ -294,15 +294,5 @@ describe('<SelectRepositoryListComponent /> instance', function() {
         expect(wrapper.html()).toInclude('1 selected, 2 matches in');
       });
     });
-
-    it('should render only one row as filtered repos has been changed', function() {
-      wrapper.setProps(Object.assign({}, props, { filteredRepos: [1001] }));
-      expect(wrapper.find(SelectRepositoryRow).length).toBe(1);
-    });
-
-    it('should render text 1 match in', function() {
-      wrapper.setProps(Object.assign({}, props, { filteredRepos: [1001] }));
-      expect(wrapper.html()).toNotInclude('1 match in');
-    });
   });
 });
