@@ -95,7 +95,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
     });
 
     it('should show not message about 0 selected repos', function() {
-      expect(wrapper.html()).toNotInclude('0 selected of');
+      expect(wrapper.html()).toNotInclude('0 selected,');
     });
 
     it('should render same number of rows as repos in state', function() {
