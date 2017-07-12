@@ -198,7 +198,7 @@ describe('<SelectRepositoryListComponent /> instance', function() {
       expect(wrapper.find(SelectRepositoryRow).length).toBe(props.filteredRepos.length);
     });
 
-    it('should render only one row as the searchTerm is set', function() {
+    it('should render only one row as filtered repos has been changed', function() {
       wrapper.setProps(Object.assign({}, props, { filteredRepos: [1001] }));
       expect(wrapper.find(SelectRepositoryRow).length).toBe(1);
     });
