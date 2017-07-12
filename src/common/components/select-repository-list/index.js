@@ -130,18 +130,29 @@ export class SelectRepositoryListComponent extends Component {
   renderRepoAmount() {
     const { ids, isFetching } = this.props.repositories;
     const { selectedRepositories } = this.props;
+    const { filteredRepos } = this.props;
+    let filteredAmount = null;
 
     // Return nothing until isFetching completes
     if (isFetching || ids.length === 0) {
       return;
     }
 
+    if (filteredRepos.length < ids.length && filteredRepos.length > 1) {
+      filteredAmount = <span>{ filteredRepos.length } matches in </span>;
+    } else if (filteredRepos.length < ids.length && filteredRepos.length === 1) {
+      filteredAmount = <span>{ filteredRepos.length } match in </span>;
+    } else if (filteredRepos.length === 0) {
+      filteredAmount = <span>no matches </span>;
+    }
+
     // Return selected repos amount and the total
     return (
       <strong>
-        { (selectedRepositories.length > 0) &&
-          <span>{ selectedRepositories.length } selected of </span>
+        { selectedRepositories.length > 0 &&
+          <span>{ selectedRepositories.length } selected, </span>
         }
+        { filteredAmount }
         { ids.length } repos
       </strong>
     );
