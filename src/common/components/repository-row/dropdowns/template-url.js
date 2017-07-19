@@ -1,13 +1,14 @@
-import qs from 'qs';
+import url from 'url';
 
-import { conf } from '../../../helpers/config';
 import { parseGitHubRepoUrl } from '../../../helpers/github-url';
 
-const BASE_URL = conf.get('BASE_URL');
-
-export default function getTemplateUrl(repositoryUrl, configFilePath) {
-  const { owner, name } = parseGitHubRepoUrl(repositoryUrl);
-  return `${BASE_URL}/api/github/repos/${owner}/${name}/edit?` + qs.stringify({
-    filename: configFilePath
+export default function getTemplateUrl(snap) {
+  const { fullName } = parseGitHubRepoUrl(snap.gitRepoUrl);
+  const templateUrl = url.format({
+    protocol: 'https:',
+    host: 'github.com',
+    pathname: `${fullName}/edit/${snap.gitBranch}/${snap.snapcraftData.path}`
   });
+
+  return templateUrl;
 }

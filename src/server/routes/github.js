@@ -6,8 +6,6 @@ import {
   createWebhook,
   getUser,
   listRepositories,
-  redirectEditFile,
-  redirectNewFile,
   refreshOrganizations
 } from '../handlers/github';
 import { getSnapcraftYaml } from '../handlers/launchpad';
@@ -27,10 +25,6 @@ router.get('/github/orgs', refreshOrganizations);
 
 router.use('/github/repos', json());
 router.get('/github/repos', listRepositories);
-
-router.get('/github/repos/:owner/:name/new', redirectNewFile);
-
-router.get('/github/repos/:owner/:name/edit', redirectEditFile);
 
 router.use('/github/snapcraft-yaml/:owner/:name', json());
 router.get('/github/snapcraft-yaml/:owner/:name', getSnapcraftYaml);

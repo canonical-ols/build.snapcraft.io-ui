@@ -4,7 +4,6 @@ import supertest from 'supertest';
 import nock from 'nock';
 import expect from 'expect';
 import { EOL } from 'os';
-import url from 'url';
 
 import github from '../../../../../src/server/routes/github';
 import { conf } from '../../../../../src/server/helpers/config.js';
@@ -785,121 +784,6 @@ describe('The GitHub API endpoint', () => {
           .set('X-CSRF-Token', 'blah')
           .send({ owner: 'anowner', name: 'aname' })
           .expect(hasPayloadCode('github-error-other'))
-          .end(done);
-      });
-    });
-  });
-
-  describe('redirect to new file route', () => {
-    context('when repository lookup fails', () => {
-      beforeEach(() => {
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anowner/aname')
-          .reply(500);
-      });
-
-      afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('redirects to /:owner/:name/new/master', (done) => {
-        supertest(app)
-          .get('/github/repos/anowner/aname/new')
-          .query({ filename: 'snap/snapcraft.yaml', value: 'test' })
-          .expect(302)
-          .expect((res) => {
-            expect(url.parse(res.headers.location, true)).toMatch({
-              protocol: 'https:',
-              host: 'github.com',
-              pathname: '/anowner/aname/new/master',
-              query: { filename: 'snap/snapcraft.yaml', value: 'test' }
-            });
-          })
-          .end(done);
-      });
-    });
-
-    context('when repository lookup succeeds', () => {
-      beforeEach(() => {
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anowner/aname')
-          .reply(200, { default_branch: 'dev' });
-      });
-
-      afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('redirects to /:owner/:name/new/:defaultBranch', (done) => {
-        supertest(app)
-          .get('/github/repos/anowner/aname/new')
-          .query({ filename: 'snap/snapcraft.yaml', value: 'test' })
-          .expect(302)
-          .expect((res) => {
-            expect(url.parse(res.headers.location, true)).toMatch({
-              protocol: 'https:',
-              host: 'github.com',
-              pathname: '/anowner/aname/new/dev',
-              query: { filename: 'snap/snapcraft.yaml', value: 'test' }
-            });
-          })
-          .end(done);
-      });
-    });
-  });
-
-  describe('redirect to edit file route', () => {
-    context('when repository lookup fails', () => {
-      beforeEach(() => {
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anowner/aname')
-          .reply(500);
-      });
-
-      afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('redirects to /:owner/:name/edit/master/:filename', (done) => {
-        supertest(app)
-          .get('/github/repos/anowner/aname/edit')
-          .query({ filename: 'snap/snapcraft.yaml' })
-          .expect(302)
-          .expect((res) => {
-            expect(url.parse(res.headers.location, true)).toMatch({
-              protocol: 'https:',
-              host: 'github.com',
-              pathname: '/anowner/aname/edit/master/snap/snapcraft.yaml',
-            });
-          })
-          .end(done);
-      });
-    });
-
-    context('when repository lookup succeeds', () => {
-      beforeEach(() => {
-        nock(conf.get('GITHUB_API_ENDPOINT'))
-          .get('/repos/anowner/aname')
-          .reply(200, { default_branch: 'dev' });
-      });
-
-      afterEach(() => {
-        nock.cleanAll();
-      });
-
-      it('redirects to /:owner/:name/edit/:defaultBranch/' +
-         ':filename', (done) => {
-        supertest(app)
-          .get('/github/repos/anowner/aname/edit')
-          .query({ filename: 'snap/snapcraft.yaml' })
-          .expect(302)
-          .expect((res) => {
-            expect(url.parse(res.headers.location, true)).toMatch({
-              protocol: 'https:',
-              host: 'github.com',
-              pathname: '/anowner/aname/edit/dev/snap/snapcraft.yaml'
-            });
-          })
           .end(done);
       });
     });

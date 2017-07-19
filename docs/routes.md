@@ -202,17 +202,6 @@ snap name, if any.
       }
     }
 
-### Editing files
-
-These routes redirect to the appropriate GitHub URL to create or edit a file
-in the default branch of the repository:
-
-    GET /api/github/repos/:owner/:name/new?filename=:filename&value=:value
-    Cookie: <session cookie>
-
-    GET /api/github/repos/:owner/:name/edit?filename=:filename
-    Cookie: <session cookie>
-
 ### Getting snapcraft.yaml
 
 To get a parsed version of the `snapcraft.yaml` file in a GitHub repository:

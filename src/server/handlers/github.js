@@ -260,48 +260,28 @@ export const createWebhook = async (req, res) => {
   }
 };
 
-const getDefaultBranch = async (owner, name, token) => {
+// memcached cache id helper
+export const getDefaultBranchCacheId = (repositoryUrl) => `default_branch:${repositoryUrl}`;
+
+export const getDefaultBranch = async (repositoryUrl, token) => {
+  const { owner, name } = parseGitHubRepoUrl(repositoryUrl);
+  const cacheId = getDefaultBranchCacheId(repositoryUrl);
+
+  try {
+    const result = await getMemcached().get(cacheId);
+    if (result !== undefined) {
+      return result;
+    }
+  } catch (error) {
+    logger.error(`Error getting ${cacheId} from memcached: ${error}`);
+  }
+
   const response = await requestGitHub.get(`/repos/${owner}/${name}`, {
     token, json: true
   });
-  if (response.statusCode !== 200) {
-    // Since this is used in handlers that are expected to redirect (which
-    // is less effort for the client), try to send the user somewhere that
-    // stands a chance of being sensible.
-    return 'master';
-  }
+  await checkGitHubStatus(response);
+  await getMemcached().set(cacheId, response.body.default_branch, 3600);
   return response.body.default_branch;
-};
-
-export const redirectNewFile = async (req, res) => {
-  if (!req.session || !req.session.token) {
-    return res.status(401).send(RESPONSE_AUTHENTICATION_FAILED);
-  }
-
-  const { owner, name } = req.params;
-  const defaultBranch = await getDefaultBranch(owner, name, req.session.token);
-  const targetUrl = url.format({
-    protocol: 'https:',
-    host: 'github.com',
-    pathname: `/${owner}/${name}/new/${defaultBranch}`,
-    query: req.query
-  });
-  res.redirect(targetUrl);
-};
-
-export const redirectEditFile = async (req, res) => {
-  if (!req.session || !req.session.token) {
-    return res.status(401).send(RESPONSE_AUTHENTICATION_FAILED);
-  }
-
-  const { owner, name } = req.params;
-  const defaultBranch = await getDefaultBranch(owner, name, req.session.token);
-  const targetUrl = url.format({
-    protocol: 'https:',
-    host: 'github.com',
-    pathname: `/${owner}/${name}/edit/${defaultBranch}/${req.query.filename}`
-  });
-  res.redirect(targetUrl);
 };
 
 const getRequest = (owner, name, token, secret) => {

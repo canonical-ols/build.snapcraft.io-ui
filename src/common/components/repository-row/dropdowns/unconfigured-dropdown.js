@@ -1,7 +1,6 @@
-import qs from 'qs';
 import React, { PropTypes } from 'react';
+import url from 'url';
 
-import { conf } from '../../../helpers/config';
 import { parseGitHubRepoUrl } from '../../../helpers/github-url';
 
 import { Row, Data, Dropdown } from '../../vanilla/table-interactive';
@@ -10,16 +9,22 @@ import templateYaml from './template-yaml.js';
 
 import styles from './dropdowns.css';
 
-const BASE_URL = conf.get('BASE_URL');
 const LEARN_THE_BASICS_LINK = 'https://snapcraft.io/docs/build-snaps/your-first-snap';
 const INSTALL_IT_LINK = 'https://snapcraft.io/create/';
 
 const getTemplateUrl = (snap) => {
-  const { owner, name } = parseGitHubRepoUrl(snap.gitRepoUrl);
-  return `${BASE_URL}/api/github/repos/${owner}/${name}/new?` + qs.stringify({
-    filename: 'snap/snapcraft.yaml',
-    value: templateYaml
+  const { fullName } = parseGitHubRepoUrl(snap.gitRepoUrl);
+  const templateUrl = url.format({
+    protocol: 'https:',
+    host: 'github.com',
+    pathname: `${fullName}/new/${snap.gitBranch}`,
+    query: {
+      'filename': 'snap/snapcraft.yaml',
+      'value': templateYaml
+    }
   });
+
+  return templateUrl;
 };
 
 const UnconfiguredDropdown = (props) => {
@@ -70,7 +75,8 @@ const UnconfiguredDropdown = (props) => {
 
 UnconfiguredDropdown.propTypes = {
   snap: PropTypes.shape({
-    gitRepoUrl: PropTypes.string
+    gitRepoUrl: PropTypes.string,
+    gitBranch: PropTypes.string
   })
 };
 
