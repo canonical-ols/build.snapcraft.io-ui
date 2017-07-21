@@ -27,7 +27,7 @@
 .arrow {
   position: absolute;
   top: -1px;
-  right: 270px; /* positioned above link that opens missing repos info */
+  right: 290px; /* positioned above link that opens missing repos info */
 }
 
 /* arrow triangles */
