@@ -6,7 +6,7 @@ import Spinner from '../../spinner';
 
 import style from '../../../style/vanilla/css/button.css';
 
-// XXX this additonal spinner styles are needed to support non-vanilla spinner in buttons
+// XXX this additonal styles are needed to support non-vanilla spinner and bigger style
 import customStyle from './customButton.css';
 
 function createButtonComponent(Component) {
