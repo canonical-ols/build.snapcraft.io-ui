@@ -49,8 +49,9 @@ class Landing extends Component {
                     </div>
                   )
                   : (
-                    <Anchor href="/auth/authenticate" icon={ octocat } flavour='bigger' appearance='positive' >
+                    <Anchor href="/auth/authenticate" flavour='bigger' appearance='positive' >
                       Set up in minutes
+                      <img className= { styles.icon } src={ octocat } />
                     </Anchor>
                   )
                 }

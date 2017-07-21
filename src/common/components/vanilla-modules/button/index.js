@@ -31,7 +31,7 @@ function createButtonComponent(Component) {
   ButtonComponent.propTypes = {
     isSpinner: PropTypes.bool,
     disabled: PropTypes.bool,
-    children: PropTypes.string,
+    children: PropTypes.node,
     onClick: PropTypes.func,
     appearance: React.PropTypes.oneOf(['positive', 'negative', 'neutral', 'base', 'brand']),
     href: PropTypes.string
