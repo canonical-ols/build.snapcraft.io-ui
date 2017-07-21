@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { Anchor } from '../components/vanilla/button';
+import { Anchor } from '../components/vanilla-modules/button';
 import { HeadingTwo } from '../components/vanilla/heading';
 import { HeadingThree } from '../components/vanilla/heading';
 import { ListWithIcon } from '../components/vanilla/list';
@@ -49,7 +49,7 @@ class Landing extends Component {
                     </div>
                   )
                   : (
-                    <Anchor href="/auth/authenticate" flavour='bigger' appearance='positive' >
+                    <Anchor href="/auth/authenticate" isBigger appearance='positive' >
                       Set up in minutes
                       <img className= { styles.icon } src={ octocat } />
                     </Anchor>
@@ -108,8 +108,9 @@ class Landing extends Component {
           </div>
 
           <div className={ styles.centeredButton }>
-            <Anchor href="/auth/authenticate" icon={ octocat } flavour='bigger'  appearance='positive'>
+            <Anchor href="/auth/authenticate" isBigger appearance='positive'>
               Get started now
+              <img className= { styles.icon } src={ octocat } />
             </Anchor>
           </div>
         </section>

@@ -14,3 +14,9 @@
   left: calc(50% - 10px);
   top: calc(50% - 10px);
 }
+
+.bigger {
+  margin-top: 2.4em;
+  padding: .5em 1.5em;
+  font-size: 1.5em;
+}

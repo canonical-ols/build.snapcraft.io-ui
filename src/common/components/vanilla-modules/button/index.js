@@ -7,29 +7,31 @@ import Spinner from '../../spinner';
 import style from '../../../style/vanilla/css/button.css';
 
 // XXX this additonal spinner styles are needed to support non-vanilla spinner in buttons
-import spinnerStyle from './buttonSpinner.css';
+import customStyle from './customButton.css';
 
 function createButtonComponent(Component) {
   function ButtonComponent(props) {
-    const { appearance='primary', isSpinner=false, ...rest } = props;
+    const { appearance='primary', isBigger=false, isSpinner=false, ...rest } = props;
     const buttonStyle = `p-button--${appearance}`;
     const className = classNames({
       [style[buttonStyle]]: true,
-      [spinnerStyle.hasSpinner]: isSpinner
+      [customStyle.bigger]: isBigger,
+      [customStyle.hasSpinner]: isSpinner
     });
 
     return (
       <Component {...rest} className={ className }>
         { isSpinner &&
-          <span className={ spinnerStyle.spinner }><Spinner light/></span>
+          <span className={ customStyle.spinner }><Spinner light/></span>
         }
-        <span className={spinnerStyle.text}>{ props.children }</span>
+        <span className={ customStyle.text }>{ props.children }</span>
       </Component>
     );
   }
 
   ButtonComponent.propTypes = {
     isSpinner: PropTypes.bool,
+    isBigger: PropTypes.bool,
     disabled: PropTypes.bool,
     children: PropTypes.node,
     onClick: PropTypes.func,
