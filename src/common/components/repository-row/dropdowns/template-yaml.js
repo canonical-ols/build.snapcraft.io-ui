@@ -1,17 +1,16 @@
-export default function templateYaml(name, storeName) {
-  let repoName = name;
-  let nameMsg;
+export default function templateYaml(repoName, storeName) {
+  let name;
 
   // If the snap isn't registed on the store change the first template line
   if (!storeName) {
-    nameMsg = `# After registering a name on build.snapcraft.io, commit an uncommented line:
+    name = `# After registering a name on build.snapcraft.io, commit an uncommented line:
   # name: ${repoName}`;
   } else {
-    nameMsg = `name: ${repoName}`;
+    name = `name: ${repoName}`;
   }
 
   const template = `
-  ${nameMsg}
+  ${name}
   version: '0.1' # just for humans, typically '1.2+git' or '1.3.2'
   summary: Single-line elevator pitch for your amazing snap # 79 char long summary
   description: |
