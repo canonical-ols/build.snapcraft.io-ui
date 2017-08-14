@@ -1,4 +1,4 @@
-export default function templateYaml(repoName, storeName) {
+export default function templateYaml(storeName) {
   let name;
 
   // If the snap isn't registed on the store change the first template line
@@ -6,7 +6,7 @@ export default function templateYaml(repoName, storeName) {
     name = `# After registering a name on build.snapcraft.io, commit an uncommented line:
   # name: registered-name`;
   } else {
-    name = `name: ${repoName}`;
+    name = `name: ${storeName}`;
   }
 
   const template = `
