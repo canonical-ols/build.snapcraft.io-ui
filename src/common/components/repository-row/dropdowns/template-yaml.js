@@ -4,7 +4,7 @@ export default function templateYaml(storeName) {
   // If the snap isn't registed on the store change the first template line
   if (!storeName) {
     name = `# After registering a name on build.snapcraft.io, commit an uncommented line:
-  # name: registered-name`;
+  # name: your-registered-name`;
   } else {
     name = `name: ${storeName}`;
   }
