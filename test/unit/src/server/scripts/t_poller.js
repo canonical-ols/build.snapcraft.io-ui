@@ -27,11 +27,10 @@ describe('Poller script helpers', function() {
     });
 
     context('when there are no repositories', function() {
-      let lock;
       it('does nothing and returns the iteration lock', async () => {
         let checker = sinon.spy();
         let builder = sinon.spy();
-        lock = await pollRepositories(checker, builder);
+        const lock = await pollRepositories(checker, builder);
         expect(checker.callCount).toBe(0);
         expect(builder.callCount).toBe(0);
         const AsyncLock = require('async-lock');
