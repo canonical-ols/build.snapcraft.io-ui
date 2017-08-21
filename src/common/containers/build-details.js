@@ -27,6 +27,8 @@ class BuildDetails extends Component {
     const { error, isFetching } = this.props.snapBuilds;
 
     const buildFailed = (build.statusMessage === 'Failed to build');
+    const buildFailedToUpload = (build.storeUploadStatus === 'Failed to upload');
+
     let helpBox;
 
     if (buildFailed) {
@@ -101,6 +103,13 @@ class BuildDetails extends Component {
               </Body>
             </Table>
             <div className={ styles.strip }>
+              {
+                buildFailedToUpload &&
+                <div>
+                  <HeadingThree>Build failed to release</HeadingThree>
+                  <Message status='error'>{ build.storeUploadErrorMessage }</Message>
+                </div>
+              }
               <HeadingThree>Build log</HeadingThree>
               <BuildLog logUrl={build.buildLogUrl} />
             </div>
