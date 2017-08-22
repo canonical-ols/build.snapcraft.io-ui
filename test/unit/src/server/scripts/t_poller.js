@@ -1,11 +1,11 @@
 import expect from 'expect';
+import moment from 'moment';
 import nock from 'nock';
 import sinon from 'sinon';
 
 import { conf } from '../../../../../src/server/helpers/config';
 import db from '../../../../../src/server/db';
 import {
-  buildSnapRepository,
   checkSnapRepository,
   extractPartsToPoll,
   pollRepositories,
@@ -20,34 +20,37 @@ describe('Poller script helpers', function() {
   });
 
   describe('pollRepositories', function() {
+    let db_user;
 
-    beforeEach(async () => {
-      await db.model('Repository').query().truncate();
-      await db.model('GitHubUser').query().del();
-    });
-
-    context('when there are no repositories', function() {
-      it('does nothing and returns the iteration lock', async () => {
-        let checker = sinon.spy();
-        let builder = sinon.spy();
-        const lock = await pollRepositories(checker, builder);
-        expect(checker.callCount).toBe(0);
-        expect(builder.callCount).toBe(0);
-        const AsyncLock = require('async-lock');
-        expect(lock).toBeA(AsyncLock);
-      });
-    });
-
-    context('when the repository has no name in snapcraft.yaml', function() {
-      it('gets skipped', async () => {
-        await db.transaction(async (trx) => {
-          const db_user = db.model('GitHubUser').forge({
+    beforeEach(() => {
+      return Promise.all([
+        db.model('Repository').query().truncate(),
+        db.model('GitHubUser').query().del(),
+        db.transaction(async (trx) => {
+          db_user = db.model('GitHubUser').forge({
             github_id: 1234,
             name: null,
             login: 'person',
             last_login_at: new Date()
           });
           await db_user.save({}, { transacting: trx });
+        })
+      ]);
+    });
+
+    context('when there are no repositories', function() {
+      it('does nothing, returns no results', async () => {
+        let checker = sinon.spy();
+        const results = await pollRepositories(checker);
+        expect(checker.callCount).toBe(0);
+        expect(results).toBeA('array');
+        expect(results.length).toBe(0);
+      });
+    });
+
+    context('when the repository has no name in snapcraft.yaml', function() {
+      it('gets skipped', async () => {
+        await db.transaction(async (trx) => {
           const db_repo = db.model('Repository').forge({
             owner: 'anowner',
             name: 'aname',
@@ -58,23 +61,14 @@ describe('Poller script helpers', function() {
           await db_repo.save({}, { transacting: trx });
         });
         let checker = sinon.spy();
-        let builder = sinon.spy();
-        await pollRepositories(checker, builder);
+        await pollRepositories(checker);
         expect(checker.callCount).toBe(0);
-        expect(builder.callCount).toBe(0);
       });
     });
 
     context('when the repository has no name registered in the store', function() {
       it('gets skipped', async () => {
         await db.transaction(async (trx) => {
-          const db_user = db.model('GitHubUser').forge({
-            github_id: 1234,
-            name: null,
-            login: 'person',
-            last_login_at: new Date()
-          });
-          await db_user.save({}, { transacting: trx });
           const db_repo = db.model('Repository').forge({
             owner: 'anowner',
             name: 'aname',
@@ -85,23 +79,14 @@ describe('Poller script helpers', function() {
           await db_repo.save({}, { transacting: trx });
         });
         let checker = sinon.spy();
-        let builder = sinon.spy();
-        await pollRepositories(checker, builder);
+        await pollRepositories(checker);
         expect(checker.callCount).toBe(0);
-        expect(builder.callCount).toBe(0);
       });
     });
 
     context('when the repository snapcraft name does not match the one in the store', function() {
       it('gets skipped', async () => {
         await db.transaction(async (trx) => {
-          const db_user = db.model('GitHubUser').forge({
-            github_id: 1234,
-            name: null,
-            login: 'person',
-            last_login_at: new Date()
-          });
-          await db_user.save({}, { transacting: trx });
           const db_repo = db.model('Repository').forge({
             owner: 'anowner',
             name: 'aname',
@@ -112,67 +97,59 @@ describe('Poller script helpers', function() {
           await db_repo.save({}, { transacting: trx });
         });
         let checker = sinon.spy();
-        let builder = sinon.spy();
-        await pollRepositories(checker, builder);
+        await pollRepositories(checker);
         expect(checker.callCount).toBe(0);
-        expect(builder.callCount).toBe(0);
       });
     });
 
-    context('when there are repositories with no changes', function() {
+    context('when the repository has no changes', function() {
+      const LP_API_URL = conf.get('LP_API_URL');
+      const LP_API_USERNAME = conf.get('LP_API_USERNAME');
+      let lp;
+
+      beforeEach(() => {
+        lp = nock(LP_API_URL)
+          .defaultReplyHeaders({ 'Content-Type': 'application/json' });
+        lp.get('/devel/+snaps')
+          .query({ 'ws.op': 'findByURL', url: 'https://github.com/anowner/aname' })
+          .reply(200, [{
+            owner_link: `${LP_API_URL}/devel/~${LP_API_USERNAME}`,
+            self_link: `${LP_API_URL}/devel/~${LP_API_USERNAME}/+snap/a_snap`,
+            builds_collection_link: `${LP_API_URL}/devel/~${LP_API_USERNAME}/+snap/a_snap/builds`,
+            auto_build: true
+          }]);
+        return db.transaction(async (trx) => {
+          const db_repo = db.model('Repository').forge({
+            owner: 'anowner',
+            name: 'aname',
+            snapcraft_name: 'foo',
+            store_name: 'foo',
+            registrant_id: db_user.get('id')
+          });
+          await db_repo.save({}, { transacting: trx });
+        });
+      });
+
+      afterEach(() => {
+        lp.done();
+      });
+
       it('gets checked, but not built', async () => {
-        await db.transaction(async (trx) => {
-          const db_user = db.model('GitHubUser').forge({
-            github_id: 1234,
-            name: null,
-            login: 'person',
-            last_login_at: new Date()
+        const threshold = conf.get('BUILD_TRIGGER_THRESHOLD');
+        const since = moment().utc().subtract(threshold + 1, 'hours');
+        lp.get(`/devel/~${LP_API_USERNAME}/+snap/a_snap/builds`)
+          .query({ 'ws.start': '0', 'ws.size': '1' })
+          .reply(200, {
+            entries: [{
+              datebuilt: since.format()
+            }]
           });
-          await db_user.save({}, { transacting: trx });
-          const db_repo = db.model('Repository').forge({
-            owner: 'anowner',
-            name: 'aname',
-            snapcraft_name: 'foo',
-            store_name: 'foo',
-            registrant_id: db_user.get('id')
-          });
-          await db_repo.save({}, { transacting: trx });
-        });
-        let checker = sinon.stub().returns(false);
-        let builder = sinon.spy();
-        await pollRepositories(checker, builder);
-        expect(checker.callCount).toBe(1);
-        expect(checker.calledWithMatch('anowner', 'aname')).toBe(true);
-        expect(builder.callCount).toBe(0);
-      });
-    });
 
-    context('when there are repositories with changes', function() {
-      it('gets built', async () => {
-        await db.transaction(async (trx) => {
-          const db_user = db.model('GitHubUser').forge({
-            github_id: 1234,
-            name: null,
-            login: 'person',
-            last_login_at: new Date()
-          });
-          await db_user.save({}, { transacting: trx });
-          const db_repo = db.model('Repository').forge({
-            owner: 'anowner',
-            name: 'aname',
-            snapcraft_name: 'foo',
-            store_name: 'foo',
-            registrant_id: db_user.get('id')
-          });
-          await db_repo.save({}, { transacting: trx });
-        });
-        let checker = sinon.stub().returns(true);
-        let builder = sinon.spy();
-        await pollRepositories(checker, builder);
+        let checker = sinon.stub().returns(false);
+        await pollRepositories(checker);
         expect(checker.callCount).toBe(1);
         expect(checker.calledWithMatch('anowner', 'aname')).toBe(true);
-        expect(builder.callCount).toBe(1);
-        expect(builder.calledWith('anowner', 'aname')).toBe(true);
+        expect(checker.getCall(0).args[2].format()).toBe(since.milliseconds(0).format());
       });
     });
 
@@ -279,8 +256,9 @@ describe('Poller script helpers', function() {
           .reply(200, { commit: { commit: { committer: { date: 1501762400001 } } } });
       });
 
-      it('returns true', async function() {
-        const needs_build = await checkSnapRepository('anowner', 'aname', 1501762400000);
+      it('returns true', async () => {
+        const since = moment(1501762400000);
+        const needs_build = await checkSnapRepository('anowner', 'aname', since);
         expect(needs_build).toBe(true);
       });
     });
@@ -306,8 +284,9 @@ describe('Poller script helpers', function() {
           .reply(200, { commit: { commit: { committer: { date: 1501762400001 } } } });
       });
 
-      it('returns true', async function() {
-        const needs_build = await checkSnapRepository('anowner', 'aname', 1501762400000);
+      it('returns true', async () => {
+        const since = moment(1501762400000);
+        const needs_build = await checkSnapRepository('anowner', 'aname', since);
         expect(needs_build).toBe(true);
       });
     });
@@ -333,8 +312,9 @@ describe('Poller script helpers', function() {
           .reply(200, { commit: { commit: { committer: { date: 1501762300000 } } } });
       });
 
-      it('returns false', async function() {
-        const needs_build = await checkSnapRepository('anowner', 'aname', 1501762400000);
+      it('returns false', async () => {
+        const since = moment(1501762400000);
+        const needs_build = await checkSnapRepository('anowner', 'aname', since);
         expect(needs_build).toBe(false);
       });
     });
@@ -347,8 +327,9 @@ describe('Poller script helpers', function() {
           .reply(404, {});
       });
 
-      it('returns false', async function() {
-        const needs_build = await checkSnapRepository('anowner', 'aname', 1501762400000);
+      it('returns false', async () => {
+        const since = moment(1501762400000);
+        const needs_build = await checkSnapRepository('anowner', 'aname', since);
         expect(needs_build).toBe(false);
       });
     });
@@ -367,68 +348,10 @@ describe('Poller script helpers', function() {
           .reply(404, {});
       });
 
-      it('returns false', async function() {
-        const needs_build = await checkSnapRepository('anowner', 'aname', 1501762400000);
+      it('returns false', async () => {
+        const since = moment(1501762400000);
+        const needs_build = await checkSnapRepository('anowner', 'aname', since);
         expect(needs_build).toBe(false);
-      });
-    });
-
-  });
-
-  describe('buildSnapRepository', function() {
-    const LP_API_URL = conf.get('LP_API_URL');
-    const LP_API_USERNAME = conf.get('LP_API_USERNAME');
-    let lp, db_repo;
-
-    beforeEach(async () => {
-      await db.model('Repository').query().truncate();
-      await db.model('GitHubUser').query().del();
-      await db.transaction(async (trx) => {
-        const db_user = db.model('GitHubUser').forge({
-          github_id: 1234,
-          name: null,
-          login: 'person',
-          last_login_at: new Date()
-        });
-        await db_user.save({}, { transacting: trx });
-        db_repo = db.model('Repository').forge({
-          owner: 'anowner',
-          name: 'aname',
-          snapcraft_name: 'foo',
-          store_name: 'foo',
-          registrant_id: db_user.get('id')
-        });
-        await db_repo.save({}, { transacting: trx });
-      });
-      lp = nock(LP_API_URL)
-        .defaultReplyHeaders({ 'Content-Type': 'application/json' });
-    });
-
-    afterEach(function() {
-      lp.done();
-    });
-
-    context('when LP is properly setup', function() {
-
-      it('the snap is build', async () => {
-        lp.get('/devel/+snaps')
-          .query({ 'ws.op': 'findByURL', url: 'https://github.com/anowner/aname' })
-          .reply(200, [{
-            self_link: `${LP_API_URL}/devel/a_snap`,
-            owner_link: `/~${LP_API_USERNAME}`,
-            auto_build: true
-          }]);
-        lp.post('/devel/a_snap')
-          .reply(200, {});
-
-        expect(db_repo.get('polled_at')).toBe(undefined);
-        await buildSnapRepository('anowner', 'aname');
-        await db_repo.refresh();
-        // TODO: persuade sqlite + knex + bookshelf to deal with datetime
-        // column properly, like postgres would do. There we can check it
-        // `.toBeA(Date)`. Also don't feel tempted to mock the clock here
-        // (sinon.useFakeTimers()) it freezes LP promises and nothing works.
-        expect(db_repo.get('polled_at')).toNotBe(undefined);
       });
     });
 

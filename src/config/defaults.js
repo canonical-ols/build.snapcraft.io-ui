@@ -13,6 +13,7 @@ export default {
   STORE_DEVPORTAL_URL: 'https://dashboard.snapcraft.io/dev',
   STORE_ALLOWED_CHANNELS: ['edge'],
   STORE_PACKAGE_UPLOAD_REQUEST_LIFETIME: '7200',
+  BUILD_TRIGGER_THRESHOLD: 24,
   GITHUB_API_ENDPOINT: 'https://api.github.com',
   GITHUB_AUTH_LOGIN_URL: 'https://github.com/login/oauth/authorize',
   GITHUB_AUTH_VERIFY_URL: 'https://github.com/login/oauth/access_token',
