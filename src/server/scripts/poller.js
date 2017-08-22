@@ -40,21 +40,21 @@ export const pollRepositories = (checker) => {
       const p = pollRepoLock.acquire('PROCESS-REPO-SYNC', async () => {
         const owner = repo.get('owner');
         const name = repo.get('name');
+        const store_name = repo.get('store_name');
+        const snapcraft_name = repo.get('snapcraft_name');
 
-        if (!repo.get('snapcraft_name')) {
+        if (!snapcraft_name) {
           logger.info(`${owner}/${name}: NO NAME IN SNAPCRAFT.YAML`);
           logger.info('==========');
           return;
         }
 
-        if (!repo.get('store_name')) {
+        if (!store_name) {
           logger.info(`${owner}/${name}: NO NAME REGISTERED IN THE STORE`);
           logger.info('==========');
           return;
         }
 
-        const store_name = repo.get('store_name');
-        const snapcraft_name = repo.get('snapcraft_name');
         if (store_name != snapcraft_name) {
           logger.info(`${owner}/${name}: STORE/SNAPCRAFT NAME MISMATCH ` +
                       `(${store_name} != ${snapcraft_name})`);
