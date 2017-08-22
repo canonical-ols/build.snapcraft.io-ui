@@ -27,7 +27,9 @@ class BuildDetails extends Component {
     const { error, isFetching } = this.props.snapBuilds;
 
     const buildFailed = (build.statusMessage === 'Failed to build');
-    const buildFailedToUpload = (build.storeUploadStatus === 'Failed to upload');
+    const buildFailedToUpload = (build.storeUploadStatus === 'Failed to upload'
+                              || build.storeUploadStatus === 'Failed to release to channels');
+    const showBuildUploadErrorMessage = buildFailedToUpload && build.storeUploadErrorMessage;
 
     let helpBox;
 
@@ -104,7 +106,7 @@ class BuildDetails extends Component {
             </Table>
             <div className={ styles.strip }>
               {
-                buildFailedToUpload &&
+                showBuildUploadErrorMessage &&
                 <div>
                   <HeadingThree>Build failed to release</HeadingThree>
                   <Message status='error'>{ build.storeUploadErrorMessage }</Message>
