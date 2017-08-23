@@ -142,14 +142,14 @@ describe('Poller script helpers', function() {
 
       it('gets checked and built if changed', async () => {
         // TODO: Exotic dance to re-import `pollRepositories` with the
-        // `POLLER_REQUEST_BUILD` configuration option enabled.
+        // `POLLER_REQUEST_BUILDS` configuration option enabled.
         const requireWithMockConfig = requireWithMockConfigHelper.bind(
           null,
           path.resolve(__dirname, '../../../../../src/server/scripts/poller'),
           '../helpers/config'
         );
         const pollRepositoriesMock = requireWithMockConfig({
-          POLLER_REQUEST_BUILD: true
+          POLLER_REQUEST_BUILDS: true
         }).pollRepositories;
 
         const threshold = conf.get('POLLER_BUILD_THRESHOLD');
