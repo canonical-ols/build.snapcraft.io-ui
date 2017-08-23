@@ -5,7 +5,6 @@ import Helmet from 'react-helmet';
 import BuildRow from '../components/build-row';
 import { Table, Head, Body, Row, Header } from '../components/vanilla/table-interactive';
 import BuildLog from '../components/build-log';
-import { Message } from '../components/forms';
 import {
   HelpBox,
   HelpInstallSnap,
@@ -15,7 +14,7 @@ import { HeadingOne, HeadingThree } from '../components/vanilla-modules/heading'
 import { IconSpinner } from '../components/vanilla-modules/icons';
 import Breadcrumbs, { BreadcrumbsLink } from '../components/vanilla-modules/breadcrumbs';
 import BetaNotification from '../components/beta-notification';
-
+import Notification from '../components/vanilla-modules/notification';
 import withRepository from './with-repository';
 import withSnapBuilds from './with-snap-builds';
 
@@ -87,7 +86,7 @@ class BuildDetails extends Component {
           Build #{buildId}
         </HeadingOne>
         { error &&
-          <Message status='error'>{ error.message || error }</Message>
+          <Notification appearance='negative' status='error'>{ error.message || error }</Notification>
         }
         { build &&
           <div>
@@ -104,14 +103,14 @@ class BuildDetails extends Component {
                 <BuildRow repository={repository} {...build} />
               </Body>
             </Table>
+            {
+              showBuildUploadErrorMessage &&
+              <div className={ styles.strip }>
+                <HeadingThree>Build failed to release</HeadingThree>
+                <Notification appearance='negative' status='error'>{ build.storeUploadErrorMessage }</Notification>
+              </div>
+            }
             <div className={ styles.strip }>
-              {
-                showBuildUploadErrorMessage &&
-                <div>
-                  <HeadingThree>Build failed to release</HeadingThree>
-                  <Message status='error'>{ build.storeUploadErrorMessage }</Message>
-                </div>
-              }
               <HeadingThree>Build log</HeadingThree>
               <BuildLog logUrl={build.buildLogUrl} />
             </div>
