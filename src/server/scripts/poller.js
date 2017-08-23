@@ -80,21 +80,24 @@ export const pollRepositories = (checker) => {
           const last_built = moment(last_built_at).utc();
           logger.info(`${owner}/${name}: last built in ${last_built.format()}`);
 
-
           // Do not even check for changes if the snap was already built in the
-          // last `BUILD_TRIGGER_THRESHOLD` internal (typically 24h).
-          const threshold = conf.get('BUILD_TRIGGER_THRESHOLD');
+          // last `POLLER_BUILD_THRESHOLD` interval (typically 24h).
+          const threshold = conf.get('POLLER_BUILD_THRESHOLD');
           if (moment().utc().diff(last_built, 'hours', true) <= threshold) {
             logger.info(
-              `${owner}/${name}: Already build in the last ${threshold}h`);
+              `${owner}/${name}: Already built in the last ${threshold}h`);
             logger.info('==========');
             return;
           }
 
           if (await checker(owner, name, last_built)) {
             logger.info(`${owner}/${name}: NEEDSBUILD`);
-            await internalRequestSnapBuilds(snap, owner, name);
-            logger.info(`${owner}/${name}: Builds requested.`);
+            if (conf.get('POLLER_REQUEST_BUILDS')) {
+              await internalRequestSnapBuilds(snap, owner, name);
+              logger.info(`${owner}/${name}: Builds requested.`);
+            } else {
+              logger.info(`${owner}/${name}: Build requesting DISABLED.`);
+            }
           } else {
             logger.info(`${owner}/${name}: UNCHANGED`);
           }
@@ -118,7 +121,7 @@ export const pollRepositories = (checker) => {
 // Consider changes in the repository itself as well as any of the (GitHub)
 // parts source.
 export const checkSnapRepository = async (owner, name, since) => {
-  const token = conf.get('GITHUB_AUTH_CLIENT_TOKEN');
+  const token = conf.get('POLLER_GITHUB_AUTH_TOKEN');
   const repo_url = getGitHubRepoUrl(owner, name);
   if (await new GitSourcePart(repo_url).hasRepoChangedSince(since, token)) {
     logger.info(`The ${owner}/${name} repository has changed.`);
@@ -179,7 +182,7 @@ export class GitSourcePart {
     //       support these.
     // TODO: Not sure if we can support setting tags _and_ branch in the same
     //       part.
-    const gh_repo_prefix = conf.get('GITHUB_REPOSITORY_PREFIX');
+    const gh_repo_prefix = conf.get('POLLER_GITHUB_REPOSITORY_PREFIX');
     if (part.source == undefined) {
       logger.info('Skipping part with no source set.');
     } else if (part.source.startsWith(gh_repo_prefix)) {

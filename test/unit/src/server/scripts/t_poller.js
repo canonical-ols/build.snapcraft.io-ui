@@ -1,6 +1,7 @@
 import expect from 'expect';
 import moment from 'moment';
 import nock from 'nock';
+import path from 'path';
 import sinon from 'sinon';
 
 import { conf } from '../../../../../src/server/helpers/config';
@@ -11,6 +12,7 @@ import {
   pollRepositories,
   GitSourcePart
 } from '../../../../../src/server/scripts/poller';
+import { requireWithMockConfigHelper } from '../../../../helpers';
 
 
 describe('Poller script helpers', function() {
@@ -105,7 +107,7 @@ describe('Poller script helpers', function() {
       });
 
       it('gets skipped if built within the previous built window', async () => {
-        const threshold = conf.get('BUILD_TRIGGER_THRESHOLD');
+        const threshold = conf.get('POLLER_BUILD_THRESHOLD');
         const since = moment().utc().subtract(threshold - 1, 'hours');
         lp.get(`/devel/~${LP_API_USERNAME}/+snap/a_snap/builds`)
           .query({ 'ws.start': '0', 'ws.size': '1' })
@@ -121,7 +123,7 @@ describe('Poller script helpers', function() {
       });
 
       it('gets checked, but not built if not changed', async () => {
-        const threshold = conf.get('BUILD_TRIGGER_THRESHOLD');
+        const threshold = conf.get('POLLER_BUILD_THRESHOLD');
         const since = moment().utc().subtract(threshold + 1, 'hours');
         lp.get(`/devel/~${LP_API_USERNAME}/+snap/a_snap/builds`)
           .query({ 'ws.start': '0', 'ws.size': '1' })
@@ -139,7 +141,18 @@ describe('Poller script helpers', function() {
       });
 
       it('gets checked and built if changed', async () => {
-        const threshold = conf.get('BUILD_TRIGGER_THRESHOLD');
+        // TODO: Exotic dance to re-import `pollRepositories` with the
+        // `POLLER_REQUEST_BUILD` configuration option enabled.
+        const requireWithMockConfig = requireWithMockConfigHelper.bind(
+          null,
+          path.resolve(__dirname, '../../../../../src/server/scripts/poller'),
+          '../helpers/config'
+        );
+        const pollRepositoriesMock = requireWithMockConfig({
+          POLLER_REQUEST_BUILD: true
+        }).pollRepositories;
+
+        const threshold = conf.get('POLLER_BUILD_THRESHOLD');
         const since = moment().utc().subtract(threshold + 1, 'hours');
         lp.get(`/devel/~${LP_API_USERNAME}/+snap/a_snap/builds`)
           .query({ 'ws.start': '0', 'ws.size': '1' })
@@ -152,7 +165,7 @@ describe('Poller script helpers', function() {
           .reply(200, {});
 
         let checker = sinon.stub().returns(true);
-        await pollRepositories(checker);
+        await pollRepositoriesMock(checker);
         expect(checker.callCount).toBe(1);
         expect(checker.calledWithMatch('anowner', 'aname')).toBe(true);
         expect(checker.getCall(0).args[2].format()).toBe(since.milliseconds(0).format());
