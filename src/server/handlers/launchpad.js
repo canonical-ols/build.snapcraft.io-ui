@@ -480,16 +480,9 @@ const internalFindSnaps = async (owner, token) => {
     }
     return snaps;
   } catch (error) {
-    // At least for the moment, we just wrap the error we get from
-    // Launchpad.
-    const text = await error.response.text();
-    throw new PreparedError(error.response.status, {
-      status: 'error',
-      payload: {
-        code: 'lp-error',
-        message: text
-      }
-    });
+    // At least for the moment, we just throw the error and let it be caught
+    // later and sent in the response
+    throw error;
   }
 };
 
