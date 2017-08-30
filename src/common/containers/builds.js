@@ -16,10 +16,26 @@ import withRepository from './with-repository';
 import withSnapBuilds from './with-snap-builds';
 import { fetchSnapStableRelease } from '../actions/snaps';
 import { requestBuilds } from '../actions/snap-builds';
+import { isBuildInProgress } from '../helpers/snap-builds';
 
 import styles from './container.css';
 
 export class Builds extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      buildTriggered: false,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // if builds stopped fetching after they were triggered, reset build button status
+    if (this.props.snapBuilds.isFetching && !nextProps.snapBuilds.isFetching) {
+      this.setState({ buildTriggered: false });
+    }
+  }
+
   componentWillMount() {
     const { url } = this.props.repository;
     const { snap } = this.props;
@@ -91,7 +107,12 @@ export class Builds extends Component {
     return false;
   }
 
+  hasBuildInProgress() {
+    return this.props.snapBuilds.builds && this.props.snapBuilds.builds.some(build => isBuildInProgress(build));
+  }
+
   onBuildNowClick() {
+    this.setState({ buildTriggered: true });
     this.props.requestSnapBuilds(this.props.repository.url);
   }
 
@@ -101,6 +122,7 @@ export class Builds extends Component {
 
     // only show spinner when data is loading for the first time
     const isLoading = isFetching && !success;
+    const isBuilding = this.hasBuildInProgress() || this.state.buildTriggered;
 
     return (
       <div className={ styles.container }>
@@ -128,6 +150,8 @@ export class Builds extends Component {
           <div className={styles.buildOnDemand}>
             <Button
               onClick={this.onBuildNowClick.bind(this)}
+              isSpinner={isBuilding}
+              disabled={isBuilding}
             >
               Build now
             </Button>
