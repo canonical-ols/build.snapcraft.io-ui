@@ -10,10 +10,12 @@ import { HeadingOne } from '../components/vanilla-modules/heading';
 import Badge from '../components/badge';
 import Breadcrumbs, { BreadcrumbsLink } from '../components/vanilla-modules/breadcrumbs';
 import BetaNotification from '../components/beta-notification';
+import Button from '../components/vanilla-modules/button';
 
 import withRepository from './with-repository';
 import withSnapBuilds from './with-snap-builds';
 import { fetchSnapStableRelease } from '../actions/snaps';
+import { requestBuilds } from '../actions/snap-builds';
 
 import styles from './container.css';
 
@@ -72,6 +74,27 @@ export class Builds extends Component {
     }
   }
 
+  isRepositoryOwner() {
+    const user = this.props.user;
+    const owner = this.props.repository.owner;
+
+    // if user is not logged in
+    if (!user) {
+      return false;
+    }
+
+    // if user owns of the repo or one of their orgs owns the repo
+    if (user.login === owner || user.orgs.some(o => o.login === owner)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  onBuildNowClick() {
+    this.props.requestSnapBuilds(this.props.repository.url);
+  }
+
   render() {
     const { user, repository } = this.props;
     let { isFetching, success, error } = this.props.snapBuilds;
@@ -99,6 +122,17 @@ export class Builds extends Component {
           <Badge fullName={repository.fullName} />
         </div>
         <BuildHistory repository={repository} />
+        {/* TODO: only show if user is owner of the repo */}
+        {/* TODO: disable when building? */}
+        { this.isRepositoryOwner() &&
+          <div className={styles.buildOnDemand}>
+            <Button
+              onClick={this.onBuildNowClick.bind(this)}
+            >
+              Build now
+            </Button>
+          </div>
+        }
         { isLoading &&
           <IconSpinner />
         }
@@ -116,7 +150,8 @@ export class Builds extends Component {
 
 Builds.propTypes = {
   user: PropTypes.shape({
-    login: PropTypes.string
+    login: PropTypes.string,
+    orgs: PropTypes.array
   }),
   repository: PropTypes.shape({
     owner: PropTypes.string.isRequired,
@@ -138,7 +173,8 @@ Builds.propTypes = {
     success: PropTypes.bool,
     error: PropTypes.object
   }),
-  fetchSnapStableRelease: PropTypes.func
+  fetchSnapStableRelease: PropTypes.func,
+  requestSnapBuilds: PropTypes.func
 };
 
 const mapStateToProps = (state) => {
@@ -149,7 +185,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchSnapStableRelease: (url, name) => dispatch(fetchSnapStableRelease(url, name))
+    fetchSnapStableRelease: (url, name) => dispatch(fetchSnapStableRelease(url, name)),
+    requestSnapBuilds: (url) => dispatch(requestBuilds(url))
   };
 };
 
