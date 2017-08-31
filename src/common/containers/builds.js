@@ -2,11 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
-import BuildHistory from '../components/build-history';
+// TODO: remove BuildHistory component as it is not used anywhere anymore
+import BuildsList from '../components/builds-list';
 import Notification from '../components/vanilla-modules/notification';
 import { IconSpinner } from '../components/vanilla-modules/icons';
 import { HelpBox, HelpCustom, HelpInstallSnap } from '../components/help';
-import { HeadingOne } from '../components/vanilla-modules/heading';
+import { HeadingOne, HeadingFive } from '../components/vanilla-modules/heading';
 import Badge from '../components/badge';
 import Breadcrumbs, { BreadcrumbsLink } from '../components/vanilla-modules/breadcrumbs';
 import BetaNotification from '../components/beta-notification';
@@ -45,6 +46,15 @@ export class Builds extends Component {
     }
   }
 
+  renderBuilds(repo, builds, heading) {
+    return (
+      <div>
+        <HeadingFive>{heading}</HeadingFive>
+        <BuildsList repository={repo} builds={builds} />
+      </div>
+    );
+  }
+
   renderHelpBoxes() {
     const { snap } = this.props;
     const { builds } = this.props.snapBuilds;
@@ -52,7 +62,7 @@ export class Builds extends Component {
 
     if (snap && snap.storeName && isPublished) {
       return (
-        <div className={styles.row}>
+        <div className={`${styles.row} ${styles.strip}`}>
           <div className={styles.rowItem}>
             <HelpBox isFlex>
               <HelpInstallSnap
@@ -111,6 +121,18 @@ export class Builds extends Component {
     return this.props.snapBuilds.builds && this.props.snapBuilds.builds.some(build => isBuildInProgress(build));
   }
 
+  getLatestAndPreviousBuilds() {
+    return this.props.snapBuilds.builds.reduce((builds, build) => {
+      let { latest, previous } = builds;
+      if (latest.filter(b => b.architecture === build.architecture).length === 0) {
+        latest.push(build);
+      } else {
+        previous.push(build);
+      }
+      return { latest, previous };
+    }, { latest: [], previous: [] });
+  }
+
   onBuildNowClick() {
     this.setState({ buildTriggered: true });
     this.props.requestSnapBuilds(this.props.repository.url);
@@ -123,6 +145,8 @@ export class Builds extends Component {
     // only show spinner when data is loading for the first time
     const isLoading = isFetching && !success;
     const isBuilding = this.hasBuildInProgress() || this.state.buildTriggered;
+
+    const { latest, previous } = this.getLatestAndPreviousBuilds();
 
     return (
       <div className={ styles.container }>
@@ -143,9 +167,8 @@ export class Builds extends Component {
           </HeadingOne>
           <Badge fullName={repository.fullName} />
         </div>
-        <BuildHistory repository={repository} />
-        {/* TODO: only show if user is owner of the repo */}
-        {/* TODO: disable when building? */}
+        {/* TODO: show message if there are no builds */}
+        { this.renderBuilds(repository, latest, 'Latest builds') }
         { this.isRepositoryOwner() &&
           <div className={styles.buildOnDemand}>
             <Button
@@ -166,6 +189,7 @@ export class Builds extends Component {
           </div>
         }
         { this.renderHelpBoxes() }
+        { !!previous.length && this.renderBuilds(repository, previous, 'Previous builds') }
       </div>
     );
   }
@@ -185,7 +209,7 @@ Builds.propTypes = {
   }).isRequired,
   snap: PropTypes.shape({
     selfLink: PropTypes.string.isRequired,
-    storeName: PropTypes.string.isRequired
+    storeName: PropTypes.string
   }),
   snapBuilds: PropTypes.shape({
     isFetching: PropTypes.bool,

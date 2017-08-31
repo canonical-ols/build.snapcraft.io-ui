@@ -1,0 +1,56 @@
+import React, { PropTypes } from 'react';
+
+import BuildRow from '../build-row';
+import { Table, Head, Body, Row, Header } from '../vanilla/table-interactive';
+import Notification from '../vanilla-modules/notification';
+
+import styles from './buildsList.css';
+
+export const BuildsList = (props) => {
+  const { repository, builds } = props;
+
+  const hasBuilds = (builds && builds.length > 0);
+
+  if (!hasBuilds) {
+    return (
+      <div className={styles.notificationWrapper}>
+        <Notification status='information' appearance="information">This snap has not been built yet.</Notification>
+      </div>
+    );
+  }
+
+  const buildRows = builds
+    .sort((a,b) => ((+b.buildId) - (+a.buildId)))
+    .map((build) => (
+      <BuildRow key={build.buildId} {...build} repository={repository} />
+    ));
+
+  return (
+    <Table>
+      <Head>
+        <Row>
+          <Header col="20">Number</Header>
+          <Header col="20">Architecture</Header>
+          <Header col="20">Duration</Header>
+          <Header col="40">Result</Header>
+        </Row>
+      </Head>
+      <Body>
+        { buildRows }
+      </Body>
+    </Table>
+  );
+};
+
+BuildsList.propTypes = {
+  repository: PropTypes.shape({
+    owner: PropTypes.string,
+    name: PropTypes.string,
+    fullName: PropTypes.string
+  }),
+  builds: React.PropTypes.arrayOf(React.PropTypes.object)
+};
+
+
+
+export default BuildsList;
