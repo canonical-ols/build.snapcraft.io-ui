@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
-// TODO: remove BuildHistory component as it is not used anywhere anymore
 import BuildsList from '../components/builds-list';
 import Notification from '../components/vanilla-modules/notification';
 import { IconSpinner } from '../components/vanilla-modules/icons';
