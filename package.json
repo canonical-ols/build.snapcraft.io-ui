@@ -135,7 +135,7 @@
     "style-loader": "^0.13.1",
     "supertest": "^2.0.0",
     "url-loader": "^0.5.7",
-    "vanilla-framework": "git+https://git@github.com/vanilla-framework/vanilla-framework.git#e3b7034a1caf39e4ed87b9481d5fe0e9913c2b0f",
+    "vanilla-framework": "^1.5.0",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.0"
