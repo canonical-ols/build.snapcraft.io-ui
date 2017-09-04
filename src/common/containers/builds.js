@@ -172,10 +172,9 @@ export class Builds extends Component {
           <div className={styles.buildOnDemand}>
             <Button
               onClick={this.onBuildNowClick.bind(this)}
-              isSpinner={isBuilding}
               disabled={isBuilding}
             >
-              Build now
+              Build manually now
             </Button>
           </div>
         }
