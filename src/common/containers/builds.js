@@ -164,7 +164,7 @@ export class Builds extends Component {
           <HeadingOne>
             {repository.fullName}
           </HeadingOne>
-          <Badge fullName={repository.fullName} buildStatus={latest[0].statusMessage}/>
+          <Badge fullName={repository.fullName} buildStatus={latest[0] ? latest[0].statusMessage : null}/>
         </div>
         {/* TODO: show message if there are no builds */}
         { this.renderBuilds(repository, latest, 'Latest builds') }
