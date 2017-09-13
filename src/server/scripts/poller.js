@@ -34,6 +34,11 @@ export const pollRepositories = (checker) => {
   let pollRepoLock = new AsyncLock();
   let locked_promises = [];
 
+  let poller_request_builds = false;
+  try {
+    poller_request_builds = JSON.parse(conf.get('POLLER_REQUEST_BUILDS'));
+  } catch (e) {}
+
   return db.model('Repository').fetchAll().then(function (results) {
     logger.info(`Iterating over ${results.length} repositories.`);
     results.models.forEach((repo) => {
@@ -82,7 +87,7 @@ export const pollRepositories = (checker) => {
 
           // Do not even check for changes if the snap was already built in the
           // last `POLLER_BUILD_THRESHOLD` interval (typically 24h).
-          const threshold = conf.get('POLLER_BUILD_THRESHOLD');
+          const threshold = parseInt(conf.get('POLLER_BUILD_THRESHOLD'));
           if (moment().utc().diff(last_built, 'hours', true) <= threshold) {
             logger.info(
               `${owner}/${name}: Already built in the last ${threshold}h`);
@@ -92,7 +97,7 @@ export const pollRepositories = (checker) => {
 
           if (await checker(owner, name, last_built)) {
             logger.info(`${owner}/${name}: NEEDSBUILD`);
-            if (conf.get('POLLER_REQUEST_BUILDS')) {
+            if (poller_request_builds) {
               await internalRequestSnapBuilds(snap, owner, name);
               logger.info(`${owner}/${name}: Builds requested.`);
             } else {
@@ -110,6 +115,7 @@ export const pollRepositories = (checker) => {
 
       locked_promises.push(p);
     });
+    if (locked_promises.length == 0) { return []; }
     // Wrap all the individual locked promises so chained tasks can actually check
     // for completion, if necessary.
     return Promise.all(locked_promises);
