@@ -89,7 +89,7 @@ export const pollRepositories = (checker) => {
 
           // Do not even check for changes if the snap was already built in the
           // last `POLLER_BUILD_THRESHOLD` interval (typically 24h).
-          const threshold = parseInt(conf.get('POLLER_BUILD_THRESHOLD'));
+          const threshold = parseInt(conf.get('POLLER_BUILD_THRESHOLD'), 10);
           if (moment().utc().diff(last_built, 'hours', true) <= threshold) {
             logger.info(
               `${owner}/${name}: Already built in the last ${threshold}h`);
