@@ -117,7 +117,6 @@ export const pollRepositories = (checker) => {
 
       locked_promises.push(p);
     });
-    if (locked_promises.length == 0) { return []; }
     // Wrap all the individual locked promises so chained tasks can actually check
     // for completion, if necessary.
     return Promise.all(locked_promises);
