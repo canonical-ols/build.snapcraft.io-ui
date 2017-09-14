@@ -37,7 +37,9 @@ export const pollRepositories = (checker) => {
   let poller_request_builds = false;
   try {
     poller_request_builds = JSON.parse(conf.get('POLLER_REQUEST_BUILDS'));
-  } catch (e) {}
+  } catch (e) {
+    logger.error(`Invalid POLLER_REQUEST_BUILDS configuration: ${e}`);
+  }
 
   return db.model('Repository').fetchAll().then(function (results) {
     logger.info(`Iterating over ${results.length} repositories.`);
@@ -108,7 +110,7 @@ export const pollRepositories = (checker) => {
           }
         } catch (e) {
           raven_client.captureException(e);
-          logger.error(`${owner}/${name}: FAILED (${e.message})`);
+          logger.error(`${owner}/${name}: FAILED (${e.message || e})`);
         }
         logger.info('==========');
       });
