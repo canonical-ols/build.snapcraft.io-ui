@@ -141,7 +141,7 @@ def configure(pgsql, cache):
                 'poller_request_builds': poller_request_builds,
                 'poller_build_threshold': poller_build_threshold,
                 'knex_config_path': KNEXFILE_NORMAL},
-               user='root', group='root', perms=0600)
+               owner='root', group='ubuntu', perms=0o640)
 
         # XXX cjwatson 2017-03-08: Set NODE_ENV from here instead of in .env
         # files?  This may make more sense as part of entirely getting rid

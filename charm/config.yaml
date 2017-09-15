@@ -34,7 +34,7 @@ options:
         description: GitHub webhook secret
     poller_github_auth_token:
         type: string
-        description: GitHub auth token to be used exclusively by the poller
+        description: GitHub authorization token to be used exclusively by the poller
     poller_request_builds:
         type: string
         description: set to 'true' in order to allow poller to request builds
