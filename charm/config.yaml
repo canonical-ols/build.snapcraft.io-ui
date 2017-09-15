@@ -37,7 +37,7 @@ options:
         description: GitHub auth token to be used exclusively by the poller
     poller_request_builds:
         type: string
-        description: set to 'true' in other to allow poller to request builds
+        description: set to 'true' in order to allow poller to request builds
         default: "false"
     poller_build_threshold:
         type: string
