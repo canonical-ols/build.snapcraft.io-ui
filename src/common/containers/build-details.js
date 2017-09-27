@@ -37,7 +37,7 @@ class BuildDetails extends Component {
       helpBox = (
         <HelpBox>
           <HelpInstallSnap headline='To debug this build:'>
-            sudo snap install lxd && sudo snap lxd init # if you don’t have LXD already<br/>
+            sudo snap install lxd && sudo lxd init # if you don’t have LXD already<br/>
             sudo snap install --classic --edge snapcraft # if you don’t have snapcraft already<br/>
             <br/>
             git clone {repository.url}<br/>
