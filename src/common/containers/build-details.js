@@ -38,11 +38,12 @@ class BuildDetails extends Component {
         <HelpBox>
           <HelpInstallSnap headline='To debug this build:'>
             sudo snap install lxd && sudo lxd init # if you don’t have LXD already<br/>
+            sudo usermod -a -G lxd $USER && newgrp lxd # if your user is not in the lxd group already<br/>
             sudo snap install --classic --edge snapcraft # if you don’t have snapcraft already<br/>
             <br/>
             git clone {repository.url}<br/>
             cd {repository.name}<br/>
-            sudo snapcraft cleanbuild --debug
+            snapcraft cleanbuild --debug
           </HelpInstallSnap>
         </HelpBox>
       );
