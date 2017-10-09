@@ -55,7 +55,16 @@ const RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS = {
   }
 };
 
-const RESPONSE_GITHUB_NOT_FOUND = {
+// TODO: same in github.js
+const RESPONSE_GITHUB_REPO_NOT_FOUND = {
+  status: 'error',
+  payload: {
+    code: 'github-repository-not-found',
+    message: 'The GitHub repository cannot be found or access not granted to account'
+  }
+};
+
+const RESPONSE_GITHUB_SNAPCRAFT_YAML_NOT_FOUND = {
   status: 'error',
   payload: {
     code: 'github-snapcraft-yaml-not-found',
@@ -137,7 +146,7 @@ const sendError = async (res, error) => {
   res.status(preparedError.status).send(preparedError.body);
 };
 
-export const checkGitHubStatus = (response) => {
+export const checkGitHubStatus = (response, notFoundError = RESPONSE_GITHUB_REPO_NOT_FOUND) => {
   if (response.statusCode !== 200) {
     let body = response.body;
     if (typeof body !== 'object') {
@@ -150,8 +159,8 @@ export const checkGitHubStatus = (response) => {
     }
     switch (body.message) {
       case 'Not Found':
-        // snapcraft.yaml not found
-        throw new PreparedError(404, RESPONSE_GITHUB_NOT_FOUND);
+        // repo or snapcraft.yaml not found
+        throw new PreparedError(404, notFoundError);
       case 'Bad credentials':
         // Authentication failed
         throw new PreparedError(401, RESPONSE_GITHUB_AUTHENTICATION_FAILED);
@@ -205,7 +214,7 @@ const fetchSnapcraftYaml = async (path, owner, name, token) => {
   logger.info(`Fetching ${path} from ${owner}/${name}`);
 
   const response = await requestGitHub.get(uri, options);
-  await checkGitHubStatus(response);
+  await checkGitHubStatus(response, RESPONSE_GITHUB_SNAPCRAFT_YAML_NOT_FOUND);
   return response;
 };
 
@@ -228,7 +237,7 @@ export const internalGetSnapcraftYaml = async (owner, name, token) => {
     } catch (error) {
       if (path !== paths[paths.length - 1] &&
           error.status === 404 && error.body &&
-          error.body.payload.code === RESPONSE_GITHUB_NOT_FOUND.payload.code) {
+          error.body.payload.code === RESPONSE_GITHUB_SNAPCRAFT_YAML_NOT_FOUND.payload.code) {
         continue;
       } else {
         throw error;

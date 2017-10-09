@@ -13,6 +13,7 @@ import { getGitHubRootSecret, makeWebhookSecret } from './webhook';
 const logger = logging.getLogger('express');
 const SNAPCRAFT_INFO_WHITELIST = ['name', 'confinement'];
 
+// TODO: same in launchpad.js
 const RESPONSE_NOT_FOUND = {
   status: 'error',
   payload: {
@@ -101,7 +102,13 @@ export const internalListOrganizations = async (owner, token) => {
     const response = await requestGitHub.get('/user/orgs', {
       token, json: true
     });
-    await checkGitHubStatus(response);
+    await checkGitHubStatus(response, {
+      status: 'error',
+      payload: {
+        code: 'github-orgs-not-found',
+        message: 'Cannot access user organizations'
+      }
+    });
     await getMemcached().set(cacheId, response.body, 3600);
     return response.body;
   } catch (error) {
