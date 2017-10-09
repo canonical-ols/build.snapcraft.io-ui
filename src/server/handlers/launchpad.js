@@ -562,15 +562,46 @@ export const getGitBranch = async (snap, token) => {
   }
 };
 
+const getSnapRepoData = async(snap, token) => {
+  let gitBranch, snapcraftData;
+  try {
+    // first try to check defaut branch
+    gitBranch = await getGitBranch(snap, token);
+    // then get snapcraft.yaml data - there is no point trying to fetch this if fetching branch fails
+    snapcraftData = await getSnapcraftData(snap.git_repository_url, token);
+  } catch (error) {
+    logger.error(`Error while fetching data of ${snap.git_repository_url}: ${error}`);
+
+    if (error.status && error.body) {
+      // if it's PreparedError (with status code and body) return whole JSON
+      snapcraftData = {
+        error
+      };
+    } else if (error.message) {
+      snapcraftData = {
+        error: error.message
+      };
+    } else {
+      snapcraftData = {
+        error: `Error while fetching data of ${snap.git_repository_url}`
+      };
+    }
+  }
+
+  return {
+    gitBranch,
+    snapcraftData
+  };
+};
+
 export const findSnaps = async (req, res) => {
   const owner = req.query.owner || req.session.user.login;
   try {
     const rawSnaps = await internalFindSnaps(owner, req.session.token);
     const snaps = await Promise.all(rawSnaps.map(async (snap) => {
-      const [gitBranch, snapcraftData] = await Promise.all([
-        getGitBranch(snap, req.session.token),
-        getSnapcraftData(snap.git_repository_url, req.session.token)
-      ]);
+
+      let { gitBranch, snapcraftData } = await getSnapRepoData(snap, req.session.token);
+
       return {
         ...snap,
         git_branch: gitBranch,
@@ -600,10 +631,8 @@ export const findSnaps = async (req, res) => {
 export const findSnap = async (req, res) => {
   try {
     const snap = await internalFindSnap(req.query.repository_url);
-    const [gitBranch, snapcraftData] = await Promise.all([
-      getGitBranch(snap, req.session.token),
-      getSnapcraftData(snap.git_repository_url, req.session.token)
-    ]);
+
+    let { gitBranch, snapcraftData } = await getSnapRepoData(snap, req.session.token);
 
     snap.git_branch = gitBranch;
     snap.snapcraft_data = snapcraftData;

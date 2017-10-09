@@ -151,46 +151,29 @@ export const getSnapcraftData = async (repositoryUrl, token) => {
     logger.error(`Error getting ${cacheId} from memcached: ${error}`);
   }
 
-  try {
-    const snapcraftYaml = await internalGetSnapcraftYaml(owner, name, token);
-    const snapcraftData = {};
+  const snapcraftYaml = await internalGetSnapcraftYaml(owner, name, token);
+  const snapcraftData = {};
 
-    if (snapcraftYaml.contents) {
-      for (const index of Object.keys(snapcraftYaml.contents)) {
-        if (SNAPCRAFT_INFO_WHITELIST.indexOf(index) >= 0) {
-          snapcraftData[index] = snapcraftYaml.contents[index];
-        }
+  if (snapcraftYaml.contents) {
+    for (const index of Object.keys(snapcraftYaml.contents)) {
+      if (SNAPCRAFT_INFO_WHITELIST.indexOf(index) >= 0) {
+        snapcraftData[index] = snapcraftYaml.contents[index];
       }
     }
-
-    // copy snapcraft.yaml path from repo into snapcraftData
-    //
-    // XXX we are mixing our custom `path` into data from snapcraft.yaml file
-    // currently there is no `path` defined in snapcraft syntax
-    // https://snapcraft.io/docs/build-snaps/syntax
-    // and also we whitelist only `name`, so no collision should occur
-    snapcraftData.path = snapcraftYaml.path;
-
-    // if there was parse error include it as well
-    snapcraftData.error = snapcraftYaml.error;
-    await getMemcached().set(cacheId, snapcraftData, 3600);
-    return snapcraftData;
-  } catch (error) {
-    if (error.status && error.body) {
-      // if it's PreparedError (with status code and body) return whole JSON
-      return {
-        error
-      };
-    } else if (error.message) {
-      return {
-        error: error.message
-      };
-    } else {
-      return {
-        error: `Error while reading snapcraft.yaml for ${repositoryUrl}`
-      };
-    }
   }
+
+  // copy snapcraft.yaml path from repo into snapcraftData
+  //
+  // XXX we are mixing our custom `path` into data from snapcraft.yaml file
+  // currently there is no `path` defined in snapcraft syntax
+  // https://snapcraft.io/docs/build-snaps/syntax
+  // and also we whitelist only `name`, so no collision should occur
+  snapcraftData.path = snapcraftYaml.path;
+
+  // if there was parse error include it as well
+  snapcraftData.error = snapcraftYaml.error;
+  await getMemcached().set(cacheId, snapcraftData, 3600);
+  return snapcraftData;
 };
 
 export const listRepositories = async (req, res) => {
