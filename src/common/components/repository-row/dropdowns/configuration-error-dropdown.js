@@ -48,7 +48,7 @@ const ConfigurationErrorDropdown = ({ snap }) => {
     );
   } else {
     content = (
-      <p>We cannot access this repository on GitHub.</p>
+      <p>Check whether the repo has been made private or deleted from GitHub.</p>
     );
   }
 

@@ -359,19 +359,22 @@ export class RepositoryRowView extends Component {
 
   renderConfiguredStatus(snap) {
     const { gitBranch, snapcraftData } = snap;
+    const isSnapcraftDataMissing = (
+      !snapcraftData || (snapcraftData.error && snapcraftData.error.status === 404)
+    );
+
     let onClick, content;
 
     if (!snapcraftData || snapcraftData.error) {
       // if there is no snapcraftData or snapcraft data contains 404 error
       // show repo as not configured
-      if (gitBranch && (!snapcraftData ||
-          (snapcraftData.error && snapcraftData.error.status === 404))) {
+      if (gitBranch && isSnapcraftDataMissing) {
         onClick = this.onNotConfiguredClick.bind(this);
         content = <span>Not configured</span>;
       // otherwise show a configuration error
       } else {
         onClick = this.onConfigurationErrorClick.bind(this);
-        content = <span>Error</span>;
+        content = <span>{ gitBranch ? 'Error' : 'Repo missing' }</span>;
       }
     } else if (snapNameIsMismatched(snap)){
       onClick = this.onNameMismatchClick.bind(this);
