@@ -573,13 +573,20 @@ export const getGitBranch = async (snap, token) => {
 };
 
 const getSnapRepoData = async(snap, token) => {
-  let gitBranch, snapcraftData;
-  try {
-    // first try to check defaut branch
-    gitBranch = await getGitBranch(snap, token);
-    // then get snapcraft.yaml data - there is no point trying to fetch this if fetching branch fails
-    snapcraftData = await getSnapcraftData(snap.git_repository_url, token);
-  } catch (error) {
+  let gitBranch, snapcraftData, gitBranchError, snapcraftDataError;
+
+  [gitBranch, snapcraftData] = await Promise.all([
+    // explicit return of undefined in case of error to avoid arrow function
+    // implicit return (of error object)
+    getGitBranch(snap, token)
+      .catch(e => { gitBranchError = e; return; }),
+    getSnapcraftData(snap.git_repository_url, token)
+      .catch(e => { snapcraftDataError = e; return; })
+  ]);
+
+  const error = gitBranchError || snapcraftDataError;
+
+  if (error) {
     logger.error(`Error while fetching data of ${snap.git_repository_url}: ${error}`);
 
     if (error.status && error.body) {
