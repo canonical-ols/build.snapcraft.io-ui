@@ -84,7 +84,7 @@ const RESPONSE_GITHUB_OTHER = {
   status: 'error',
   payload: {
     code: 'github-error-other',
-    message: 'Something went wrong when looking for snapcraft.yaml'
+    message: 'Something went wrong when calling GitHub API'
   }
 };
 
@@ -159,6 +159,7 @@ export const checkGitHubStatus = (response, notFoundError = RESPONSE_GITHUB_REPO
     }
     switch (body.message) {
       case 'Not Found':
+      case 'This repository is empty.':
         // repo or snapcraft.yaml not found
         throw new PreparedError(404, notFoundError);
       case 'Bad credentials':
@@ -167,7 +168,7 @@ export const checkGitHubStatus = (response, notFoundError = RESPONSE_GITHUB_REPO
       default:
         // Something else
         logger.error('GitHub API error:', response.statusCode, body);
-        throw new PreparedError(500, RESPONSE_GITHUB_OTHER);
+        throw new PreparedError(response.statusCode, RESPONSE_GITHUB_OTHER);
     }
   }
   return response;
