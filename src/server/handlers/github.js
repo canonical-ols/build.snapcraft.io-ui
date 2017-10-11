@@ -6,14 +6,14 @@ import logging from '../logging';
 import requestGitHub from '../helpers/github';
 import { conf } from '../helpers/config';
 import { getMemcached } from '../helpers/memcached';
-import { checkGitHubStatus, internalGetSnapcraftYaml } from './launchpad';
+import { internalGetSnapcraftYaml } from './launchpad';
 import { parseGitHubRepoUrl } from '../../common/helpers/github-url';
+import { PreparedError } from '../helpers/prepared-error';
 import { getGitHubRootSecret, makeWebhookSecret } from './webhook';
 
 const logger = logging.getLogger('express');
 const SNAPCRAFT_INFO_WHITELIST = ['name', 'confinement'];
 
-// TODO: same in launchpad.js
 const RESPONSE_NOT_FOUND = {
   status: 'error',
   payload: {
@@ -27,14 +27,6 @@ const RESPONSE_AUTHENTICATION_FAILED = {
   payload: {
     code: 'github-authentication-failed',
     message: 'Authentication with GitHub failed'
-  }
-};
-
-const RESPONSE_OTHER = {
-  status: 'error',
-  payload: {
-    code: 'github-error-other',
-    message: 'Something went wrong when creating a webhook'
   }
 };
 
@@ -52,6 +44,42 @@ const RESPONSE_ALREADY_CREATED = {
     code: 'github-already-created',
     message: 'A webhook already exists on the given repository'
   }
+};
+
+const RESPONSE_OTHER_ERROR = {
+  status: 'error',
+  payload: {
+    code: 'github-error-other',
+    message: 'Something went wrong when calling GitHub API'
+  }
+};
+
+export const checkGitHubStatus = (response, notFoundError = RESPONSE_NOT_FOUND) => {
+  if (response.statusCode !== 200) {
+    let body = response.body;
+    if (typeof body !== 'object') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        logger.error('Invalid JSON received', e, body);
+        throw new PreparedError(500, RESPONSE_OTHER_ERROR);
+      }
+    }
+    switch (body.message) {
+      case 'Not Found':
+      case 'This repository is empty.':
+        // repo or snapcraft.yaml not found
+        throw new PreparedError(404, notFoundError);
+      case 'Bad credentials':
+        // Authentication failed
+        throw new PreparedError(401, RESPONSE_AUTHENTICATION_FAILED);
+      default:
+        // Something else
+        logger.error('GitHub API error:', response.statusCode, body);
+        throw new PreparedError(response.statusCode, RESPONSE_OTHER_ERROR);
+    }
+  }
+  return response;
 };
 
 export const requestUser = (token) => {
@@ -258,7 +286,7 @@ export const createWebhook = async (req, res) => {
         default:
           // Something else
           logger.error('GitHub API error', response.statusCode);
-          return res.status(500).send(RESPONSE_OTHER);
+          return res.status(500).send(RESPONSE_OTHER_ERROR);
       }
     }
 

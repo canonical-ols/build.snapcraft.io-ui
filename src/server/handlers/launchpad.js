@@ -11,10 +11,12 @@ import db from '../db';
 import { conf } from '../helpers/config';
 import { getMemcached } from '../helpers/memcached';
 import requestGitHub from '../helpers/github';
+import { PreparedError, prepareError } from '../helpers/prepared-error';
 import getLaunchpad from '../launchpad';
 import logging from '../logging';
 import * as schema from './schema.js';
 import {
+  checkGitHubStatus,
   getDefaultBranch,
   getSnapcraftData,
   internalListOrganizations
@@ -55,36 +57,11 @@ const RESPONSE_GITHUB_NO_ADMIN_PERMISSIONS = {
   }
 };
 
-// TODO: same in github.js
-const RESPONSE_GITHUB_REPO_NOT_FOUND = {
-  status: 'error',
-  payload: {
-    code: 'github-repository-not-found',
-    message: 'The GitHub repository cannot be found or access not granted to account'
-  }
-};
-
 const RESPONSE_GITHUB_SNAPCRAFT_YAML_NOT_FOUND = {
   status: 'error',
   payload: {
     code: 'github-snapcraft-yaml-not-found',
     message: 'Cannot find snapcraft.yaml in this GitHub repository'
-  }
-};
-
-const RESPONSE_GITHUB_AUTHENTICATION_FAILED = {
-  status: 'error',
-  payload: {
-    code: 'github-authentication-failed',
-    message: 'Authentication with GitHub failed'
-  }
-};
-
-const RESPONSE_GITHUB_OTHER = {
-  status: 'error',
-  payload: {
-    code: 'github-error-other',
-    message: 'Something went wrong when calling GitHub API'
   }
 };
 
@@ -96,14 +73,6 @@ const RESPONSE_SNAP_NOT_FOUND = {
   }
 };
 
-class PreparedError extends Error {
-  constructor(status, body) {
-    super();
-    this.status = status;
-    this.body = body;
-  }
-}
-
 // helper function to get URL prefix for given repo owner
 export const getRepoUrlPrefix = (owner) => `https://github.com/${owner}/`;
 
@@ -112,66 +81,9 @@ export const getUrlPrefixCacheId = (urlPrefix) => `url_prefix:${urlPrefix}`;
 export const getRepositoryUrlCacheId = (repositoryUrl) => `url:${repositoryUrl}`;
 export const getHasWebhookCacheId = (snapUrl) => `has_webhook:${snapUrl}`;
 
-// Wrap errors in a promise chain so that they always end up as a
-// PreparedError.
-const prepareError = async (error) => {
-  if (error.status && error.body) {
-    // The error comes with a prepared representation.
-    return error;
-  } else if (error.response) {
-    // if it's ResourceError from LP client at least for the moment
-    // we just wrap the error we get from LP
-    const text = await error.response.text();
-    logger.error('Launchpad API error:', text);
-    return new PreparedError(error.response.status, {
-      status: 'error',
-      payload: {
-        code: 'lp-error',
-        message: text
-      }
-    });
-  } else {
-    return new PreparedError(500, {
-      status: 'error',
-      payload: {
-        code: 'internal-error',
-        message: error.message
-      }
-    });
-  }
-};
-
 const sendError = async (res, error) => {
   const preparedError = await prepareError(error);
   res.status(preparedError.status).send(preparedError.body);
-};
-
-export const checkGitHubStatus = (response, notFoundError = RESPONSE_GITHUB_REPO_NOT_FOUND) => {
-  if (response.statusCode !== 200) {
-    let body = response.body;
-    if (typeof body !== 'object') {
-      try {
-        body = JSON.parse(body);
-      } catch (e) {
-        logger.error('Invalid JSON received', e, body);
-        throw new PreparedError(500, RESPONSE_GITHUB_OTHER);
-      }
-    }
-    switch (body.message) {
-      case 'Not Found':
-      case 'This repository is empty.':
-        // repo or snapcraft.yaml not found
-        throw new PreparedError(404, notFoundError);
-      case 'Bad credentials':
-        // Authentication failed
-        throw new PreparedError(401, RESPONSE_GITHUB_AUTHENTICATION_FAILED);
-      default:
-        // Something else
-        logger.error('GitHub API error:', response.statusCode, body);
-        throw new PreparedError(response.statusCode, RESPONSE_GITHUB_OTHER);
-    }
-  }
-  return response;
 };
 
 const checkAdminPermissions = async (session, repositoryUrl) => {
