@@ -54,6 +54,7 @@ const handlePing = async (req, res) => {
 const handleGitHubPush = async (req, res, owner, name) => {
   const repositoryUrl = getGitHubRepoUrl(owner, name);
   const cacheId = getSnapcraftYamlCacheId(repositoryUrl);
+  const reason = `${repositoryUrl} changed.`;
   // Clear snap name cache before starting.
   // XXX cjwatson 2017-02-16: We could be smarter about this by looking at
   // the content of the push event.
@@ -67,7 +68,7 @@ const handleGitHubPush = async (req, res, owner, name) => {
       // XXX cjwatson 2017-02-16: Cache returned snap name, if any.
       await internalGetSnapcraftYaml(owner, name);
     }
-    await internalRequestSnapBuilds(snap, owner, name);
+    await internalRequestSnapBuilds(snap, owner, name, reason);
     logger.info(`Requested builds of ${repositoryUrl}.`);
     return res.status(200).send();
   } catch (error) {

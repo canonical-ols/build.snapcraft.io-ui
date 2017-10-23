@@ -672,11 +672,24 @@ export const getSnapBuilds = async (req, res) => {
     const snap = await getLaunchpad().get(snapUrl);
     const builds = await internalGetSnapBuilds(snap, req.query.start, req.query.size);
 
+    // Let's collect corresponding build annotations.
+    let build_annotations = {};
+    const build_ids = builds.entries.map((b) => { return b.self_link.split('/').pop(); });
+    const results = await db.model('BuildAnnotation')
+      .where('build_id', 'IN', build_ids)
+      .fetchAll();
+    for (const m of results.models) {
+      build_annotations[m.get('build_id')] = {
+        reason: m.get('reason')
+      };
+    }
+
     return res.status(200).send({
       status: 'success',
       payload: {
         code: 'snap-builds-found',
-        builds: builds.entries
+        builds: builds.entries,
+        build_annotations: build_annotations
       }
     });
   } catch (error) {
@@ -684,7 +697,7 @@ export const getSnapBuilds = async (req, res) => {
   }
 };
 
-export const internalRequestSnapBuilds = async (snap, owner, name) => {
+export const internalRequestSnapBuilds = async (snap, owner, name, reason) => {
   // Request builds, then make sure that auto_build is enabled so that
   // future push events will cause the webhook to dispatch builds.  Doing
   // things in this order ensures that Launchpad's internal
@@ -697,6 +710,7 @@ export const internalRequestSnapBuilds = async (snap, owner, name) => {
   if (!snap.auto_build) {
     await lpClient.patch(snap.self_link, { auto_build: true });
   }
+
   // We can't do this properly transactionally (i.e. don't request builds if
   // the DB connection fails), because we don't know how many builds we're
   // going to request up-front.  If we find a way to fix that then we should
@@ -718,6 +732,26 @@ export const internalRequestSnapBuilds = async (snap, owner, name) => {
   } catch (error) {
     logger.error(`Error incrementing builds_requested for ${owner}: ${error}`);
   }
+
+  // Record build annotations (reason), some comment above applies ...
+  const build_annotations = builds.map((b) => {
+    return {
+      build_id: b.self_link.split('/').pop(),
+      reason: reason
+    };
+  });
+
+  try {
+    await db.transaction(async (trx) => {
+      for (const ann of build_annotations) {
+        await db.model('BuildAnnotation').forge(ann).save({}, { transacting: trx });
+      }
+    });
+  } catch (error) {
+    const ids = build_annotations.map((b) => { return b.build_id; });
+    logger.error(`Error saving build annotations for ${ids}: ${error}`);
+  }
+
   return builds;
 };
 
@@ -726,8 +760,9 @@ export const requestSnapBuilds = async (req, res) => {
     const { owner, name } = await checkAdminPermissions(
       req.session, req.body.repository_url
     );
+    const reason = req.body.reason || 'Build requested manually';
     const snap = await internalFindSnap(req.body.repository_url);
-    const builds = await internalRequestSnapBuilds(snap, owner, name);
+    const builds = await internalRequestSnapBuilds(snap, owner, name, reason);
     return res.status(201).send({
       status: 'success',
       payload: {
