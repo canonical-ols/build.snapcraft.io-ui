@@ -179,8 +179,8 @@ describe('Poller script helpers', function() {
         expect(annotations.models.map((m) => {
           return { build_id: m.get('build_id'), reason: m.get('reason') };
         }))
-          .toContain({ build_id: 100, reason: 'Build requested due changes in parts.' })
-          .toContain({ build_id: 101, reason: 'Build requested due changes in parts.' });
+          .toContain({ build_id: 100, reason: 'triggered-by-poller' })
+          .toContain({ build_id: 101, reason: 'triggered-by-poller' });
 
       });
     });

@@ -1956,8 +1956,8 @@ describe('The Launchpad API endpoint', () => {
             reasons[m.get('build_id')] = m.get('reason');
           }
           expect(reasons).toEqual({
-            '1': 'Build requested manually',
-            '2': 'Build requested manually',
+            '1': 'triggered-manually',
+            '2': 'triggered-manually',
           });
         });
 
@@ -1967,7 +1967,7 @@ describe('The Launchpad API endpoint', () => {
             .set('X-CSRF-Token', 'blah')
             .send({
               repository_url: 'https://github.com/anowner/aname',
-              reason: 'Testing ...'
+              reason: 'testing-trigger'
             });
           const build_annotations = await db.model('BuildAnnotation').fetchAll();
           let reasons = {};
@@ -1975,8 +1975,8 @@ describe('The Launchpad API endpoint', () => {
             reasons[m.get('build_id')] = m.get('reason');
           }
           expect(reasons).toEqual({
-            '1': 'Testing ...',
-            '2': 'Testing ...',
+            '1': 'testing-trigger',
+            '2': 'testing-trigger',
           });
         });
 

@@ -102,7 +102,7 @@ export const pollRepositories = (checker) => {
           if (await checker(owner, name, last_built)) {
             logger.info(`${owner}/${name}: NEEDSBUILD`);
             if (poller_request_builds) {
-              const reason = 'Build requested due changes in parts.';
+              const reason = 'triggered-by-poller';
               await internalRequestSnapBuilds(snap, owner, name, reason);
               logger.info(`${owner}/${name}: Builds requested.`);
             } else {

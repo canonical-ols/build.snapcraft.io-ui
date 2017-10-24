@@ -54,7 +54,7 @@ const handlePing = async (req, res) => {
 const handleGitHubPush = async (req, res, owner, name) => {
   const repositoryUrl = getGitHubRepoUrl(owner, name);
   const cacheId = getSnapcraftYamlCacheId(repositoryUrl);
-  const reason = `${repositoryUrl} changed.`;
+  const reason = 'triggered-by-webhook';
   // Clear snap name cache before starting.
   // XXX cjwatson 2017-02-16: We could be smarter about this by looking at
   // the content of the push event.

@@ -760,7 +760,7 @@ export const requestSnapBuilds = async (req, res) => {
     const { owner, name } = await checkAdminPermissions(
       req.session, req.body.repository_url
     );
-    const reason = req.body.reason || 'Build requested manually';
+    const reason = req.body.reason || 'triggered-manually';
     const snap = await internalFindSnap(req.body.repository_url);
     const builds = await internalRequestSnapBuilds(snap, owner, name, reason);
     return res.status(201).send({
