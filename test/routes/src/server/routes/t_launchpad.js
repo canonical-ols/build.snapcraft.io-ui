@@ -14,6 +14,10 @@ import {
 import launchpad from '../../../../../src/server/routes/launchpad';
 import db from '../../../../../src/server/db';
 import {
+  BUILD_TRIGGERED_BY_POLLER,
+  BUILD_TRIGGERED_MANUALLY,
+} from '../../../../../src/common/helpers/build_annotation';
+import {
   getDefaultBranchCacheId,
   getSnapcraftYamlCacheId,
   listOrganizationsCacheId
@@ -1956,8 +1960,8 @@ describe('The Launchpad API endpoint', () => {
             reasons[m.get('build_id')] = m.get('reason');
           }
           expect(reasons).toEqual({
-            '1': 'triggered-manually',
-            '2': 'triggered-manually',
+            1: BUILD_TRIGGERED_MANUALLY,
+            2: BUILD_TRIGGERED_MANUALLY
           });
         });
 
@@ -1967,7 +1971,7 @@ describe('The Launchpad API endpoint', () => {
             .set('X-CSRF-Token', 'blah')
             .send({
               repository_url: 'https://github.com/anowner/aname',
-              reason: 'testing-trigger'
+              reason: BUILD_TRIGGERED_BY_POLLER
             });
           const build_annotations = await db.model('BuildAnnotation').fetchAll();
           let reasons = {};
@@ -1975,8 +1979,8 @@ describe('The Launchpad API endpoint', () => {
             reasons[m.get('build_id')] = m.get('reason');
           }
           expect(reasons).toEqual({
-            '1': 'testing-trigger',
-            '2': 'testing-trigger',
+            1: BUILD_TRIGGERED_BY_POLLER,
+            2: BUILD_TRIGGERED_BY_POLLER
           });
         });
 

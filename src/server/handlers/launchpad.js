@@ -6,6 +6,10 @@ import uniq from 'lodash/uniq';
 import zip from 'lodash/zip';
 import { normalize } from 'normalizr';
 
+import {
+  BUILD_TRIGGERED_MANUALLY,
+  getBuildId
+} from '../../common/helpers/build_annotation';
 import { parseGitHubRepoUrl } from '../../common/helpers/github-url';
 import db from '../db';
 import { conf } from '../helpers/config';
@@ -655,6 +659,21 @@ export async function internalGetSnapBuilds(snap, start = 0, size = 10) {
   });
 }
 
+export async function internaGetBuildAnnotations(builds) {
+  const db_annotations = await db.model('BuildAnnotation')
+    .where('build_id', 'IN', builds.entries.map((b) => { return getBuildId(b); }))
+    .fetchAll();
+
+  let build_annotations = {};
+  for (const m of db_annotations.models) {
+    build_annotations[m.get('build_id')] = {
+      reason: m.get('reason')
+    };
+  }
+
+  return build_annotations;
+}
+
 export const getSnapBuilds = async (req, res) => {
   const snapUrl = req.query.snap;
 
@@ -671,18 +690,7 @@ export const getSnapBuilds = async (req, res) => {
   try {
     const snap = await getLaunchpad().get(snapUrl);
     const builds = await internalGetSnapBuilds(snap, req.query.start, req.query.size);
-
-    // Let's collect corresponding build annotations.
-    let build_annotations = {};
-    const build_ids = builds.entries.map((b) => { return b.self_link.split('/').pop(); });
-    const results = await db.model('BuildAnnotation')
-      .where('build_id', 'IN', build_ids)
-      .fetchAll();
-    for (const m of results.models) {
-      build_annotations[m.get('build_id')] = {
-        reason: m.get('reason')
-      };
-    }
+    const build_annotations = await internaGetBuildAnnotations(builds);
 
     return res.status(200).send({
       status: 'success',
@@ -733,10 +741,11 @@ export const internalRequestSnapBuilds = async (snap, owner, name, reason) => {
     logger.error(`Error incrementing builds_requested for ${owner}: ${error}`);
   }
 
-  // Record build annotations (reason), some comment above applies ...
+  // Record build annotations (reason), same comment above applies (this operation
+  // is not transactional).
   const build_annotations = builds.map((b) => {
     return {
-      build_id: b.self_link.split('/').pop(),
+      build_id: getBuildId(b),
       reason: reason
     };
   });
@@ -760,7 +769,7 @@ export const requestSnapBuilds = async (req, res) => {
     const { owner, name } = await checkAdminPermissions(
       req.session, req.body.repository_url
     );
-    const reason = req.body.reason || 'triggered-manually';
+    const reason = req.body.reason || BUILD_TRIGGERED_MANUALLY;
     const snap = await internalFindSnap(req.body.repository_url);
     const builds = await internalRequestSnapBuilds(snap, owner, name, reason);
     return res.status(201).send({

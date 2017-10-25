@@ -4,6 +4,7 @@ import raven from 'raven';
 import logging from '../logging';
 import { conf } from '../helpers/config';
 import db from '../db';
+import { BUILD_TRIGGERED_BY_POLLER } from '../../common/helpers/build_annotation';
 import {
   getGitHubRepoUrl,
   parseGitHubRepoUrl
@@ -102,8 +103,7 @@ export const pollRepositories = (checker) => {
           if (await checker(owner, name, last_built)) {
             logger.info(`${owner}/${name}: NEEDSBUILD`);
             if (poller_request_builds) {
-              const reason = 'triggered-by-poller';
-              await internalRequestSnapBuilds(snap, owner, name, reason);
+              await internalRequestSnapBuilds(snap, owner, name, BUILD_TRIGGERED_BY_POLLER);
               logger.info(`${owner}/${name}: Builds requested.`);
             } else {
               logger.info(`${owner}/${name}: Build requesting DISABLED.`);
