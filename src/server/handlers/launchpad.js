@@ -661,7 +661,7 @@ export async function internalGetSnapBuilds(snap, start = 0, size = 10) {
 
 export async function internaGetBuildAnnotations(builds) {
   const db_annotations = await db.model('BuildAnnotation')
-    .where('build_id', 'IN', builds.entries.map((b) => { return getBuildId(b); }))
+    .where('build_id', 'IN', builds.map((b) => { return getBuildId(b); }))
     .fetchAll();
 
   let build_annotations = {};
@@ -690,7 +690,7 @@ export const getSnapBuilds = async (req, res) => {
   try {
     const snap = await getLaunchpad().get(snapUrl);
     const builds = await internalGetSnapBuilds(snap, req.query.start, req.query.size);
-    const build_annotations = await internaGetBuildAnnotations(builds);
+    const build_annotations = await internaGetBuildAnnotations(builds.entries);
 
     return res.status(200).send({
       status: 'success',
@@ -772,11 +772,14 @@ export const requestSnapBuilds = async (req, res) => {
     const reason = req.body.reason || BUILD_TRIGGERED_MANUALLY;
     const snap = await internalFindSnap(req.body.repository_url);
     const builds = await internalRequestSnapBuilds(snap, owner, name, reason);
+    const build_annotations = await internaGetBuildAnnotations(builds);
+
     return res.status(201).send({
       status: 'success',
       payload: {
         code: 'snap-builds-requested',
-        builds: builds
+        builds: builds,
+        build_annotations: build_annotations
       }
     });
   } catch (error) {

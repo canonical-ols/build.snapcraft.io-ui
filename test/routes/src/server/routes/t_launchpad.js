@@ -1984,6 +1984,23 @@ describe('The Launchpad API endpoint', () => {
           });
         });
 
+        it('returns just created build annotations in payload', (done) => {
+          supertest(app)
+            .post('/launchpad/snaps/request-builds')
+            .set('X-CSRF-Token', 'blah')
+            .send({ repository_url: 'https://github.com/anowner/aname' })
+            .expect((res) => {
+              expect(res.body.payload.build_annotations).toEqual({
+                1: { reason: BUILD_TRIGGERED_MANUALLY },
+                2: { reason: BUILD_TRIGGERED_MANUALLY }
+              });
+            })
+            .end((err) => {
+              api.done();
+              done(err);
+            });
+        });
+
         it('leaves builds_requested unmodified if it is unset', async () => {
           await supertest(app)
             .post('/launchpad/snaps/request-builds')
