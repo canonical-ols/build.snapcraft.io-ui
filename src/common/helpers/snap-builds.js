@@ -231,3 +231,12 @@ export function snapBuildFromAPI(entry) {
 export function isBuildInProgress(build) {
   return build.statusMessage === 'In progress' || build.statusMessage === 'Building soon';
 }
+
+export const annotateSnapBuild = (buildAnnotations = {}) => {
+  return (build) => {
+    return {
+      ...build,
+      reason: buildAnnotations[build.buildId] ? buildAnnotations[build.buildId].reason : 'trigger-unknown'
+    };
+  };
+};

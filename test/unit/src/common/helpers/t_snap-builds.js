@@ -1,6 +1,7 @@
 import expect from 'expect';
 
 import {
+  annotateSnapBuild,
   isBuildInProgress,
   snapBuildFromAPI,
   BuildStatusColours,
@@ -283,5 +284,28 @@ describe('isBuildInProgress', () => {
 
   it('should return false if build is not in progress', () => {
     expect(isBuildInProgress({ statusMessage: 'Failed to build' })).toBe(false);
+  });
+});
+
+describe('annotateSnapBuild', () => {
+  const TEST_ANNOTATIONS = {
+    '1234': { reason: 'test1234' },
+    '1235': { reason: 'test1235' }
+  };
+
+  it('should return a function', () => {
+    expect(annotateSnapBuild()).toBeA('function');
+  });
+
+  context('returned function', () => {
+    let annotate;
+
+    beforeEach(() => {
+      annotate = annotateSnapBuild(TEST_ANNOTATIONS);
+    });
+
+    it('should annotate given build with true if build is in progress', () => {
+      expect(annotate({ buildId: '1234' }).reason).toBe('test1234');
+    });
   });
 });

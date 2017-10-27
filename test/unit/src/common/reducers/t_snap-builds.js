@@ -1,9 +1,12 @@
 import expect from 'expect';
 
-import { snapBuilds, snapBuildsInitialStatus } from '../../../../../src/common/reducers/snap-builds';
+import { getAnnotatedBuilds, snapBuilds, snapBuildsInitialStatus } from '../../../../../src/common/reducers/snap-builds';
 import * as ActionTypes from '../../../../../src/common/actions/snap-builds';
 
-import { snapBuildFromAPI } from '../../../../../src/common/helpers/snap-builds';
+describe('getAnnotatedBuilds', () => {
+  // TODO:
+  it('should be tested');
+});
 
 describe('snapBuilds reducers', () => {
   const initialState = {};
@@ -141,7 +144,7 @@ describe('snapBuilds reducers', () => {
     });
 
     it('should store builds on fetch success', () => {
-      expect(snapBuilds(state, action)[id].builds).toEqual(SNAP_BUILDS.map(snapBuildFromAPI));
+      expect(snapBuilds(state, action)[id].builds).toEqual(getAnnotatedBuilds(action));
     });
 
     it('should store success state', () => {
@@ -181,7 +184,7 @@ describe('snapBuilds reducers', () => {
     });
 
     it('should prepend requested builds on success', () => {
-      const expected = SNAP_BUILDS.map(snapBuildFromAPI).concat(state[id].builds);
+      const expected = getAnnotatedBuilds(action).concat(state[id].builds);
       expect(snapBuilds(state, action)[id].builds).toEqual(expected);
     });
 
