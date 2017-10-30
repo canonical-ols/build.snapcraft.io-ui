@@ -8,6 +8,8 @@ import BuildStatus from '../build-status';
 
 import * as buildAnnotation from '../../helpers/build_annotation';
 
+import styles from './buildRow.css';
+
 const getBuildTriggerMessage = (repository, reason, commitId) => {
   switch (reason) {
     case buildAnnotation.BUILD_TRIGGERED_MANUALLY:
@@ -19,11 +21,13 @@ const getBuildTriggerMessage = (repository, reason, commitId) => {
         return (
           <span>
             Commit
+            {' '}
             <a
               target="_blank"
               rel="noopener noreferrer"
               href={`https://github.com/bartaz/snap-build-test/commit/${commitId}`}
             >
+              <img className={ styles.commitIcon } src="https://assets.ubuntu.com/v1/95b0c093-git-commit.svg" alt="" />
               { commitId.substring(0,7) }
             </a>
           </span>
