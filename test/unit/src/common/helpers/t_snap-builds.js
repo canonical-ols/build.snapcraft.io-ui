@@ -8,6 +8,7 @@ import {
   UserFacingState
 } from '../../../../../src/common/helpers/snap-builds';
 
+import { BUILD_TRIGGER_UNKNOWN } from '../../../../../src/common/helpers/build_annotation';
 
 describe('snapBuildFromAPI helper', () => {
   const SNAP_BUILD_ENTRY = {
@@ -304,8 +305,12 @@ describe('annotateSnapBuild', () => {
       annotate = annotateSnapBuild(TEST_ANNOTATIONS);
     });
 
-    it('should annotate given build with true if build is in progress', () => {
+    it('should annotate given build with given reason', () => {
       expect(annotate({ buildId: '1234' }).reason).toBe('test1234');
+    });
+
+    it('should annotate given build with default reason if reason is invalid', () => {
+      expect(annotate({ buildId: '4321' }).reason).toBe(BUILD_TRIGGER_UNKNOWN);
     });
   });
 });
