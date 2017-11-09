@@ -33,7 +33,7 @@ const getBuildTriggerMessage = (repository, reason, commitId) => {
           </span>
         );
       }
-      return 'Unknown';
+      return 'Commit';
     default:
       return 'Unknown';
   }
