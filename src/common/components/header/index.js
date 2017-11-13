@@ -16,6 +16,11 @@ export default class Header extends Component {
           <Link className={ styles.logo } to="/">
             <img src={ wordmark } alt="Snapcraft.io" height={ 28 } />
           </Link>
+          <div className={ styles.sideNav }>
+            <a href="https://snapcraft.io/docs" className={ styles.link }>Docs</a>
+            <a href="https://tutorials.ubuntu.com" className={ styles.link }>Tutorials</a>
+            <a href="https://forum.snapcraft.io" className={ styles.link }>Forum</a>
+          </div>
           { authenticated
             ?
               <div className={ styles.sideNav }>
