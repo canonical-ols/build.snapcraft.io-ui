@@ -27,15 +27,13 @@ describe('The build Annotation metric', () => {
     return db.transaction(async (trx) => {
       for (let i = 1; i <= 2; i++) {
         const annotation = db.model('BuildAnnotation').forge({
-          build_id: i,
-          reason: BUILD_TRIGGERED_BY_POLLER
+          build_id: i, reason: BUILD_TRIGGERED_BY_POLLER
         });
         await annotation.save({}, { method: 'insert', transacting: trx });
       }
       for (let i = 3; i <= 6; i++) {
         const annotation = db.model('BuildAnnotation').forge({
-          build_id: i,
-          reason: BUILD_TRIGGERED_MANUALLY
+          build_id: i, reason: BUILD_TRIGGERED_MANUALLY
         });
         await annotation.save({}, { method: 'insert', transacting: trx });
       }
@@ -47,15 +45,14 @@ describe('The build Annotation metric', () => {
         name: metricName,
         help: 'Total number of build annotations labelled by reason.',
         values: [{
-          labels: { metric_type: 'kpi' ,
-                    reason: BUILD_TRIGGERED_BY_POLLER },
+          labels: { metric_type: 'kpi', reason: BUILD_TRIGGERED_BY_POLLER },
           value: 2
         }, {
-          labels: { metric_type: 'kpi' ,
-                    reason: BUILD_TRIGGERED_MANUALLY },
+          labels: { metric_type: 'kpi', reason: BUILD_TRIGGERED_MANUALLY },
           value: 4
         }]
       });
     });
   });
+
 });
