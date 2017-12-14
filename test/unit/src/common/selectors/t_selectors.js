@@ -26,15 +26,15 @@ describe('selectors', function() {
 
   const stateWithNoName = {
     snaps: {
-      ids: ['https:github.com/anowner/aname', 'https:github.com/anowner/aname-i']
+      ids: ['https://github.com/anowner/aname', 'https://github.com/anowner/aname-i']
     },
     entities: {
       snaps: {
-        'https:github.com/anowner/aname': {
-          gitRepoUrl: 'https:github.com/anowner/aname'
+        'https://github.com/anowner/aname': {
+          gitRepoUrl: 'https://github.com/anowner/aname'
         },
-        'https:github.com/anowner/aname-i': {
-          gitRepoUrl: 'https:github.com/anowner/aname-i'
+        'https://github.com/anowner/aname-i': {
+          gitRepoUrl: 'https://github.com/anowner/aname-i'
         }
       }
     }
@@ -42,13 +42,13 @@ describe('selectors', function() {
 
   const stateWithName = {
     snaps: {
-      ids: ['https:github.com/anowner/aname']
+      ids: ['https://github.com/anowner/aname']
     },
     entities: {
       snaps: {
-        'https:github.com/anowner/aname': {
+        'https://github.com/anowner/aname': {
           storeName: 'bsi-test-ii',
-          gitRepoUrl: 'https:github.com/anowner/aname'
+          gitRepoUrl: 'https://github.com/anowner/aname'
         }
       }
     }
@@ -56,14 +56,14 @@ describe('selectors', function() {
 
   const stateWithSnapcraftData = {
     snaps: {
-      ids: ['https:github.com/anowner/aname']
+      ids: ['https://github.com/anowner/aname']
     },
     entities: {
       snaps: {
-        'https:github.com/anowner/aname': {
+        'https://github.com/anowner/aname': {
           storeName: 'bsi-test-ii',
           snapcraftData: { name: 'bsi-test-ii' },
-          gitRepoUrl: 'https:github.com/anowner/aname'
+          gitRepoUrl: 'https://github.com/anowner/aname'
         }
       }
     }
@@ -71,14 +71,14 @@ describe('selectors', function() {
 
   const stateWithSnapcraftDataError = {
     snaps: {
-      ids: ['https:github.com/anowner/aname']
+      ids: ['https://github.com/anowner/aname']
     },
     entities: {
       snaps: {
-        'https:github.com/anowner/aname': {
+        'https://github.com/anowner/aname': {
           storeName: 'bsi-test-ii',
           snapcraftData: { error: 'Some error' },
-          gitRepoUrl: 'https:github.com/anowner/aname'
+          gitRepoUrl: 'https://github.com/anowner/aname'
         }
       }
     }
@@ -165,19 +165,19 @@ describe('selectors', function() {
     const stateWithNameAndSnapcraftData = {
       snaps: {
         ids: [
-          'https:github.com/anowner/aname',
-          'https:github.com/anowner/aname-i',
-          'https:github.com/anowner/aname-ii'
+          'https://github.com/anowner/aname',
+          'https://github.com/anowner/aname-i',
+          'https://github.com/anowner/aname-ii'
         ]
       },
       entities: {
         snaps: {
-          'https:github.com/anowner/aname': {
+          'https://github.com/anowner/aname': {
             storeName: 'bsi-test',
             snapcraftData: { name: 'bsi-test' }
           },
-          'https:github.com/anowner/aname-i': {},
-          'https:github.com/anowner/aname-ii': {
+          'https://github.com/anowner/aname-i': {},
+          'https://github.com/anowner/aname-ii': {
             storeName: 'bsi-test-ii',
             snapcraftData: { error: 'Some error' }
           }
