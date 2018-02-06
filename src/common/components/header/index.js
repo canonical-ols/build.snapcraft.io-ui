@@ -5,7 +5,7 @@ import { signOut } from '../../actions/auth-store';
 import containerStyles from '../../containers/container.css';
 import style from '../../style/vanilla/css/navigation.css';
 
-const wordmark = 'https://assets.ubuntu.com/v1/d45097a4-snapcraft.io-logotype.svg';
+const brandmark = 'https://assets.ubuntu.com/v1/863eb087-snapcraft_green-red_su_no_spacing.svg';
 
 export default class Header extends Component {
   render() {
@@ -17,7 +17,7 @@ export default class Header extends Component {
           <div className={ style['p-navigation__banner'] }>
             <div className={ style['p-navigation__logo'] }>
               <a className={ style['p-navigation__link'] } href="https://snapcraft.io">
-                <img className={ style['p-navigation__image'] } src={ wordmark } alt="Snapcraft.io" width={ 148 } />
+                <img className={ style['p-navigation__image'] } src={ brandmark } alt="Snapcraft" />
               </a>
             </div>
             <a href="#navigation" className={ style['p-navigation__toggle--open'] } title="menu">Menu</a>
