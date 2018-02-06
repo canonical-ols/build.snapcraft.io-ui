@@ -87,6 +87,8 @@ export default class Html extends Component {
           {head.meta.toComponent()}
           {head.link.toComponent()}
           {head.script.toComponent()}
+          <link rel="icon" type="image/png" href="https://assets.ubuntu.com/v1/f5dbe897-snapcraft-favicon-16.png" sizes="16x16" />
+          <link rel="icon" type="image/png" href="https://assets.ubuntu.com/v1/f2ee2c97-snapcraft-favicon.png" sizes="32x32" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400" />
           <link rel="stylesheet" href={ assets.main.css } />
           {
