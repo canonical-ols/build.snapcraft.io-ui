@@ -12,7 +12,7 @@ export default class Header extends Component {
     const { authenticated, user } = this.props;
 
     return (
-      <header id="navigation" className={ style['p-navigation--light'] }>
+      <header id="navigation" className={ style['p-navigation'] }>
         <div className={ containerStyles.wrapper }>
           <div className={ style['p-navigation__banner'] }>
             <div className={ style['p-navigation__logo'] }>
