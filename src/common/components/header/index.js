@@ -5,7 +5,7 @@ import { signOut } from '../../actions/auth-store';
 import containerStyles from '../../containers/container.css';
 import style from '../../style/vanilla/css/navigation.css';
 
-const brandmark = 'https://assets.ubuntu.com/v1/863eb087-snapcraft_green-red_su_no_spacing.svg';
+const brandmark = 'https://assets.ubuntu.com/v1/ea4e7803-snapcraft_green-red_su_hex_cropped.svg';
 
 export default class Header extends Component {
   render() {
