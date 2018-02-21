@@ -19,6 +19,7 @@ import withRepository from './with-repository';
 import withSnapBuilds from './with-snap-builds';
 
 import styles from './container.css';
+import help_styles from '../components/help/help.css';
 
 class BuildDetails extends Component {
   render() {
@@ -28,7 +29,8 @@ class BuildDetails extends Component {
     const buildFailed = (build.statusMessage === 'Failed to build');
     const buildFailedToUpload = (build.storeUploadStatus === 'Failed to upload'
                               || build.storeUploadStatus === 'Failed to release to channels');
-    const showBuildUploadErrorMessage = buildFailedToUpload && build.storeUploadErrorMessage;
+    const showBuildUploadErrorMessage = buildFailedToUpload && build.storeUploadErrorMessage && !build.storeUploadErrorMessages;
+    const showBuildUploadErrorMessages = buildFailedToUpload && build.storeUploadErrorMessages;
 
     let helpBox;
 
@@ -113,6 +115,26 @@ class BuildDetails extends Component {
               <div className={ styles.strip }>
                 <HeadingThree>Build failed to release</HeadingThree>
                 <Notification appearance='negative' status='error'>{ build.storeUploadErrorMessage }</Notification>
+              </div>
+            }
+            {
+              showBuildUploadErrorMessages &&
+              <div className={ styles.strip }>
+                <HeadingThree>Build failed to release</HeadingThree>
+                { build.storeUploadErrorMessages.map((error) => {
+                  if (error.link) {
+                    return (
+                      <Notification appearance='negative' status='error'>
+                        { error.message }
+                        &nbsp;
+                        <a className={ help_styles.external } href={ error.link } target="_blank" rel="noreferrer noopener">
+                          What does this mean?
+                        </a>
+                      </Notification>);
+                  } else {
+                    return <Notification appearance='negative' status='error'>{ error.message }</Notification>;
+                  }})
+                }
               </div>
             }
             <div className={ styles.strip }>
