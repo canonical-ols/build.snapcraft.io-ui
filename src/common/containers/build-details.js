@@ -19,7 +19,6 @@ import withRepository from './with-repository';
 import withSnapBuilds from './with-snap-builds';
 
 import styles from './container.css';
-import help_styles from '../components/help/help.css';
 
 class BuildDetails extends Component {
   render() {
