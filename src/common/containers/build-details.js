@@ -11,7 +11,7 @@ import {
   HelpPromoteSnap
 } from '../components/help';
 import { HeadingOne, HeadingThree } from '../components/vanilla-modules/heading';
-import { IconSpinner } from '../components/vanilla-modules/icons';
+import { IconQuestion, IconSpinner } from '../components/vanilla-modules/icons';
 import Breadcrumbs, { BreadcrumbsLink } from '../components/vanilla-modules/breadcrumbs';
 import BetaNotification from '../components/beta-notification';
 import Notification from '../components/vanilla-modules/notification';
@@ -127,8 +127,8 @@ class BuildDetails extends Component {
                       <Notification appearance='negative' status='error'>
                         { error.message }
                         &nbsp;
-                        <a className={ help_styles.external } href={ error.link } target="_blank" rel="noreferrer noopener">
-                          What does this mean?
+                        <a href={ error.link } target="_blank" rel="noreferrer noopener">
+                          <IconQuestion />
                         </a>
                       </Notification>);
                   } else {
