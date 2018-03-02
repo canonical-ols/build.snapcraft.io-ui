@@ -5,7 +5,7 @@ import { signOut } from '../../actions/auth-store';
 import containerStyles from '../../containers/container.css';
 import style from '../../style/vanilla/css/navigation.css';
 
-const brandmark = 'https://assets.ubuntu.com/v1/2964e9eb-snapcraft-logo--web.svg';
+const brandmark = 'https://assets.ubuntu.com/v1/7f93bb62-snapcraft-logo--web-white-text.svg';
 
 export default class Header extends Component {
   render() {
@@ -32,13 +32,13 @@ export default class Header extends Component {
                 <a href="https://build.snapcraft.io">Build</a>
               </li>
               <li className={ style['p-navigation__link'] } role="menuitem">
-                <a className={ style['p-link--external'] } href="https://docs.snapcraft.io">Docs</a>
+                <a href="https://docs.snapcraft.io">Docs</a>
               </li>
               <li className={ style['p-navigation__link'] } role="menuitem">
-                <a className={ style['p-link--external'] } href="https://tutorials.ubuntu.com">Tutorials</a>
+                <a href="https://tutorials.ubuntu.com">Tutorials</a>
               </li>
               <li className={ style['p-navigation__link'] } role="menuitem">
-                <a className={ style['p-link--external'] } href="https://forum.snapcraft.io/categories">Forum</a>
+                <a href="https://forum.snapcraft.io/categories">Forum</a>
               </li>
             </ul>
             { authenticated
