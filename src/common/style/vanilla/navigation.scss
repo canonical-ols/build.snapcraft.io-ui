@@ -3,6 +3,10 @@
 
 $color-navigation-background: #252525;
 
+// for external links in navigation
+@import 'vanilla-framework/scss/patterns_links.scss';
+@include vf-p-links;
+
 @import 'vanilla-framework/scss/patterns_navigation.scss';
 @include vf-p-navigation;
 
