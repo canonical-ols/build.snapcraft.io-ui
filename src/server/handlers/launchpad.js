@@ -400,9 +400,8 @@ const internalFindSnaps = async (owner, token) => {
     )
   ));
   snaps = snaps.concat(result.entries);
-  for (const snap of snaps) {
-    await ensureWebhook(snap);
-  }
+  // ensure LP webhook is set up for all the snaps
+  await Promise.all(snaps.map(snap => ensureWebhook(snap)));
   return snaps;
 };
 
