@@ -28,10 +28,10 @@ describe('login', () => {
       expect(req.session.destroy.calledOnce).toBe(true);
     });
 
-    it('on success redirects to home', () => {
+    it('on success redirects to snapcraft.io/logout', () => {
       req.session.destroy.callsArgWith(0, false);
       logout(req, res, next);
-      expect(res.redirect.calledWith('/')).toBe(true);
+      expect(res.redirect.calledWith('https://snapcraft.io/logout')).toBe(true);
     });
 
     it('on error calls next with error', () => {
