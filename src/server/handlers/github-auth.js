@@ -146,6 +146,6 @@ export const logout = (req, res, next) => {
       return next(new Error('Failed to log out.'));
     }
     // FIXME redirect to page that initiated the sign in request
-    res.redirect('https://snapcraft.io/logout');
+    res.redirect('https://snapcraft.io/logout?no_redirect=true');
   });
 };
