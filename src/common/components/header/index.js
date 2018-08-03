@@ -81,7 +81,7 @@ export default class Header extends Component {
             ) : (
               <ul className={ style['p-navigation__links--right']} role="menu">
                 <li className={ style['p-navigation__link'] } role="menuitem">
-                  <a href="http://0.0.0.0:8004/login?next=/login/bsi">
+                  <a href={ `${SNAPCRAFT_URL}/login?next=/login/bsi` }>
                     <IconUser/>Developer account
                   </a>
                 </li>

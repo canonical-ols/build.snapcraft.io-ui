@@ -17,7 +17,7 @@ describe('<Header />', function() {
     });
 
     it('should render sign in link', () => {
-      expect(element.find({ href: '/auth/authenticate' }).length).toBe(1);
+      expect(element.find({ href: 'https://snapcraft.io/login?next=/login/bsi' }).length).toBe(1);
     });
   });
 
