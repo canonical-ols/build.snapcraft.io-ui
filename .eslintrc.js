@@ -21,10 +21,15 @@ module.exports = {
     'sourceType': 'module'
   },
   'plugins': [
+    'babel',
     'mocha',
     'react'
   ],
   'rules': {
+    'babel/semi': [
+      'error',
+      'always'
+    ],
     'indent': [
       'error',
       2,
@@ -62,10 +67,7 @@ module.exports = {
     'react/jsx-no-target-blank': [
       2
     ],
-    'semi': [
-      'error',
-      'always'
-    ]
+    'semi': 'off'
   },
   'settings': {
     'react': {

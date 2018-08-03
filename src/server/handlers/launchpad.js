@@ -335,8 +335,7 @@ export const internalFindSnap = async (repositoryUrl) => {
     });
   }
   const username = conf.get('LP_API_USERNAME');
-  // https://github.com/babel/babel-eslint/issues/415
-  for await (const entry of entries) { // eslint-disable-line semi
+  for await (const entry of entries) {
     if (entry.owner_link.endsWith(`/~${username}`)) {
       await getMemcached().set(cacheId, entry, 3600);
       return entry;
@@ -454,8 +453,7 @@ const initializeMetrics = async (trx, gitHubId, snaps) => {
           buildsRequested += builds.total_size;
           if (rowData.builds_released === undefined ||
               rowData.builds_released === null) {
-            // https://github.com/babel/babel-eslint/issues/415
-            for await (const build of builds) { // eslint-disable-line semi
+            for await (const build of builds) {
               if (build.store_upload_status === 'Uploaded') {
                 buildsReleased += 1;
               }
