@@ -63,7 +63,7 @@ export default class Header extends Component {
                       <a href="https://snapcraft.io/account/snaps">My published snaps</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
-                      <a href="/auth/authenticate" className={ style['is-selected']}>Build with GitHub</a>
+                      <a href={ `/user/${user.login}`} className={ style['is-selected']}>Build with GitHub</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
                       <a href="https://snapcraft.io/account/details">Account details</a>
