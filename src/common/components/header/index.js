@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 
 import { signOut } from '../../actions/auth-store';
 
+import { conf } from '../../helpers/config';
+
 import style from '../../style/vanilla/css/navigation.css';
 import { IconChevron, IconUser } from '../vanilla-modules/icons';
 
@@ -19,6 +21,8 @@ export default class Header extends Component {
   render() {
     const { authenticated, user } = this.props;
 
+    const SNAPCRAFT_URL = conf.get('SNAPCRAFT_URL');
+
     return (
       <header id="navigation" className={ style['p-navigation'] }>
         <div className={ style['p-navigation__banner'] }>
@@ -34,13 +38,13 @@ export default class Header extends Component {
         <nav className={ style['p-navigation__nav'] } role="menubar">
           <ul className={ style['p-navigation__links']} role="menu">
             <li className={ style['p-navigation__link'] } role="menuitem">
-              <a href="https://snapcraft.io/store/">Store</a>
+              <a href={ `${SNAPCRAFT_URL}/store` }>Store</a>
             </li>
             <li className={ style['p-navigation__link'] } role="menuitem">
-              <a href="https://snapcraft.io/blog/">Blog</a>
+              <a href={ `${SNAPCRAFT_URL}/blog` }>Blog</a>
             </li>
             <li className={ style['p-navigation__link'] } role="menuitem">
-              <a className={ authenticated ? '' : style['is-selected'] } href="https://snapcraft.io/build">Build</a>
+              <a className={ authenticated ? '' : style['is-selected'] } href={ `${SNAPCRAFT_URL}/build}` }>Build</a>
             </li>
             <li className={ style['p-navigation__link'] } role="menuitem">
               <a href="https://docs.snapcraft.io">Docs</a>
@@ -60,13 +64,13 @@ export default class Header extends Component {
                   </a>
                   <ul className={ style['p-dropdown__menu']} id="account-menu" aria-hidden={ !this.state.showUserDropdown }>
                     <li className={ style['p-navigation__link']} role="menuitem">
-                      <a href="https://snapcraft.io/account/snaps">My published snaps</a>
+                      <a href={ `${SNAPCRAFT_URL}/account/snaps` } >My published snaps</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
                       <a href={ `/user/${user.login}`} className={ style['is-selected']}>Build with GitHub</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
-                      <a href="https://snapcraft.io/account/details">Account details</a>
+                      <a href={ `${SNAPCRAFT_URL}/account/details` }>Account details</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
                       <a href="/auth/logout" onClick={ this.onLogoutClick.bind(this)}>Sign out</a>
@@ -77,7 +81,7 @@ export default class Header extends Component {
             ) : (
               <ul className={ style['p-navigation__links--right']} role="menu">
                 <li className={ style['p-navigation__link'] } role="menuitem">
-                  <a href="/auth/authenticate">
+                  <a href="http://0.0.0.0:8004/login?next=/login/bsi">
                     <IconUser/>Developer account
                   </a>
                 </li>
