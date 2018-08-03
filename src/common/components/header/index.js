@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import { signOut } from '../../actions/auth-store';
 
 import style from '../../style/vanilla/css/navigation.css';
-import {IconChevron, IconUser} from "../vanilla-modules/icons";
+import { IconChevron, IconUser } from '../vanilla-modules/icons';
 
 const brandmark = 'https://assets.ubuntu.com/v1/7f93bb62-snapcraft-logo--web-white-text.svg';
 
@@ -40,7 +40,7 @@ export default class Header extends Component {
               <a href="https://snapcraft.io/blog/">Blog</a>
             </li>
             <li className={ style['p-navigation__link'] } role="menuitem">
-              <a className={ style['is-selected'] } href="https://snapcraft.io/build">Build</a>
+              <a className={ authenticated ? '' : style['is-selected'] } href="https://snapcraft.io/build">Build</a>
             </li>
             <li className={ style['p-navigation__link'] } role="menuitem">
               <a href="https://docs.snapcraft.io">Docs</a>
@@ -54,7 +54,8 @@ export default class Header extends Component {
               <ul className={ style['p-navigation__links--right']} role="menu">
                 <li className={ style['p-navigation__link']} role="menuitem">
                   <a className={ style['p-dropdown__toggle']} aria-controls="account-menu" aria-expanded={ this.state.showUserDropdown }
-                    onClick={ this.onDropdownClick.bind(this)}>
+                    onClick={ this.onDropdownClick.bind(this)}
+                  >
                     {user.name || user.login}<IconChevron/>
                   </a>
                   <ul className={ style['p-dropdown__menu']} id="account-menu" aria-hidden={ !this.state.showUserDropdown }>
@@ -62,7 +63,7 @@ export default class Header extends Component {
                       <a href="https://snapcraft.io/account/snaps">My published snaps</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
-                      <a href="/auth/authenticate">Build with GitHub</a>
+                      <a href="/auth/authenticate" className={ style['is-selected']}>Build with GitHub</a>
                     </li>
                     <li className={ style['p-navigation__link']} role="menuitem">
                       <a href="https://snapcraft.io/account/details">Account details</a>
