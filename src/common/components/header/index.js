@@ -35,7 +35,7 @@ export default class Header extends Component {
           <a href="#navigation-closed" className={ style['p-navigation__toggle--close'] } title="close menu">Close menu</a>
         </div>
         <nav className={ style['p-navigation__nav'] } role="menubar">
-          <ul className={ style['p-navigation__links']} role="menu">
+          <ul className={ style['p-navigation__links'] } role="menu">
             <li className={ style['p-navigation__link'] } role="menuitem">
               <a href={ `${SNAPCRAFT_URL}/store` }>Store</a>
             </li>
@@ -54,34 +54,34 @@ export default class Header extends Component {
           </ul>
           { authenticated
             ? (
-              <ul className={ style['p-navigation__links--right']} role="menu">
-                <li className={ style['p-navigation__link']} role="menuitem">
-                  <a className={ style['p-dropdown__toggle']} aria-controls="account-menu" aria-expanded={ this.state.showUserDropdown }
+              <ul className={ style['p-navigation__links--right'] } role="menu">
+                <li className={ style['p-navigation__link'] } role="menuitem">
+                  <a className={ style['p-dropdown__toggle'] } aria-controls="account-menu" aria-expanded={ this.state.showUserDropdown }
                     onClick={ this.onDropdownClick.bind(this)}
                   >
-                    {user.name || user.login}<IconChevron className={ style['p-nav-icon']}/>
+                    {user.name || user.login}<IconChevron className={ style['p-nav-icon'] }/>
                   </a>
-                  <ul className={ style['p-dropdown__menu']} id="account-menu" aria-hidden={ !this.state.showUserDropdown }>
-                    <li className={ style['p-navigation__link']} role="menuitem">
+                  <ul className={ style['p-dropdown__menu'] } id="account-menu" aria-hidden={ !this.state.showUserDropdown }>
+                    <li className={ style['p-navigation__link'] } role="menuitem">
                       <a href={ `${SNAPCRAFT_URL}/account/snaps` } >My published snaps</a>
                     </li>
-                    <li className={ style['p-navigation__link']} role="menuitem">
-                      <a href={ `/user/${user.login}`} className={ style['is-selected']}>Build with GitHub</a>
+                    <li className={ style['p-navigation__link'] } role="menuitem">
+                      <a href={ `/user/${user.login}`} className={ style['is-selected'] }>Build with GitHub</a>
                     </li>
-                    <li className={ style['p-navigation__link']} role="menuitem">
+                    <li className={ style['p-navigation__link'] } role="menuitem">
                       <a href={ `${SNAPCRAFT_URL}/account/details` }>Account details</a>
                     </li>
-                    <li className={ style['p-navigation__link']} role="menuitem">
+                    <li className={ style['p-navigation__link'] } role="menuitem">
                       <a href="/auth/logout" onClick={ this.onLogoutClick.bind(this)}>Sign out</a>
                     </li>
                   </ul>
                 </li>
               </ul>
             ) : (
-              <ul className={ style['p-navigation__links--right']} role="menu">
+              <ul className={ style['p-navigation__links--right'] } role="menu">
                 <li className={ style['p-navigation__link'] } role="menuitem">
                   <a href="/auth/authenticate">
-                    <IconUser className={ style['p-nav-icon']}/>Developer account
+                    <IconUser className={ style['p-nav-icon'] }/>Developer account
                   </a>
                 </li>
               </ul>
