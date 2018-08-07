@@ -7,6 +7,7 @@ import { conf } from '../../helpers/config';
 import style from '../../style/vanilla/css/navigation.css';
 import { IconChevron, IconUser } from '../vanilla-modules/icons';
 
+const SNAPCRAFT_URL = conf.get('SNAPCRAFT_URL');
 const brandmark = 'https://assets.ubuntu.com/v1/7f93bb62-snapcraft-logo--web-white-text.svg';
 
 export default class Header extends Component {
@@ -20,8 +21,6 @@ export default class Header extends Component {
 
   render() {
     const { authenticated, user } = this.props;
-
-    const SNAPCRAFT_URL = conf.get('SNAPCRAFT_URL');
 
     return (
       <header id="navigation" className={ style['p-navigation'] }>
@@ -60,7 +59,7 @@ export default class Header extends Component {
                   <a className={ style['p-dropdown__toggle']} aria-controls="account-menu" aria-expanded={ this.state.showUserDropdown }
                     onClick={ this.onDropdownClick.bind(this)}
                   >
-                    {user.name || user.login}<IconChevron/>
+                    {user.name || user.login}<IconChevron className={ style['p-nav-icon']}/>
                   </a>
                   <ul className={ style['p-dropdown__menu']} id="account-menu" aria-hidden={ !this.state.showUserDropdown }>
                     <li className={ style['p-navigation__link']} role="menuitem">
@@ -82,7 +81,7 @@ export default class Header extends Component {
               <ul className={ style['p-navigation__links--right']} role="menu">
                 <li className={ style['p-navigation__link'] } role="menuitem">
                   <a href="/auth/authenticate">
-                    <IconUser/>Developer account
+                    <IconUser className={ style['p-nav-icon']}/>Developer account
                   </a>
                 </li>
               </ul>

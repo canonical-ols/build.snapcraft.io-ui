@@ -524,13 +524,13 @@
 
 .p-navigation .p-navigation__links--right {
   margin-right: 20px; }
-  .p-navigation .p-navigation__links--right i {
+  .p-navigation .p-navigation__links--right .p-nav-icon {
     margin-right: .5rem; }
   .p-navigation .p-navigation__links--right:last-of-type {
     border-right: none; }
   .p-navigation .p-navigation__links--right .p-dropdown__toggle {
     cursor: pointer; }
-    .p-navigation .p-navigation__links--right .p-dropdown__toggle i {
+    .p-navigation .p-navigation__links--right .p-dropdown__toggle .p-nav-icon {
       width: 12px;
       height: 12px;
       margin-right: 0;

@@ -75,7 +75,7 @@ $color-navigation-background: #252525;
     @extend .p-navigation__links;
     margin-right: 20px;
 
-    i {
+    .p-nav-icon {
       margin-right: .5rem;
     }
 
@@ -86,7 +86,7 @@ $color-navigation-background: #252525;
     .p-dropdown__toggle {
       cursor: pointer;
 
-      i {
+      .p-nav-icon {
         width: 12px;
         height: 12px;
         margin-right: 0;
