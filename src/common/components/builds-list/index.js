@@ -22,7 +22,11 @@ export const BuildsList = (props) => {
   const buildRows = builds
     .sort((a,b) => ((+b.buildId) - (+a.buildId)))
     .map((build) => (
-      <BuildRow key={build.buildId} {...build} repository={repository} />
+      <BuildRow
+        key={ build.isRequest ? `request_${build.buildId}` : build.buildId }
+        {...build}
+        repository={repository}
+      />
     ));
 
   return (

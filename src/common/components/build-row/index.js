@@ -42,6 +42,7 @@ const getBuildTriggerMessage = (repository, reason, commitId) => {
 const BuildRow = (props) => {
 
   const {
+    isRequest,
     repository,
     architecture,
     buildId,
@@ -49,6 +50,7 @@ const BuildRow = (props) => {
     duration,
     colour,
     statusMessage,
+    dateCreated,
     dateStarted,
     reason,
     commitId,
@@ -67,33 +69,57 @@ const BuildRow = (props) => {
     ? `/user/${repository.fullName}/${buildId}`
     : null;
 
-  return (
-    <Row key={ buildId }>
-      <Data col="15">
-        { buildUrl
-          ? <Link to={buildUrl}>{`#${buildId}`}</Link>
-          : <span>{`#${buildId}`}</span>
-        }
-      </Data>
-      <Data col="20">
-        { getBuildTriggerMessage(repository, reason, commitId) }
-      </Data>
-      <Data col="15">
-        {architecture}
-      </Data>
-      <Data col="15">
-        {humanDuration}
-      </Data>
-      <Data col="35">
-        <BuildStatus
-          link={buildUrl}
-          colour={colour}
-          statusMessage={statusMessage}
-          dateStarted={dateStarted}
-        />
-      </Data>
-    </Row>
+  const buildTriggerCell = (
+    <Data col="20">
+      { getBuildTriggerMessage(repository, reason, commitId) }
+    </Data>
   );
+
+  if (isRequest) {
+    return (
+      <Row key={ buildId }>
+        <Data col="15">
+          Requested
+        </Data>
+        { buildTriggerCell }
+        <Data col="65">
+          { statusMessage === 'Failed to build' &&
+            <BuildStatus
+              colour={colour}
+              statusMessage={ `(Request #${buildId}) ${statusMessage}` }
+              dateStarted={dateCreated}
+            />
+          }
+        </Data>
+      </Row>
+    );
+  } else {
+    return (
+      <Row key={ buildId }>
+        <Data col="15">
+          { buildUrl
+            ? <Link to={buildUrl}>{`#${buildId}`}</Link>
+            : <span>{`#${buildId}`}</span>
+          }
+        </Data>
+        { buildTriggerCell }
+        <Data col="15">
+          {architecture}
+        </Data>
+        <Data col="15">
+          {humanDuration}
+        </Data>
+        <Data col="35">
+          <BuildStatus
+            link={buildUrl}
+            colour={colour}
+            statusMessage={statusMessage}
+            dateStarted={dateStarted}
+          />
+        </Data>
+      </Row>
+    );
+  }
 };
 
 BuildRow.defaultProps = {
@@ -107,11 +133,13 @@ BuildRow.propTypes = {
   }),
 
   // build properties
-  buildId:  PropTypes.string,
+  isRequest: PropTypes.bool,
+  buildId: PropTypes.string,
   buildLogUrl: PropTypes.string,
   architecture: PropTypes.string,
   colour: PropTypes.oneOf(Object.values(BuildStatusColours)),
   statusMessage: PropTypes.string,
+  dateCreated: PropTypes.string,
   dateStarted: PropTypes.string,
   duration: PropTypes.string,
   reason: PropTypes.string,
