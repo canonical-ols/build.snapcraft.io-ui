@@ -19,15 +19,6 @@ describe('<BuildRow />', function() {
     duration: '0:01:24.425045',
     reason: BUILD_TRIGGER_UNKNOWN
   };
-  const TEST_BUILD_REQUEST = {
-    isRequest: true,
-    buildId: '123456',
-    statusMessage: 'Building soon',
-    colour: 'grey',
-    dateCreated: '2016-11-09T17:05:52.436792+00:00',
-    errorMessage: null,
-    reason: BUILD_TRIGGER_UNKNOWN
-  };
   const TEST_REPO = {
     fullName: 'anowner/aname'
   };
@@ -135,17 +126,5 @@ describe('<BuildRow />', function() {
       expect(element.find('BuildStatus').length).toBe(1);
       expect(element.find('BuildStatus').prop('link')).toBe(null);
     });
-  });
-
-  it('should display pending build request', () => {
-    element = shallow(
-      <BuildRow repository={TEST_REPO} {...TEST_BUILD_REQUEST} />
-    );
-
-    const dataRows = element.find('Data');
-    expect(dataRows.length).toBe(3);
-    expect(shallow(dataRows.get(0)).text()).toEqual('Requested');
-    expect(shallow(dataRows.get(1)).text()).toEqual('Unknown');
-    expect(shallow(dataRows.get(2)).text()).toEqual('');
   });
 });
