@@ -11,6 +11,11 @@ import {
   getSelfId
 } from '../../common/helpers/build_annotation';
 import { parseGitHubRepoUrl } from '../../common/helpers/github-url';
+import {
+  ARCHITECTURES,
+  DISTRIBUTION,
+  DISTRO_SERIES
+} from '../../common/helpers/launchpad';
 import db from '../db';
 import { conf } from '../helpers/config';
 import { getMemcached } from '../helpers/memcached';
@@ -30,12 +35,6 @@ import { getLaunchpadRootSecret, makeWebhookSecret } from './webhook';
 const logger = logging.getLogger('express');
 
 import { getSnapcraftYamlCacheId } from './github';
-
-// XXX cjwatson 2016-12-08: Hardcoded for now, but should eventually be
-// configurable.
-const DISTRIBUTION = 'ubuntu';
-const DISTRO_SERIES = 'xenial';
-const ARCHITECTURES = ['amd64', 'arm64', 'armhf', 'i386', 'ppc64el', 's390x'];
 
 const RESPONSE_NOT_LOGGED_IN = {
   status: 'error',
