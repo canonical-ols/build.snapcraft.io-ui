@@ -14,7 +14,8 @@ import { parseGitHubRepoUrl } from '../../common/helpers/github-url';
 import {
   ARCHITECTURES,
   DISTRIBUTION,
-  DISTRO_SERIES
+  DISTRO_SERIES,
+  STORE_SERIES
 } from '../../common/helpers/launchpad';
 import db from '../db';
 import { conf } from '../helpers/config';
@@ -202,7 +203,8 @@ const requestNewSnap = (repositoryUrl) => {
       auto_build: false,
       auto_build_archive: `/${DISTRIBUTION}/+archive/primary`,
       auto_build_pocket: 'Updates',
-      processors: ARCHITECTURES.map((arch) => `/+processors/${arch}`)
+      processors: ARCHITECTURES.map((arch) => `/+processors/${arch}`),
+      store_series: `/+snappy-series/${STORE_SERIES}`
     }
   });
 };
@@ -659,6 +661,8 @@ export const authorizeSnap = async (req, res) => {
     const snapUrl = result.self_link;
     await getLaunchpad().patch(snapUrl, {
       store_upload: true,
+      // XXX cjwatson 2019-01-30: This can be removed once the change to set
+      // store_series when creating the snap has been deployed everywhere.
       store_series_link: `/+snappy-series/${series}`,
       store_name: snapName,
       store_channels: channels
