@@ -60,9 +60,6 @@ export default class Footer extends Component {
                 <a href="https://twitter.com/snapcraftio" className={ style['p-social-icon--twitter'] }>Share on Twitter</a>
               </li>
               <li className={ style['p-inline-list__item'] }>
-                <a href="https://plus.google.com/+SnapcraftIo" className={ style['p-social-icon--google'] }>Share on Google plus</a>
-              </li>
-              <li className={ style['p-inline-list__item'] }>
                 <a href="https://www.facebook.com/snapcraftio" className={ style['p-social-icon--facebook'] }>Share on Facebook</a>
               </li>
               <li className={ style['p-inline-list__item'] }>
