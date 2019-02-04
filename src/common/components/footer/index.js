@@ -28,8 +28,7 @@ export default class Footer extends Component {
                 </li>
               </ul>
             </nav>
-            <p>&copy; 2019 Canonical Ltd. <br/> Ubuntu and Canonical are registered trademarks of Canonical Ltd.<br />
-            Powered by <a href="https://www.ubuntu.com/kubernetes">the Charmed Distribution of Kubernetes</a></p>
+            <p>&copy; 2019 Canonical Ltd. <br/> Ubuntu and Canonical are registered trademarks of Canonical Ltd.</p>
             <p>
               <a
                 className={ style['p-link--external'] }
@@ -52,6 +51,10 @@ export default class Footer extends Component {
                 className={ style['p-link--external'] }
                 href="https://github.com/canonical-websites/build.snapcraft.io/issues"
               >this site</a>.
+              <br />
+              Powered by <a href="https://www.ubuntu.com/kubernetes">the Charmed Distribution of Kubernetes</a>
+              {' '}&#183;{' '}
+              <a href="https://status.snapcraft.io/">Service status</a>
             </p>
             <div className={ gridStyle['col-12'] }>
               <ul className={ style['p-inline-list--middot','u-no-margin--bottom'] }>
