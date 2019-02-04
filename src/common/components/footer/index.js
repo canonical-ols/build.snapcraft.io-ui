@@ -28,9 +28,13 @@ export default class Footer extends Component {
                 </li>
               </ul>
             </nav>
-            <p>&copy; 2019 Canonical Ltd. <br/> Ubuntu and Canonical are registered trademarks of Canonical Ltd.</p>
+            <p>&copy; 2019 Canonical Ltd. <br/> Ubuntu and Canonical are registered trademarks of Canonical Ltd.<br />
+            Powered by <a href="https://www.ubuntu.com/kubernetes">the Charmed Distribution of Kubernetes</a></p>
             <p>
-              You can contribute to, or report problems with,
+              <a
+                className={ style['p-link--external'] }
+                href="https://bugs.launchpad.net/snapd"
+              >Join the forum</a>, contribute to or report problems with,
               {' '}
               <a
                 className={ style['p-link--external'] }
@@ -48,11 +52,26 @@ export default class Footer extends Component {
                 className={ style['p-link--external'] }
                 href="https://github.com/canonical-websites/build.snapcraft.io/issues"
               >this site</a>.
-              <br />
-              Powered by <a href="https://www.ubuntu.com/kubernetes">the Charmed Distribution of Kubernetes</a>
-              {' '}&#183;{' '}
-              <a href="https://status.snapcraft.io/">Service status</a>
             </p>
+            <div className={ gridStyle['col-12'] }>
+              <ul className={ style['p-inline-list--middot','u-no-margin--bottom'] }>
+                <li className={ style['p-inline-list__item'] }>
+                  <a href="https://www.ubuntu.com/legal" className={ style['p-link--soft'] } accesskey="6">Legal information</a>
+                </li>
+                <li className={ style['p-inline-list__item'] }>
+                  <a href="https://www.ubuntu.com/legal/data-privacy" className={ style['p-link--soft'] } accesskey="7">Data privacy</a>
+                </li>
+                <li className={ style['p-inline-list__item'] }>
+                  <a href="https://status.snapcraft.io" className={ style['p-link--soft'] } accesskey="8">Service status</a>
+                </li>
+                <li className={ style['p-inline-list__item'] }>
+                  <a href="https://dashboard.snapcraft.io" className={ style['p-link--soft'] } accesskey="9">Other functions</a>
+                </li>
+                <li className={ style['p-inline-list__item'] }>
+                  <a href="https://boards.greenhouse.io/canonical/jobs/1161820" className={ style['p-link--soft','p-link--external'] } accesskey="7">We're hiring!</a>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className={ gridStyle['col-4'] }>
             <ul className={ style['p-inline-list--compact'] }>

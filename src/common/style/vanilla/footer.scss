@@ -41,6 +41,7 @@ body,
 .p-footer {
   // not to include whole strip pattern
   background-color: $color-light;
+  border-top: none;
   padding-bottom: $sp-xx-large;
 
   p {
