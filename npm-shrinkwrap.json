@@ -855,7 +855,7 @@
       "version": "4.17.4"
     },
     "lodash-es": {
-      "version": "4.17.2"
+      "version": "4.17.11"
     },
     "lodash._arrayeach": {
       "version": "3.0.0"
@@ -1213,24 +1213,57 @@
       }
     },
     "react-hot-loader": {
-      "version": "4.3.11",
+      "version": "4.8.0",
       "dependencies": {
-        "hoist-non-react-statics": {
-          "version": "2.5.5"
+        "big.js": {
+          "version": "5.2.2"
         },
-        "shallowequal": {
-          "version": "1.1.0"
+        "hoist-non-react-statics": {
+          "version": "3.3.0"
+        },
+        "json5": {
+          "version": "1.0.1"
+        },
+        "loader-utils": {
+          "version": "1.2.3"
+        },
+        "lodash": {
+          "version": "4.17.11"
+        },
+        "minimist": {
+          "version": "1.2.0"
+        },
+        "source-map": {
+          "version": "0.7.3"
         }
       }
+    },
+    "react-is": {
+      "version": "16.8.4"
     },
     "react-lifecycles-compat": {
       "version": "3.0.4"
     },
     "react-redux": {
-      "version": "4.4.9",
+      "version": "4.4.10",
       "dependencies": {
         "hoist-non-react-statics": {
-          "version": "2.5.5"
+          "version": "3.3.0"
+        },
+        "js-tokens": {
+          "version": "4.0.0"
+        },
+        "lodash": {
+          "version": "4.17.11"
+        },
+        "loose-envify": {
+          "version": "1.4.0"
+        },
+        "object-assign": {
+          "version": "4.1.1"
+        },
+        "prop-types": {
+          "version": "15.7.2"
         }
       }
     },
@@ -1238,7 +1271,7 @@
       "version": "3.2.1"
     },
     "react-router-redux": {
-      "version": "4.0.7"
+      "version": "4.0.8"
     },
     "react-side-effect": {
       "version": "1.1.5"
@@ -1267,10 +1300,10 @@
       "version": "0.6.2"
     },
     "redux": {
-      "version": "3.6.0"
+      "version": "3.7.2"
     },
     "redux-thunk": {
-      "version": "2.1.0"
+      "version": "2.3.0"
     },
     "referrer-policy": {
       "version": "1.0.0"
@@ -1513,7 +1546,7 @@
       "version": "2.0.0"
     },
     "symbol-observable": {
-      "version": "1.0.4"
+      "version": "1.2.0"
     },
     "tdigest": {
       "version": "0.1.1"
