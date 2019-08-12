@@ -1,6 +1,3 @@
-@import 'vanilla-framework/scss/patterns_footer.scss';
-@include vf-p-footer;
-
 @import 'vanilla-framework/scss/_utilities_content-align.scss';
 @include vf-u-align;
 
@@ -10,11 +7,14 @@
 
 // CUSTOM OVERRIDES
 
+@import 'vanilla-framework/scss/_base_placeholders.scss';
 @import 'vanilla-framework/scss/_patterns_icons.scss';
 @include vf-p-icons;
 
 @import 'vanilla-framework/scss/_utilities_clearfix.scss';
 @import 'vanilla-framework/scss/patterns_grid.scss';
+@include vf-p-grid;
+
 @import 'vanilla-framework/scss/patterns_lists.scss';
 @include vf-p-lists;
 
@@ -64,7 +64,8 @@ body,
   }
 
   // make sure default vanilla vertical spacing works in footer
-  @include vf-b-vertical-spacing;
+  // TODO: check if some replacement is needed
+  // @include vf-b-vertical-spacing;
 
   // snapcraft custom social icons
   %p-social-icon {
