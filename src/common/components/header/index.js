@@ -8,7 +8,7 @@ import { conf } from '../../helpers/config';
 import style from '../../style/vanilla/css/navigation.css';
 import containerStyles from '../../containers/container.css';
 
-import { IconChevron, IconUser } from '../vanilla-modules/icons';
+import { IconUser } from '../vanilla-modules/icons';
 
 const SNAPCRAFT_URL = conf.get('SNAPCRAFT_URL');
 const brandmark = 'https://assets.ubuntu.com/v1/7f93bb62-snapcraft-logo--web-white-text.svg';

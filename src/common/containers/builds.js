@@ -217,7 +217,8 @@ Builds.propTypes = {
   }).isRequired,
   snap: PropTypes.shape({
     selfLink: PropTypes.string.isRequired,
-    storeName: PropTypes.string
+    storeName: PropTypes.string,
+    stableRevision: PropTypes.string
   }),
   snapBuilds: PropTypes.shape({
     isFetching: PropTypes.bool,
